@@ -1,0 +1,23 @@
+.testLogoColors {
+  color: #2e2e2c;
+  color: #d01d09;
+  color: rgb(137, 137, 135); /* siempre el ultimo menos 2*/
+  color: rgb(137, 137, 136); /* siempre el ultimo menos 1*/
+  color: rgb(137, 137, 137); /*letras  ysa*/
+}
+
+.testLogoColors2 {
+  color: #db1922;
+  color: #1b1b1d;
+  color: #fdfcdc;
+  color: #fed9b7;
+  color: #f07167;
+}
+
+.testLogoColors3 {
+  color: #d1130d;
+  color: #ffaea3;
+  color: #e81402;
+  color: #eb5a5f;
+  color: #424041;
+}
