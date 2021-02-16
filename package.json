@@ -1,0 +1,20 @@
+{
+  "name": "pysa",
+  "version": "0.0.0",
+  "description": "future system of pysa",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "concurrently 'cd backend  && npm run start ' 'cd client && yarn start '"
+    },
+  "keywords": [
+    "pysa",
+    "lanes",
+    "dota"
+  ],
+  "author": "carlos rodriguez",
+  "license": "MIT",
+  "dependencies": {
+    "concurrently": "^5.3.0"
+  }
+}
