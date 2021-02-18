@@ -1,0 +1,52 @@
+{
+  "medallas":[
+    {
+      "id": 1,
+      "nombre": "Heraldo",
+      "minimo": 0,
+      "maximo": 600
+    },
+    {
+      "id": 2,
+      "nombre": "Guardián",
+      "minimo": 601,
+      "maximo": 1200
+    },
+    {
+      "id": 3,
+      "nombre": "Cruzado",
+      "minimo": 1201,
+      "maximo": 1800
+    },
+    {
+      "id": 4,
+      "nombre": "Arconte",
+      "minimo": 1801,
+      "maximo": 2400
+    },
+    {
+      "id": 5,
+      "nombre": "Leyenda",
+      "minimo": 2401,
+      "maximo": 3000
+    },
+    {
+      "id": 6,
+      "nombre": "Ancient",
+      "minimo": 3001,
+      "maximo": 3600
+    },
+    {
+      "id": 7,
+      "nombre": "Divino",
+      "minimo": 3601,
+      "maximo": 4200
+    },
+    {
+      "id": 8,
+      "nombre": "Inmortal",
+      "minimo": 4201,
+      "maximo": 4800
+    }
+  ]
+}
