@@ -1,4 +1,4 @@
-import { createGlobalStyle } from 'styled-components'
+import { createGlobalStyle } from 'styled-components';
 
 export const GlobalStyle = createGlobalStyle`
   html {
@@ -20,8 +20,26 @@ export const GlobalStyle = createGlobalStyle`
     min-height: 100vh;
     padding-bottom: 10px; 
   } */
+
+  body {
+  margin: 0;
+  padding: 0;
+  height: 100vh;
+  }
+
+
   #root {
-    background-color: #222831;
+    background-color: rgb(34, 40, 49, .9);
+    /* width: 100vw; */
     min-height: 100vh;
   }
-`
+
+  .App {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    /* position: relative;
+    height: 100vh; */
+  }
+`;

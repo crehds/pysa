@@ -1,48 +1,18 @@
 import React from 'react';
-import { Name, RankingTable, RowName, RowsNames } from './styles';
-import { ImTrophy } from 'react-icons/im';
-import { Player } from '../Player';
+import { RankingTable} from './styles';
 import { useStateValue } from '../../Context';
+import { Positions } from '../Positions';
+import { PlayersInRanking } from '../PlayersInRanking';
+import { RowsNameRanking } from '../RowsNameRanking';
 
 export const Ranking = () => {
   const value = useStateValue();
-  console.log(value);
+  console.log(typeof value);
   return (
     <RankingTable>
-      <RowsNames>
-        <RowName>
-          <ImTrophy color='gold' size='30px' />
-        </RowName>
-        <RowName>
-          <Name>Player</Name>
-        </RowName>
-        <RowName>
-          <Name>Nº de partidas</Name>
-        </RowName>
-        <RowName>
-          <Name>MMR</Name>
-        </RowName>
-        <RowName>
-          <Name>Medalla</Name>
-        </RowName>
-      </RowsNames>
-      <div>
-        {value.map((e, i) => (
-          <div key={i}>{i + 1} </div>
-        ))}
-      </div>
-
-      <div>
-        {value.map((player, i) => (
-          <Player
-            key={i}
-            name={player.nombre}
-            partidas={player.partidas}
-            mmr={player.sumaMMR}
-            medail={player.medail}
-          />
-        ))}
-      </div>
+      <RowsNameRanking/>
+      <Positions positions={value.length} />
+      <PlayersInRanking players={value} />
     </RankingTable>
   );
 };
