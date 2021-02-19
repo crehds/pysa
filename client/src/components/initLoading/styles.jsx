@@ -8,6 +8,11 @@ const Eclipse = keyframes`
 
 export const Div = styled.div`
   position: relative;
+  min-height: 100vh;
+  min-width: 100vw;
+  display:flex;
+  justify-content: center;
+  align-items: center;
 `;
 
 export const Overlay = styled.div`
@@ -24,6 +29,7 @@ export const Overlay = styled.div`
       #333333 50%
     )
     top right/200% 200%;
+  position: absolute;
 `;
 
 export const Img = styled.img`
@@ -32,9 +38,6 @@ export const Img = styled.img`
 `;
 
 export const ImgWrapper = styled.div`
-  /* border: 1px solid red; */
   color: red;
-  position: absolute;
-  top: 15%;
-  right: 30%;
+  z-index: 5000;
 `;
