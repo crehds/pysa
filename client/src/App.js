@@ -7,9 +7,9 @@ import { Home } from './components/pages/Home';
 function App() {
   const [isLoading, setLoading] = useState(false);
 
-  // useEffect(() => {
-  //   return setTimeout(() => setLoading(true), 4000);
-  // }, []);
+  useEffect(() => {
+    return setTimeout(() => setLoading(true), 4000);
+  }, []);
 
   return (
     <div className='App'>
