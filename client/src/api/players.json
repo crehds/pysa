@@ -648,7 +648,7 @@
           "id": "3",
           "nombre": "offlaner",
           "score": {
-            "victorias": 2,
+            "victorias": 4,
             "derrotas": 1,
             "kills": 35,
             "deaths": 22,
@@ -659,7 +659,7 @@
           "id": "4",
           "nombre": "soft support",
           "score": {
-            "victorias": 4,
+            "victorias": 1,
             "derrotas": 1,
             "kills": 8,
             "deaths": 19,
