@@ -14,13 +14,13 @@ function reducer(roles, mmrPerV, mmrPerD, initialMMR) {
 }
 
 function calcMMR(players) {
-  return players.map((player) => {
+  return players.filter((player) => player.estado === 1).map((player) => {
     if (player.calibracion.estado === 1) {
       // let initialMMR = player.mmr === 0 ? 1800 : player.mmr
-      let { sumaMMR, partidas } = reducer(player.roles, 100, 80, 1800);
+      let { sumaMMR, partidas } = reducer(player.roles, 100, 100, 1800);
       return { ...player, sumaMMR, partidas };
     } else {
-      let { sumaMMR, partidas } = reducer(player.roles, 50, 30, player.mmr);
+      let { sumaMMR, partidas } = reducer(player.roles, 100, 100, player.mmr);
       return { ...player, sumaMMR, partidas };
     }
   });

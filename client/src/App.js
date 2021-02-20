@@ -7,10 +7,19 @@ import { Home } from './components/pages/Home';
 function App() {
   const [isLoading, setLoading] = useState(false);
 
+  // async function testHeroku() {
+  //   let result = await fetch('/users')
+  //     .then((response) => response.text())
+  //     .then((result) => result);
+  //   console.log(result);
+  // }
+
   useEffect(() => {
+    // testHeroku();
     return setTimeout(() => setLoading(true), 4000);
   }, []);
 
+  // console.log(typeof process.env.NODE_ENV);
   return (
     <div className='App'>
       <GlobalStyle />

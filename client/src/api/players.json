@@ -3,6 +3,7 @@
     {
       "id": 1,
       "nombre": "Pakomon",
+      "estado": 1,
       "roles": [
         {
           "id": "1",
@@ -20,32 +21,32 @@
           "nombre": "midlaner",
           "score": {
             "victorias": 0,
-            "derrotas": 1,
-            "kills": 7,
-            "deaths": 5,
-            "assists": 12
+            "derrotas": 3,
+            "kills": 14,
+            "deaths": 12,
+            "assists": 33
           }
         },
         {
           "id": "3",
           "nombre": "offlaner",
           "score": {
-            "victorias": 0,
+            "victorias": 1,
             "derrotas": 1,
-            "kills": 1,
-            "deaths": 5,
-            "assists": 5
+            "kills": 9,
+            "deaths": 9,
+            "assists": 19
           }
         },
         {
           "id": "4",
           "nombre": "soft support",
           "score": {
-            "victorias": 0,
-            "derrotas": 2,
-            "kills": 2,
-            "deaths": 20,
-            "assists": 36
+            "victorias": 1,
+            "derrotas": 3,
+            "kills": 10,
+            "deaths": 29,
+            "assists": 41
           }
         },
         {
@@ -53,22 +54,23 @@
           "nombre": "support",
           "score": {
             "victorias": 0,
-            "derrotas": 3,
-            "kills": 4,
-            "deaths": 19,
-            "assists": 24
+            "derrotas": 2,
+            "kills": 3,
+            "deaths": 20,
+            "assists": 36
           }
         }
       ],
       "calibracion": {
-        "estado": 1,
-        "partidas restantes": 1
+        "estado": 0,
+        "partidas restantes": 0
       },
-      "mmr": 0
+      "mmr": 1800
     },
     {
       "id": 2,
       "nombre": "Jean",
+      "estado": 1,
       "roles": [
         {
           "id": "1",
@@ -85,23 +87,23 @@
           "id": "2",
           "nombre": "midlaner",
           "score": {
-            "victorias": 2,
-            "derrotas": 2,
-            "kills": 28,
-            "deaths": 23,
-            "assists": 28
+            "victorias": 3,
+            "derrotas": 3,
+            "kills": 42,
+            "deaths": 33,
+            "assists": 41
           }
         },
         {
           "id": "3",
           "nombre": "offlaner",
           "score": {
-            "victorias": 1,
+            "victorias": 3,
             "derrotas": 0,
             "score": {
-              "kills": 4,
-              "deaths": 5,
-              "assists": 19
+              "kills": 17,
+              "deaths": 11,
+              "assists": 41
             }
           }
         },
@@ -136,11 +138,12 @@
         "estado": 1,
         "partidas restantes": 1
       },
-      "mmr": 0
+      "mmr": 1800
     },
     {
       "id": 3,
       "nombre": "Razo",
+      "estado": 1,
       "roles": [
         {
           "id": "1",
@@ -215,6 +218,7 @@
     {
       "id": 4,
       "nombre": "Nk-striker",
+      "estado": 1,
       "roles": [
         {
           "id": "1",
@@ -265,32 +269,33 @@
           "nombre": "support",
           "score": {
             "victorias": 5,
-            "derrotas": 0,
-            "kills": 17,
-            "deaths": 28,
-            "assists": 88
+            "derrotas": 3,
+            "kills": 28,
+            "deaths": 46,
+            "assists": 120
           }
         }
       ],
       "calibracion": {
         "estado": 1,
-        "partidas restantes": 4
+        "partidas restantes": 1
       },
       "mmr": 0
     },
     {
       "id": 5,
       "nombre": "Antarez",
+      "estado": 1,
       "roles": [
         {
           "id": "1",
           "nombre": "hard carry",
           "score": {
             "victorias": 1,
-            "derrotas": 2,
-            "kills": 21,
-            "deaths": 13,
-            "assists": 16
+            "derrotas": 3,
+            "kills": 23,
+            "deaths": 18,
+            "assists": 18
           }
         },
         {
@@ -298,12 +303,10 @@
           "nombre": "midlaner",
           "score": {
             "victorias": 0,
-            "derrotas": 1,
-            "score": {
-              "kills": 13,
-              "deaths": 13,
-              "assists": 16
-            }
+            "derrotas": 2,
+            "kills": 21,
+            "deaths": 17,
+            "assists": 21
           }
         },
         {
@@ -322,43 +325,44 @@
           "nombre": "soft support",
           "score": {
             "victorias": 2,
-            "derrotas": 1,
-            "kills": 13,
-            "deaths": 29,
-            "assists": 36
+            "derrotas": 2,
+            "kills": 17,
+            "deaths": 37,
+            "assists": 51
           }
         },
         {
           "id": "5",
           "nombre": "support",
           "score": {
-            "victorias": 0,
+            "victorias": 1,
             "derrotas": 0,
-            "kills": 0,
-            "deaths": 0,
-            "assists": 0
+            "kills": 8,
+            "deaths": 9,
+            "assists": 10
           }
         }
       ],
       "calibracion": {
-        "estado": 1,
-        "partidas restantes": 1
+        "estado": 0,
+        "partidas restantes": 0
       },
-      "mmr": 0
+      "mmr": 1800
     },
     {
       "id": 6,
       "nombre": "Dxz",
+      "estado": 1,
       "roles": [
         {
           "id": "1",
           "nombre": "hard carry",
           "score": {
             "victorias": 0,
-            "derrotas": 0,
-            "kills": 0,
-            "deaths": 0,
-            "assists": 0
+            "derrotas": 1,
+            "kills": 4,
+            "deaths": 5,
+            "assists": 11
           }
         },
         {
@@ -387,34 +391,35 @@
           "id": "4",
           "nombre": "soft support",
           "score": {
-            "victorias": 0,
+            "victorias": 1,
             "derrotas": 2,
-            "kills": 4,
-            "deaths": 21,
-            "assists": 16
+            "kills": 6,
+            "deaths": 24,
+            "assists": 33
           }
         },
         {
           "id": "5",
           "nombre": "support",
           "score": {
-            "victorias": 1,
-            "derrotas": 5,
-            "kills": 22,
-            "deaths": 48,
-            "assists": 85
+            "victorias": 2,
+            "derrotas": 6,
+            "kills": 26,
+            "deaths": 71,
+            "assists": 116
           }
         }
       ],
       "calibracion": {
-        "estado": 1,
-        "partidas restantes": 1
+        "estado": 0,
+        "partidas restantes": 0
       },
-      "mmr": 0
+      "mmr": 1800
     },
     {
       "id": 7,
       "nombre": "Checa",
+      "estado": 1,
       "roles": [
         {
           "id": "1",
@@ -443,10 +448,10 @@
           "nombre": "offlaner",
           "score": {
             "victorias": 1,
-            "derrotas": 2,
-            "kills": 12,
-            "deaths": 24,
-            "assists": 34
+            "derrotas": 4,
+            "kills": 15,
+            "deaths": 36,
+            "assists": 47
           }
         },
         {
@@ -454,10 +459,10 @@
           "nombre": "soft support",
           "score": {
             "victorias": 1,
-            "derrotas": 1,
-            "kills": 8,
-            "deaths": 15,
-            "assists": 16
+            "derrotas": 3,
+            "kills": 7,
+            "deaths": 32,
+            "assists": 64
           }
         },
         {
@@ -473,24 +478,25 @@
         }
       ],
       "calibracion": {
-        "estado": 1,
-        "partidas restantes": 3
+        "estado": 0,
+        "partidas restantes": 0
       },
-      "mmr": 0
+      "mmr": 1800
     },
     {
       "id": 8,
       "nombre": "Nnnnnnnnnn",
+      "estado": 1,
       "roles": [
         {
           "id": "1",
           "nombre": "hard carry",
           "score": {
-            "victorias": 4,
-            "derrotas": 3,
-            "kills": 78,
-            "deaths": 19,
-            "assists": 73
+            "victorias": 7,
+            "derrotas": 4,
+            "kills": 99,
+            "deaths": 33,
+            "assists": 114
           }
         },
         {
@@ -539,35 +545,36 @@
         }
       ],
       "calibracion": {
-        "estado": 1,
-        "partidas restantes": 1
+        "estado": 0,
+        "partidas restantes": 0
       },
-      "mmr": 0
+      "mmr": 1800
     },
     {
       "id": 9,
       "nombre": "Diego",
+      "estado": 1,
       "roles": [
         {
           "id": "1",
           "nombre": "hard carry",
           "score": {
-            "victorias": 3,
+            "victorias": 4,
             "derrotas": 1,
-            "kills": 46,
-            "deaths": 19,
-            "assists": 50
+            "kills": 57,
+            "deaths": 14,
+            "assists": 55
           }
         },
         {
           "id": "2",
           "nombre": "midlaner",
           "score": {
-            "victorias": 3,
-            "derrotas": 2,
-            "kills": 43,
-            "deaths": 26,
-            "assists": 49
+            "victorias": 4,
+            "derrotas": 3,
+            "kills": 56,
+            "deaths": 33,
+            "assists": 46
           }
         },
         {
@@ -605,35 +612,36 @@
         }
       ],
       "calibracion": {
-        "estado": 1,
-        "partidas restantes": 1
+        "estado": 0,
+        "partidas restantes": 0
       },
-      "mmr": 0
+      "mmr": 1800
     },
     {
       "id": 10,
       "nombre": "Virtus",
+      "estado": 1,
       "roles": [
         {
           "id": "1",
           "nombre": "hard carry",
           "score": {
             "victorias": 0,
-            "derrotas": 0,
-            "kills": 0,
-            "deaths": 0,
-            "assists": 0
+            "derrotas": 1,
+            "kills": 2,
+            "deaths": 5,
+            "assists": 5
           }
         },
         {
           "id": "2",
           "nombre": "midlaner",
           "score": {
-            "victorias": 1,
+            "victorias": 3,
             "derrotas": 2,
-            "kills": 20,
-            "deaths": 16,
-            "assists": 32
+            "kills": 34,
+            "deaths": 18,
+            "assists": 56
           }
         },
         {
@@ -642,20 +650,20 @@
           "score": {
             "victorias": 2,
             "derrotas": 1,
-            "kills": 19,
-            "deaths": 13,
-            "assists": 23
+            "kills": 35,
+            "deaths": 22,
+            "assists": 45
           }
         },
         {
           "id": "4",
           "nombre": "soft support",
           "score": {
-            "victorias": 2,
+            "victorias": 4,
             "derrotas": 1,
-            "kills": 21,
-            "deaths": 21,
-            "assists": 45
+            "kills": 8,
+            "deaths": 19,
+            "assists": 39
           }
         },
         {
@@ -671,14 +679,15 @@
         }
       ],
       "calibracion": {
-        "estado": 1,
-        "partidas restantes": 1
+        "estado": 0,
+        "partidas restantes": 0
       },
-      "mmr": 0
+      "mmr": 1800
     },
     {
       "id": 11,
       "nombre": "DT-Suportchela",
+      "estado": 1,
       "roles": [
         {
           "id": "1",
@@ -745,6 +754,7 @@
     {
       "id": 12,
       "nombre": "Slash",
+      "estado": 1,
       "roles": [
         {
           "id": "1",
@@ -783,11 +793,11 @@
           "id": "4",
           "nombre": "soft support",
           "score": {
-            "victorias": 0,
+            "victorias": 1,
             "derrotas": 0,
-            "kills": 0,
-            "deaths": 0,
-            "assists": 0
+            "kills": 5,
+            "deaths": 8,
+            "assists": 8
           }
         },
         {
@@ -804,13 +814,14 @@
       ],
       "calibracion": {
         "estado": 1,
-        "partidas restantes": 9
+        "partidas restantes": 8
       },
       "mmr": 0
     },
     {
       "id": 13,
       "nombre": "Glazius",
+      "estado": 1,
       "roles": [
         {
           "id": "1",
@@ -877,6 +888,7 @@
     {
       "id": 14,
       "nombre": "Jhonix",
+      "estado": 1,
       "roles": [
         {
           "id": "1",
@@ -904,22 +916,22 @@
           "id": "3",
           "nombre": "offlaner",
           "score": {
-            "victorias": 0,
-            "derrotas": 2,
-            "kills": 13,
-            "deaths": 22,
-            "assists": 20
+            "victorias": 1,
+            "derrotas": 3,
+            "kills": 18,
+            "deaths": 27,
+            "assists": 39
           }
         },
         {
           "id": "4",
           "nombre": "soft support",
           "score": {
-            "victorias": 1,
+            "victorias": 3,
             "derrotas": 0,
-            "kills": 2,
-            "deaths": 1,
-            "assists": 12
+            "kills": 8,
+            "deaths": 9,
+            "assists": 40
           }
         },
         {
@@ -936,13 +948,14 @@
       ],
       "calibracion": {
         "estado": 1,
-        "partidas restantes": 7
+        "partidas restantes": 3
       },
       "mmr": 0
     },
     {
       "id": 15,
       "nombre": "Gottso",
+      "estado": 0,
       "roles": [
         {
           "id": "1",
@@ -1009,6 +1022,7 @@
     {
       "id": 16,
       "nombre": "Oaps",
+      "estado": 1,
       "roles": [
         {
           "id": "1",
@@ -1063,6 +1077,73 @@
             "kills": 0,
             "deaths": 0,
             "assists": 0
+          }
+        }
+      ],
+      "calibracion": {
+        "estado": 1,
+        "partidas restantes": 9
+      },
+      "mmr": 0
+    },
+    {
+      "id": 17,
+      "nombre": "Lipnos",
+      "estado": 1,
+      "roles": [
+        {
+          "id": "1",
+          "nombre": "hard carry",
+          "score": {
+            "victorias": 0,
+            "derrotas": 0,
+            "kills": 0,
+            "deaths": 0,
+            "assists": 0
+          }
+        },
+        {
+          "id": "2",
+          "nombre": "midlaner",
+          "score": {
+            "victorias": 0,
+            "derrotas": 0,
+            "kills": 0,
+            "deaths": 0,
+            "assists": 0
+          }
+        },
+        {
+          "id": "3",
+          "nombre": "offlaner",
+          "score": {
+            "victorias": 0,
+            "derrotas": 0,
+            "kills": 0,
+            "deaths": 0,
+            "assists": 0
+          }
+        },
+        {
+          "id": "4",
+          "nombre": "soft support",
+          "score": {
+            "victorias": 0,
+            "derrotas": 0,
+            "kills": 0,
+            "deaths": 0,
+            "assists": 0
+          }
+        },
+        {
+          "id": "5",
+          "nombre": "support",
+          "score": {
+            "victorias": 1,
+            "derrotas": 0,
+            "kills": 3,
+            "deaths": 6,
+            "assists": 12
           }
         }
       ],

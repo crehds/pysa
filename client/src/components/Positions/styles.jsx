@@ -5,7 +5,7 @@ export const PositionsContainer = styled.div``;
 export const Position = styled.div`
   color: #b39999;
   font-family: 'Ubuntu';
-  margin: 5px 0;
+  margin: 8px 0;
   &:nth-of-type(1) {
     color:gold;
     font-weight: bold;
