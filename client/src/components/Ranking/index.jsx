@@ -11,7 +11,7 @@ export const Ranking = () => {
   const value = useStateValue();
   function onMouseEnter() {
     let medails = document.getElementById('medails');
-    medails.style.display = 'block';
+    medails.style.display = 'grid';
   }
   function onMouseLeave() {
     let medails = document.getElementById('medails');

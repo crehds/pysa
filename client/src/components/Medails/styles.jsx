@@ -8,7 +8,7 @@ export const MedailsDiv = styled.div`
   display: none;
   background-color: rgba(151, 140, 140, 0.897);
   padding: 8px;
-  display: grid;
+  /* display: grid; */
   grid-template-rows: 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr;
 `;
 
