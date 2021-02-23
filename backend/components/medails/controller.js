@@ -1,5 +1,9 @@
 const store = require('./store');
 
+async function getMedails() {
+  return await store.list();
+}
+
 function addMedail(medails) {
   if (!medails || medails.length === 0) {
     return Promise.reject('Invalid data');
@@ -17,4 +21,5 @@ function addMedail(medails) {
 
 module.exports = {
   addMedail,
+  getMedails,
 };

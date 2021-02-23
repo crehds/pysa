@@ -7,11 +7,14 @@ const MySchema = new Schema({
     lastName: String,
   },
   nickname: String,
-  estado: Boolean,
+  medails: {
+    type: Schema.ObjectId,
+    ref: 'medails',
+  },
   mmr: Number,
+  estado: Boolean,
 });
 
 const model = mongoose.model('players', MySchema);
-
 
 module.exports = model;
