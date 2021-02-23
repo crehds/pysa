@@ -25,4 +25,12 @@ async function addScore({
   return await store.add(addScore);
 }
 
-module.exports = { addScore };
+async function getOneScore({ player, rol }) {
+  const getScore = {
+    player,
+    rol,
+  };
+  return await store.listOne(getScore);
+}
+
+module.exports = { addScore, getOneScore };
