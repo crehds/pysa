@@ -9,8 +9,23 @@ export const RankingTable = styled.div`
   padding: 50px;
   text-align: center;
   margin: 10px;
-  box-shadow: 0 0 10px 5px rgba(0, 0, 0, .09);
+  box-shadow: 0 0 10px 5px rgba(0, 0, 0, 0.09);
   /* position: absolute;
   top: 10%;
   right: 6%; */
-`
+  position: relative;
+`;
+
+export const Info = styled.div`
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  & svg {
+    color: gray;
+    &:hover {
+      /* border: 1px solid red; */
+      color: white;
+      fill: white;
+    }
+  }
+`;
