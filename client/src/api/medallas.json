@@ -16,12 +16,12 @@
       "id": 3,
       "nombre": "Cruzado",
       "minimo": 1201,
-      "maximo": 1800
+      "maximo": 1798
     },
     {
       "id": 4,
       "nombre": "Arconte",
-      "minimo": 1801,
+      "minimo": 1799,
       "maximo": 2400
     },
     {

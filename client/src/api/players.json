@@ -10,7 +10,9 @@
           "nombre": "hard carry",
           "score": {
             "victorias": 0,
+            "victoriasDouble": 0,
             "derrotas": 2,
+            "derrotasDouble": 0,
             "kills": 6,
             "deaths": 10,
             "assists": 9
@@ -21,7 +23,9 @@
           "nombre": "midlaner",
           "score": {
             "victorias": 0,
+            "victoriasDouble": 0,
             "derrotas": 3,
+            "derrotasDouble": 0,
             "kills": 14,
             "deaths": 12,
             "assists": 33
@@ -32,10 +36,12 @@
           "nombre": "offlaner",
           "score": {
             "victorias": 1,
-            "derrotas": 1,
-            "kills": 9,
-            "deaths": 9,
-            "assists": 19
+            "victoriasDouble": 0,
+            "derrotas": 2,
+            "derrotasDouble": 0,
+            "kills": 18,
+            "deaths": 17,
+            "assists": 30
           }
         },
         {
@@ -43,21 +49,25 @@
           "nombre": "soft support",
           "score": {
             "victorias": 1,
-            "derrotas": 3,
-            "kills": 10,
-            "deaths": 29,
-            "assists": 41
+            "victoriasDouble": 0,
+            "derrotas": 5,
+            "derrotasDouble": 0,
+            "kills": 15,
+            "deaths": 44,
+            "assists": 71
           }
         },
         {
           "id": "5",
           "nombre": "support",
           "score": {
-            "victorias": 0,
-            "derrotas": 2,
-            "kills": 3,
-            "deaths": 20,
-            "assists": 36
+            "victorias": 2,
+            "victoriasDouble": 0,
+            "derrotas": 3,
+            "derrotasDouble": 0,
+            "kills": 24,
+            "deaths": 40,
+            "assists": 73
           }
         }
       ],
@@ -77,21 +87,25 @@
           "nombre": "hard carry",
           "score": {
             "victorias": 1,
-            "derrotas": 2,
-            "kills": 38,
-            "deaths": 17,
-            "assists": 17
+            "victoriasDouble": 0,
+            "derrotas": 3,
+            "derrotasDouble": 0,
+            "kills": 45,
+            "deaths": 24,
+            "assists": 28
           }
         },
         {
           "id": "2",
           "nombre": "midlaner",
           "score": {
-            "victorias": 3,
-            "derrotas": 3,
-            "kills": 42,
-            "deaths": 33,
-            "assists": 41
+            "victorias": 5,
+            "victoriasDouble": 0,
+            "derrotas": 4,
+            "derrotasDouble": 0,
+            "kills": 60,
+            "deaths": 51,
+            "assists": 69
           }
         },
         {
@@ -99,25 +113,25 @@
           "nombre": "offlaner",
           "score": {
             "victorias": 3,
-            "derrotas": 0,
-            "score": {
-              "kills": 17,
-              "deaths": 11,
-              "assists": 41
-            }
+            "victoriasDouble": 0,
+            "derrotas": 1,
+            "derrotasDouble": 0,
+            "kills": 18,
+            "deaths": 14,
+            "assists": 49
           }
         },
         {
           "id": "4",
           "nombre": "soft support",
           "score": {
-            "victorias": 1,
+            "victorias": 2,
+            "victoriasDouble": 0,
             "derrotas": 0,
-            "score": {
-              "kills": 6,
-              "deaths": 8,
-              "assists": 13
-            }
+            "derrotasDouble": 0,
+            "kills": 16,
+            "deaths": 18,
+            "assists": 39
           }
         },
         {
@@ -125,18 +139,18 @@
           "nombre": "support",
           "score": {
             "victorias": 0,
+            "victoriasDouble": 0,
             "derrotas": 0,
-            "score": {
-              "kills": 0,
-              "deaths": 0,
-              "assists": 0
-            }
+            "derrotasDouble": 0,
+            "kills": 0,
+            "deaths": 0,
+            "assists": 0
           }
         }
       ],
       "calibracion": {
-        "estado": 1,
-        "partidas restantes": 1
+        "estado": 0,
+        "partidas restantes": 0
       },
       "mmr": 1800
     },
@@ -150,7 +164,9 @@
           "nombre": "hard carry",
           "score": {
             "victorias": 0,
+            "victoriasDouble": 0,
             "derrotas": 0,
+            "derrotasDouble": 0,
             "kills": 0,
             "deaths": 0,
             "assists": 0
@@ -161,12 +177,12 @@
           "nombre": "midlaner",
           "score": {
             "victorias": 1,
-            "derrotas": 1,
-            "score": {
-              "kills": 11,
-              "deaths": 8,
-              "assists": 15
-            }
+            "victoriasDouble": 0,
+            "derrotas": 5,
+            "derrotasDouble": 0,
+            "kills": 41,
+            "deaths": 35,
+            "assists": 51
           }
         },
         {
@@ -174,7 +190,9 @@
           "nombre": "offlaner",
           "score": {
             "victorias": 1,
+            "victoriasDouble": 0,
             "derrotas": 0,
+            "derrotasDouble": 0,
             "score": {
               "kills": 5,
               "deaths": 8,
@@ -187,7 +205,9 @@
           "nombre": "soft support",
           "score": {
             "victorias": 1,
+            "victoriasDouble": 0,
             "derrotas": 0,
+            "derrotasDouble": 0,
             "score": {
               "kills": 3,
               "deaths": 5,
@@ -200,7 +220,9 @@
           "nombre": "support",
           "score": {
             "victorias": 0,
+            "victoriasDouble": 0,
             "derrotas": 0,
+            "derrotasDouble": 0,
             "score": {
               "kills": 0,
               "deaths": 0,
@@ -211,7 +233,7 @@
       ],
       "calibracion": {
         "estado": 1,
-        "partidas restantes": 6
+        "partidas restantes": 2
       },
       "mmr": 0
     },
@@ -225,7 +247,9 @@
           "nombre": "hard carry",
           "score": {
             "victorias": 0,
+            "victoriasDouble": 0,
             "derrotas": 0,
+            "derrotasDouble": 0,
             "kills": 0,
             "deaths": 0,
             "assists": 0
@@ -236,7 +260,9 @@
           "nombre": "midlaner",
           "score": {
             "victorias": 0,
+            "victoriasDouble": 0,
             "derrotas": 0,
+            "derrotasDouble": 0,
             "kills": 0,
             "deaths": 0,
             "assists": 0
@@ -247,7 +273,9 @@
           "nombre": "offlaner",
           "score": {
             "victorias": 0,
+            "victoriasDouble": 0,
             "derrotas": 0,
+            "derrotasDouble": 0,
             "kills": 0,
             "deaths": 0,
             "assists": 0
@@ -258,7 +286,9 @@
           "nombre": "soft support",
           "score": {
             "victorias": 0,
+            "victoriasDouble": 0,
             "derrotas": 1,
+            "derrotasDouble": 0,
             "kills": 2,
             "deaths": 9,
             "assists": 6
@@ -268,19 +298,21 @@
           "id": "5",
           "nombre": "support",
           "score": {
-            "victorias": 5,
-            "derrotas": 3,
-            "kills": 28,
-            "deaths": 46,
-            "assists": 120
+            "victorias": 7,
+            "victoriasDouble": 0,
+            "derrotas": 6,
+            "derrotasDouble": 0,
+            "kills": 41,
+            "deaths": 85,
+            "assists": 178
           }
         }
       ],
       "calibracion": {
-        "estado": 1,
-        "partidas restantes": 1
+        "estado": 0,
+        "partidas restantes": 0
       },
-      "mmr": 0
+      "mmr": 1800
     },
     {
       "id": 5,
@@ -292,32 +324,38 @@
           "nombre": "hard carry",
           "score": {
             "victorias": 1,
-            "derrotas": 3,
-            "kills": 23,
-            "deaths": 18,
-            "assists": 18
+            "victoriasDouble": 0,
+            "derrotas": 4,
+            "derrotasDouble": 0,
+            "kills": 24,
+            "deaths": 23,
+            "assists": 22
           }
         },
         {
           "id": "2",
           "nombre": "midlaner",
           "score": {
-            "victorias": 0,
+            "victorias": 1,
+            "victoriasDouble": 0,
             "derrotas": 2,
-            "kills": 21,
-            "deaths": 17,
-            "assists": 21
+            "derrotasDouble": 0,
+            "kills": 26,
+            "deaths": 18,
+            "assists": 27
           }
         },
         {
           "id": "3",
           "nombre": "offlaner",
           "score": {
-            "victorias": 1,
+            "victorias": 2,
+            "victoriasDouble": 0,
             "derrotas": 1,
-            "kills": 19,
-            "deaths": 20,
-            "assists": 30
+            "derrotasDouble": 0,
+            "kills": 21,
+            "deaths": 30,
+            "assists": 44
           }
         },
         {
@@ -325,10 +363,12 @@
           "nombre": "soft support",
           "score": {
             "victorias": 2,
-            "derrotas": 2,
-            "kills": 17,
-            "deaths": 37,
-            "assists": 51
+            "victoriasDouble": 1,
+            "derrotas": 4,
+            "derrotasDouble": 0,
+            "kills": 32,
+            "deaths": 64,
+            "assists": 96
           }
         },
         {
@@ -336,7 +376,9 @@
           "nombre": "support",
           "score": {
             "victorias": 1,
+            "victoriasDouble": 0,
             "derrotas": 0,
+            "derrotasDouble": 0,
             "kills": 8,
             "deaths": 9,
             "assists": 10
@@ -359,7 +401,9 @@
           "nombre": "hard carry",
           "score": {
             "victorias": 0,
+            "victoriasDouble": 0,
             "derrotas": 1,
+            "derrotasDouble": 0,
             "kills": 4,
             "deaths": 5,
             "assists": 11
@@ -369,11 +413,13 @@
           "id": "2",
           "nombre": "midlaner",
           "score": {
-            "victorias": 1,
+            "victorias": 2,
+            "victoriasDouble": 0,
             "derrotas": 0,
-            "kills": 12,
-            "deaths": 8,
-            "assists": 34
+            "derrotasDouble": 0,
+            "kills": 19,
+            "deaths": 12,
+            "assists": 69
           }
         },
         {
@@ -381,7 +427,9 @@
           "nombre": "offlaner",
           "score": {
             "victorias": 0,
+            "victoriasDouble": 0,
             "derrotas": 0,
+            "derrotasDouble": 0,
             "kills": 0,
             "deaths": 0,
             "assists": 0
@@ -391,22 +439,26 @@
           "id": "4",
           "nombre": "soft support",
           "score": {
-            "victorias": 1,
+            "victorias": 3,
+            "victoriasDouble": 0,
             "derrotas": 2,
-            "kills": 6,
-            "deaths": 24,
-            "assists": 33
+            "derrotasDouble": 0,
+            "kills": 10,
+            "deaths": 33,
+            "assists": 58
           }
         },
         {
           "id": "5",
           "nombre": "support",
           "score": {
-            "victorias": 2,
-            "derrotas": 6,
-            "kills": 26,
-            "deaths": 71,
-            "assists": 116
+            "victorias": 4,
+            "victoriasDouble": 0,
+            "derrotas": 7,
+            "derrotasDouble": 0,
+            "kills": 37,
+            "deaths": 86,
+            "assists": 173
           }
         }
       ],
@@ -426,7 +478,9 @@
           "nombre": "hard carry",
           "score": {
             "victorias": 0,
+            "victoriasDouble": 0,
             "derrotas": 0,
+            "derrotasDouble": 0,
             "kills": 0,
             "deaths": 0,
             "assists": 0
@@ -436,33 +490,39 @@
           "id": "2",
           "nombre": "midlaner",
           "score": {
-            "victorias": 0,
+            "victorias": 1,
+            "victoriasDouble": 0,
             "derrotas": 0,
-            "kills": 0,
-            "deaths": 0,
-            "assists": 0
+            "derrotasDouble": 0,
+            "kills": 5,
+            "deaths": 3,
+            "assists": 14
           }
         },
         {
           "id": "3",
           "nombre": "offlaner",
           "score": {
-            "victorias": 1,
-            "derrotas": 4,
-            "kills": 15,
-            "deaths": 36,
-            "assists": 47
+            "victorias": 3,
+            "victoriasDouble": 0,
+            "derrotas": 5,
+            "derrotasDouble": 0,
+            "kills": 40,
+            "deaths": 50,
+            "assists": 89
           }
         },
         {
           "id": "4",
           "nombre": "soft support",
           "score": {
-            "victorias": 1,
-            "derrotas": 3,
-            "kills": 7,
-            "deaths": 32,
-            "assists": 64
+            "victorias": 2,
+            "victoriasDouble": 0,
+            "derrotas": 4,
+            "derrotasDouble": 0,
+            "kills": 10,
+            "deaths": 44,
+            "assists": 86
           }
         },
         {
@@ -470,7 +530,9 @@
           "nombre": "support",
           "score": {
             "victorias": 2,
+            "victoriasDouble": 0,
             "derrotas": 0,
+            "derrotasDouble": 0,
             "kills": 10,
             "deaths": 9,
             "assists": 49
@@ -492,11 +554,13 @@
           "id": "1",
           "nombre": "hard carry",
           "score": {
-            "victorias": 7,
+            "victorias": 13,
+            "victoriasDouble": 0,
             "derrotas": 4,
-            "kills": 99,
-            "deaths": 33,
-            "assists": 114
+            "derrotasDouble": 0,
+            "kills": 178,
+            "deaths": 42,
+            "assists": 163
           }
         },
         {
@@ -504,7 +568,9 @@
           "nombre": "midlaner",
           "score": {
             "victorias": 1,
+            "victoriasDouble": 0,
             "derrotas": 0,
+            "derrotasDouble": 0,
             "kills": 15,
             "deaths": 1,
             "assists": 7
@@ -515,7 +581,9 @@
           "nombre": "offlaner",
           "score": {
             "victorias": 1,
+            "victoriasDouble": 0,
             "derrotas": 0,
+            "derrotasDouble": 0,
             "kills": 7,
             "deaths": 1,
             "assists": 9
@@ -526,7 +594,9 @@
           "nombre": "soft support",
           "score": {
             "victorias": 0,
+            "victoriasDouble": 0,
             "derrotas": 0,
+            "derrotasDouble": 0,
             "kills": 0,
             "deaths": 0,
             "assists": 0
@@ -537,7 +607,9 @@
           "nombre": "support",
           "score": {
             "victorias": 0,
+            "victoriasDouble": 0,
             "derrotas": 0,
+            "derrotasDouble": 0,
             "kills": 0,
             "deaths": 0,
             "assists": 0
@@ -560,7 +632,9 @@
           "nombre": "hard carry",
           "score": {
             "victorias": 4,
+            "victoriasDouble": 0,
             "derrotas": 1,
+            "derrotasDouble": 0,
             "kills": 57,
             "deaths": 14,
             "assists": 55
@@ -571,7 +645,9 @@
           "nombre": "midlaner",
           "score": {
             "victorias": 4,
+            "victoriasDouble": 0,
             "derrotas": 3,
+            "derrotasDouble": 0,
             "kills": 56,
             "deaths": 33,
             "assists": 46
@@ -582,7 +658,9 @@
           "nombre": "offlaner",
           "score": {
             "victorias": 0,
+            "victoriasDouble": 0,
             "derrotas": 0,
+            "derrotasDouble": 0,
             "kills": 0,
             "deaths": 0,
             "assists": 0
@@ -593,7 +671,9 @@
           "nombre": "soft support",
           "score": {
             "victorias": 0,
+            "victoriasDouble": 0,
             "derrotas": 0,
+            "derrotasDouble": 0,
             "kills": 0,
             "deaths": 0,
             "assists": 0
@@ -604,7 +684,9 @@
           "nombre": "support",
           "score": {
             "victorias": 0,
+            "victoriasDouble": 0,
             "derrotas": 0,
+            "derrotasDouble": 0,
             "kills": 0,
             "deaths": 0,
             "assists": 0
@@ -627,21 +709,25 @@
           "nombre": "hard carry",
           "score": {
             "victorias": 0,
-            "derrotas": 1,
-            "kills": 2,
-            "deaths": 5,
-            "assists": 5
+            "victoriasDouble": 0,
+            "derrotas": 3,
+            "derrotasDouble": 0,
+            "kills": 15,
+            "deaths": 12,
+            "assists": 16
           }
         },
         {
           "id": "2",
           "nombre": "midlaner",
           "score": {
-            "victorias": 3,
+            "victorias": 4,
+            "victoriasDouble": 0,
             "derrotas": 2,
-            "kills": 34,
-            "deaths": 18,
-            "assists": 56
+            "derrotasDouble": 0,
+            "kills": 40,
+            "deaths": 26,
+            "assists": 71
           }
         },
         {
@@ -649,21 +735,25 @@
           "nombre": "offlaner",
           "score": {
             "victorias": 4,
-            "derrotas": 1,
-            "kills": 35,
-            "deaths": 22,
-            "assists": 45
+            "victoriasDouble": 0,
+            "derrotas": 3,
+            "derrotasDouble": 0,
+            "kills": 47,
+            "deaths": 42,
+            "assists": 68
           }
         },
         {
           "id": "4",
           "nombre": "soft support",
           "score": {
-            "victorias": 1,
+            "victorias": 2,
+            "victoriasDouble": 0,
             "derrotas": 1,
-            "kills": 8,
-            "deaths": 19,
-            "assists": 39
+            "derrotasDouble": 0,
+            "kills": 15,
+            "deaths": 27,
+            "assists": 45
           }
         },
         {
@@ -671,7 +761,9 @@
           "nombre": "support",
           "score": {
             "victorias": 0,
+            "victoriasDouble": 0,
             "derrotas": 0,
+            "derrotasDouble": 0,
             "kills": 0,
             "deaths": 0,
             "assists": 0
@@ -694,7 +786,9 @@
           "nombre": "hard carry",
           "score": {
             "victorias": 0,
+            "victoriasDouble": 0,
             "derrotas": 0,
+            "derrotasDouble": 0,
             "kills": 0,
             "deaths": 0,
             "assists": 0
@@ -705,7 +799,9 @@
           "nombre": "midlaner",
           "score": {
             "victorias": 0,
+            "victoriasDouble": 0,
             "derrotas": 0,
+            "derrotasDouble": 0,
             "kills": 0,
             "deaths": 0,
             "assists": 0
@@ -716,7 +812,9 @@
           "nombre": "offlaner",
           "score": {
             "victorias": 0,
+            "victoriasDouble": 0,
             "derrotas": 0,
+            "derrotasDouble": 0,
             "kills": 0,
             "deaths": 0,
             "assists": 0
@@ -727,7 +825,9 @@
           "nombre": "soft support",
           "score": {
             "victorias": 1,
+            "victoriasDouble": 0,
             "derrotas": 0,
+            "derrotasDouble": 0,
             "kills": 5,
             "deaths": 10,
             "assists": 33
@@ -738,7 +838,9 @@
           "nombre": "support",
           "score": {
             "victorias": 1,
+            "victoriasDouble": 0,
             "derrotas": 1,
+            "derrotasDouble": 0,
             "kills": 10,
             "deaths": 14,
             "assists": 22
@@ -761,10 +863,12 @@
           "nombre": "hard carry",
           "score": {
             "victorias": 0,
-            "derrotas": 0,
-            "kills": 0,
-            "deaths": 0,
-            "assists": 0
+            "victoriasDouble": 0,
+            "derrotas": 2,
+            "derrotasDouble": 0,
+            "kills": 19,
+            "deaths": 16,
+            "assists": 31
           }
         },
         {
@@ -772,7 +876,9 @@
           "nombre": "midlaner",
           "score": {
             "victorias": 0,
+            "victoriasDouble": 0,
             "derrotas": 0,
+            "derrotasDouble": 0,
             "kills": 0,
             "deaths": 0,
             "assists": 0
@@ -782,11 +888,13 @@
           "id": "3",
           "nombre": "offlaner",
           "score": {
-            "victorias": 0,
+            "victorias": 2,
+            "victoriasDouble": 0,
             "derrotas": 1,
-            "kills": 3,
-            "deaths": 9,
-            "assists": 7
+            "derrotasDouble": 0,
+            "kills": 22,
+            "deaths": 19,
+            "assists": 29
           }
         },
         {
@@ -794,7 +902,9 @@
           "nombre": "soft support",
           "score": {
             "victorias": 1,
+            "victoriasDouble": 0,
             "derrotas": 0,
+            "derrotasDouble": 0,
             "kills": 5,
             "deaths": 8,
             "assists": 8
@@ -805,7 +915,9 @@
           "nombre": "support",
           "score": {
             "victorias": 0,
+            "victoriasDouble": 0,
             "derrotas": 0,
+            "derrotasDouble": 0,
             "kills": 0,
             "deaths": 0,
             "assists": 0
@@ -814,21 +926,23 @@
       ],
       "calibracion": {
         "estado": 1,
-        "partidas restantes": 8
+        "partidas restantes": 4
       },
       "mmr": 0
     },
     {
       "id": 13,
       "nombre": "Glazius",
-      "estado": 1,
+      "estado": 0,
       "roles": [
         {
           "id": "1",
           "nombre": "hard carry",
           "score": {
             "victorias": 0,
+            "victoriasDouble": 0,
             "derrotas": 0,
+            "derrotasDouble": 0,
             "kills": 0,
             "deaths": 0,
             "assists": 0
@@ -839,7 +953,9 @@
           "nombre": "midlaner",
           "score": {
             "victorias": 0,
+            "victoriasDouble": 0,
             "derrotas": 0,
+            "derrotasDouble": 0,
             "kills": 0,
             "deaths": 0,
             "assists": 0
@@ -850,7 +966,9 @@
           "nombre": "offlaner",
           "score": {
             "victorias": 0,
+            "victoriasDouble": 0,
             "derrotas": 0,
+            "derrotasDouble": 0,
             "kills": 0,
             "deaths": 0,
             "assists": 0
@@ -861,7 +979,9 @@
           "nombre": "soft support",
           "score": {
             "victorias": 1,
+            "victoriasDouble": 0,
             "derrotas": 0,
+            "derrotasDouble": 0,
             "kills": 3,
             "deaths": 4,
             "assists": 19
@@ -872,7 +992,9 @@
           "nombre": "support",
           "score": {
             "victorias": 0,
+            "victoriasDouble": 0,
             "derrotas": 0,
+            "derrotasDouble": 0,
             "kills": 0,
             "deaths": 0,
             "assists": 0
@@ -895,7 +1017,9 @@
           "nombre": "hard carry",
           "score": {
             "victorias": 0,
+            "victoriasDouble": 0,
             "derrotas": 0,
+            "derrotasDouble": 0,
             "kills": 0,
             "deaths": 0,
             "assists": 0
@@ -906,10 +1030,12 @@
           "nombre": "midlaner",
           "score": {
             "victorias": 0,
-            "derrotas": 0,
-            "kills": 0,
-            "deaths": 0,
-            "assists": 0
+            "victoriasDouble": 0,
+            "derrotas": 2,
+            "derrotasDouble": 0,
+            "kills": 6,
+            "deaths": 18,
+            "assists": 16
           }
         },
         {
@@ -917,7 +1043,9 @@
           "nombre": "offlaner",
           "score": {
             "victorias": 1,
+            "victoriasDouble": 0,
             "derrotas": 3,
+            "derrotasDouble": 0,
             "kills": 18,
             "deaths": 27,
             "assists": 39
@@ -928,7 +1056,9 @@
           "nombre": "soft support",
           "score": {
             "victorias": 3,
+            "victoriasDouble": 0,
             "derrotas": 0,
+            "derrotasDouble": 0,
             "kills": 8,
             "deaths": 9,
             "assists": 40
@@ -939,18 +1069,20 @@
           "nombre": "support",
           "score": {
             "victorias": 0,
-            "derrotas": 0,
-            "kills": 0,
-            "deaths": 0,
-            "assists": 0
+            "victoriasDouble": 0,
+            "derrotas": 1,
+            "derrotasDouble": 0,
+            "kills": 3,
+            "deaths": 11,
+            "assists": 19
           }
         }
       ],
       "calibracion": {
-        "estado": 1,
-        "partidas restantes": 3
+        "estado": 0,
+        "partidas restantes": 0
       },
-      "mmr": 0
+      "mmr": 1800
     },
     {
       "id": 15,
@@ -962,7 +1094,9 @@
           "nombre": "hard carry",
           "score": {
             "victorias": 0,
+            "victoriasDouble": 0,
             "derrotas": 0,
+            "derrotasDouble": 0,
             "kills": 0,
             "deaths": 0,
             "assists": 0
@@ -973,7 +1107,9 @@
           "nombre": "midlaner",
           "score": {
             "victorias": 0,
+            "victoriasDouble": 0,
             "derrotas": 0,
+            "derrotasDouble": 0,
             "kills": 0,
             "deaths": 0,
             "assists": 0
@@ -984,7 +1120,9 @@
           "nombre": "offlaner",
           "score": {
             "victorias": 0,
+            "victoriasDouble": 0,
             "derrotas": 1,
+            "derrotasDouble": 0,
             "kills": 5,
             "deaths": 19,
             "assists": 15
@@ -995,7 +1133,9 @@
           "nombre": "soft support",
           "score": {
             "victorias": 0,
+            "victoriasDouble": 0,
             "derrotas": 0,
+            "derrotasDouble": 0,
             "kills": 0,
             "deaths": 0,
             "assists": 0
@@ -1006,7 +1146,9 @@
           "nombre": "support",
           "score": {
             "victorias": 0,
+            "victoriasDouble": 0,
             "derrotas": 0,
+            "derrotasDouble": 0,
             "kills": 0,
             "deaths": 0,
             "assists": 0
@@ -1022,14 +1164,16 @@
     {
       "id": 16,
       "nombre": "Oaps",
-      "estado": 1,
+      "estado": 0,
       "roles": [
         {
           "id": "1",
           "nombre": "hard carry",
           "score": {
             "victorias": 0,
+            "victoriasDouble": 0,
             "derrotas": 0,
+            "derrotasDouble": 0,
             "kills": 0,
             "deaths": 0,
             "assists": 0
@@ -1040,7 +1184,9 @@
           "nombre": "midlaner",
           "score": {
             "victorias": 0,
+            "victoriasDouble": 0,
             "derrotas": 0,
+            "derrotasDouble": 0,
             "kills": 0,
             "deaths": 0,
             "assists": 0
@@ -1051,7 +1197,9 @@
           "nombre": "offlaner",
           "score": {
             "victorias": 1,
+            "victoriasDouble": 0,
             "derrotas": 0,
+            "derrotasDouble": 0,
             "kills": 2,
             "deaths": 4,
             "assists": 32
@@ -1062,7 +1210,9 @@
           "nombre": "soft support",
           "score": {
             "victorias": 0,
+            "victoriasDouble": 0,
             "derrotas": 0,
+            "derrotasDouble": 0,
             "kills": 0,
             "deaths": 0,
             "assists": 0
@@ -1073,7 +1223,9 @@
           "nombre": "support",
           "score": {
             "victorias": 0,
+            "victoriasDouble": 0,
             "derrotas": 0,
+            "derrotasDouble": 0,
             "kills": 0,
             "deaths": 0,
             "assists": 0
@@ -1089,14 +1241,16 @@
     {
       "id": 17,
       "nombre": "Lipnos",
-      "estado": 1,
+      "estado": 0,
       "roles": [
         {
           "id": "1",
           "nombre": "hard carry",
           "score": {
             "victorias": 0,
+            "victoriasDouble": 0,
             "derrotas": 0,
+            "derrotasDouble": 0,
             "kills": 0,
             "deaths": 0,
             "assists": 0
@@ -1107,7 +1261,9 @@
           "nombre": "midlaner",
           "score": {
             "victorias": 0,
+            "victoriasDouble": 0,
             "derrotas": 0,
+            "derrotasDouble": 0,
             "kills": 0,
             "deaths": 0,
             "assists": 0
@@ -1118,7 +1274,9 @@
           "nombre": "offlaner",
           "score": {
             "victorias": 0,
+            "victoriasDouble": 0,
             "derrotas": 0,
+            "derrotasDouble": 0,
             "kills": 0,
             "deaths": 0,
             "assists": 0
@@ -1129,7 +1287,9 @@
           "nombre": "soft support",
           "score": {
             "victorias": 0,
+            "victoriasDouble": 0,
             "derrotas": 0,
+            "derrotasDouble": 0,
             "kills": 0,
             "deaths": 0,
             "assists": 0
@@ -1140,7 +1300,9 @@
           "nombre": "support",
           "score": {
             "victorias": 1,
+            "victoriasDouble": 0,
             "derrotas": 0,
+            "derrotasDouble": 0,
             "kills": 3,
             "deaths": 6,
             "assists": 12
