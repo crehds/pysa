@@ -2,10 +2,11 @@
 import { useEffect, useState } from 'react';
 import { Loading } from './components/initLoading';
 import { GlobalStyle } from './styles/GlobalStyles';
-import { Home } from './components/pages/Home';
+import { Home } from './pages/Home';
 import { NavBar } from './components/NavBar';
 import { Router } from '@reach/router';
-import { Players } from './components/pages/Players';
+import { Players } from './pages/Players';
+import { AdminPlayers } from './pages/AdminPlayers';
 
 // import './App.css';
 function App() {
@@ -30,9 +31,10 @@ function App() {
       {isLoading ? (
         <>
           <NavBar />
-          <Router style={{ height: '100vh'}}>
-            {/* <Home path='/'/> */}
-            <Players path='/'/>
+          <Router style={{ height: '100vh' }}>
+            <Home path='/' />
+            <Players path='/players' />
+            <AdminPlayers path='/adminPlayers'/>
           </Router>
         </>
       ) : (
