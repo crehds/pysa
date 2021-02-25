@@ -1,13 +1,5 @@
 import styled from 'styled-components';
 
-export const RankingWrapper = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  height: inherit;
-  width: 100%;
-`
-
 export const RankingTable = styled.div`
   /* border: 1px solid red; */
   display: grid;
