@@ -1,6 +1,6 @@
-import React from 'react'
-import { Ranking } from '../Ranking'
+import React from 'react';
+import { Ranking } from '../Ranking';
 
 export const Home = () => {
-  return <Ranking/>
-}
+  return <Ranking />;
+};

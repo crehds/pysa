@@ -1,13 +1,23 @@
 import React from 'react';
-import { PlayerData, Player as P } from './styles';
+import { ContentWrapper, Profile, Score } from './styles';
+import { ScoreContent } from './ScoreContent';
+import { PlayerImageMedail } from './PlayerImageMedail';
+import { ScoreColumnsName } from './ScoreColumnsNames';
 
-export const Player = ({ name, partidas, mmr, medail }) => {
+export const Player = (props) => {
   return (
-    <PlayerData>
-      <P>{name}</P>
-      <P>{partidas}</P>
-      <P>{mmr}</P>
-      <P>{medail}</P>
-    </PlayerData>
+    <Profile>
+      <ContentWrapper>
+        <PlayerImageMedail
+          nombre={props.nombre}
+          medail={props.medail}
+          mmr={props.sumaMMR}
+        />
+        <Score>
+          <ScoreColumnsName />
+          <ScoreContent roles={props.roles} />
+        </Score>
+      </ContentWrapper>
+    </Profile>
   );
 };

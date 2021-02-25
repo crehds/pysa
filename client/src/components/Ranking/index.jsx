@@ -1,5 +1,5 @@
 import React from 'react';
-import { Info, RankingTable } from './styles';
+import { Info, RankingTable, RankingWrapper } from './styles';
 import { useStateValue } from '../../Context';
 import { Positions } from '../Positions';
 import { PlayersInRanking } from '../PlayersInRanking';
@@ -18,7 +18,8 @@ export const Ranking = () => {
     medails.style.display = 'none';
   }
   return (
-    <RankingTable>
+    <RankingWrapper>
+      <RankingTable>
       <Medails />
       <Info onMouseEnter={onMouseEnter} onMouseLeave={onMouseLeave}>
         <ImInfo size='30px' />
@@ -27,5 +28,7 @@ export const Ranking = () => {
       <Positions positions={value.length} />
       <PlayersInRanking players={value} />
     </RankingTable>
+    </RankingWrapper>
+    
   );
 };

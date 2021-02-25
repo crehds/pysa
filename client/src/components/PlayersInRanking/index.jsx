@@ -1,12 +1,12 @@
 import React from 'react';
-import { Player } from '../Player';
+import { RowPlayerRanking } from '../RowPlayerRanking';
 import { PlayersData } from './styles';
 
 export const PlayersInRanking = ({ players }) => {
   return (
     <PlayersData>
       {players.map((player, i) => (
-        <Player
+        <RowPlayerRanking
           key={i}
           name={player.nombre}
           partidas={player.partidas}

@@ -193,11 +193,9 @@
             "victoriasDouble": 0,
             "derrotas": 0,
             "derrotasDouble": 0,
-            "score": {
-              "kills": 5,
-              "deaths": 8,
-              "assists": 16
-            }
+            "kills": 5,
+            "deaths": 8,
+            "assists": 16
           }
         },
         {
@@ -208,11 +206,9 @@
             "victoriasDouble": 0,
             "derrotas": 0,
             "derrotasDouble": 0,
-            "score": {
-              "kills": 3,
-              "deaths": 5,
-              "assists": 10
-            }
+            "kills": 3,
+            "deaths": 5,
+            "assists": 10
           }
         },
         {
@@ -223,11 +219,9 @@
             "victoriasDouble": 0,
             "derrotas": 0,
             "derrotasDouble": 0,
-            "score": {
-              "kills": 0,
-              "deaths": 0,
-              "assists": 0
-            }
+            "kills": 0,
+            "deaths": 0,
+            "assists": 0
           }
         }
       ],
