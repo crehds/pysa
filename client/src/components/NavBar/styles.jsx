@@ -1,4 +1,5 @@
 import styled from 'styled-components';
+import { Link as LinkRouter } from '@reach/router';
 
 export const NavBarContainer = styled.div`
   height: 100vh;
@@ -11,23 +12,24 @@ export const NavBarContainer = styled.div`
   background-image: linear-gradient(
     89.8deg,
     rgba(160, 49, 49, 0.87) 4.7%,
-    rgba(30, 29, 29, .9) 120.3%
+    rgba(30, 29, 29, 0.9) 120.3%
   );
-  border-right: 3px solid rgba(30, 29, 29, .85);
+  border-right: 3px solid rgba(30, 29, 29, 0.85);
 `;
 
 export const ImgWrapper = styled.div`
-margin: auto 0;
+  margin: auto 0;
   & img {
     max-width: 100%;
   }
 `;
 
-export const Icon = styled.div`
+export const Icon = styled(LinkRouter)`
   /* font-size: 25px; */
   display: flex;
   justify-content: center;
   align-items: center;
+  text-decoration: none;
   & svg {
     color: rgba(211, 211, 211, 0.6);
     font-size: 30px;

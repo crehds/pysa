@@ -7,8 +7,8 @@ import { NavBar } from './components/NavBar';
 import { Router } from '@reach/router';
 import { Players } from './pages/Players';
 import { AdminPlayers } from './pages/AdminPlayers';
+import './App.css';
 
-// import './App.css';
 function App() {
   const [isLoading, setLoading] = useState(false);
 
@@ -32,9 +32,9 @@ function App() {
         <>
           <NavBar />
           <Router style={{ height: '100vh' }}>
-            <Home path='/' />
-            <Players path='/players' />
-            <AdminPlayers path='/adminPlayers'/>
+            <Home exac path='/' />
+            <Players exac path='/players' />
+            <AdminPlayers exac path='/adminPlayers'/>
           </Router>
         </>
       ) : (

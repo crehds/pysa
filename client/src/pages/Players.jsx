@@ -3,5 +3,5 @@ import React from 'react';
 import { GetPlayers } from '../container/GetPlayers';
 
 export const Players = () => {
-  return <GetPlayers />;
+  return <GetPlayers user='player'/>;
 };
