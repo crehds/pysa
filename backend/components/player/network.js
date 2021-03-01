@@ -23,4 +23,59 @@ router.post('/newplayer', async function (req, res) {
   }
 });
 
+router.post('/newPlayers', async function (req, res) {
+  const { players } = req.body;
+  try {
+    const result = await controller.addPlayers(players);
+    response.success(req, res, result, 200);
+  } catch (error) {
+    response.error(req, res, 'Unexpected error', 500, error);
+  }
+});
+
+// only if the structure of model, change
+// router.put(
+//   '/updatePlayer/:playerId/updateMedail/:medailId',
+//   async function (req, res) {
+//     const { medailId, playerId } = req.params;
+//     const { body } = req;
+//     try {
+//       const result = await controller.updateMedail(medailId, playerId, body);
+//       // const result = { medailId, playerId}
+//       response.success(req, res, result, 200);
+//     } catch (error) {
+//       response.error(req, res, 'Unexpected error', 500, error);
+//     }
+//   }
+// );
+
+router.post('/playersWithAllData', async function name(req, res) {
+  const { players } = req.body;
+  try {
+    const result = await controller.addPlayersWithAllData(players);
+    response.success(req, res, result, 200);
+  } catch (error) {
+    response.error(req, res, 'Unexpected error', 500, error);
+  }
+});
+router.patch(
+  '/patchPlayer/:playerId/updateMedail/:medailId',
+  async function (req, res) {
+    const { playerId, medailId } = req.params;
+    try {
+      const result = await controller.patchPlayer(playerId, medailId);
+      response.success(req, res, result, 200);
+    } catch (error) {
+      response.error(req, res, 'Unexpected error', 500, error);
+    }
+  }
+);
+router.delete('/deleteAll', async function (req, res) {
+  try {
+    const result = await controller.deleteAll();
+    response.success(req, res, result, 200);
+  } catch (error) {
+    response.error(req, res, 'Unexpected error', 500, error);
+  }
+});
 module.exports = router;

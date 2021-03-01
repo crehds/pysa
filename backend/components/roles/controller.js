@@ -14,4 +14,7 @@ function addRoles(roles) {
   return Promise.all(result);
 }
 
-module.exports = { addRoles };
+function getRoles() {
+  return store.list();
+}
+module.exports = { addRoles, getRoles };

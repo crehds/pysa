@@ -3,7 +3,7 @@ import { Icon, ImgWrapper, NavBarContainer } from './styles';
 import { ImTable, ImProfile, ImUsers } from 'react-icons/im';
 import logo from '../../assets/logopysa_90x90.png';
 
-export const NavBar = () => {
+export const NavBar = ({isLogging}) => {
   return (
     <NavBarContainer>
       <ImgWrapper>
@@ -15,9 +15,9 @@ export const NavBar = () => {
       <Icon to='/players'>
         <ImProfile />
       </Icon>
-      <Icon to='/adminPlayers'>
+      {isLogging && <Icon to='/adminPlayers'>
         <ImUsers />
-      </Icon>
+      </Icon>}
     </NavBarContainer>
   );
 };

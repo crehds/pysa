@@ -8,10 +8,11 @@ import { Router } from '@reach/router';
 import { Players } from './pages/Players';
 import { AdminPlayers } from './pages/AdminPlayers';
 import './App.css';
+import { Logging } from './components/Logging';
 
 function App() {
   const [isLoading, setLoading] = useState(false);
-
+  const [isLogging, setLogging] = useState(false);
   // async function testHeroku() {
   //   let result = await fetch('/users')
   //     .then((response) => response.text())
@@ -24,17 +25,21 @@ function App() {
     return setTimeout(() => setLoading(true), 4000);
   }, []);
 
-  // console.log(typeof process.env.NODE_ENV);
+  function handleLogging(value) {
+    setLogging(value);
+  }
+
   return (
     <div id='app' className='App'>
       <GlobalStyle />
       {isLoading ? (
         <>
-          <NavBar />
+          <NavBar isLogging={isLogging} />
+          <Logging handleLogging={handleLogging} isLogging={isLogging} />
           <Router style={{ height: '100vh' }}>
             <Home exac path='/' />
             <Players exac path='/players' />
-            <AdminPlayers exac path='/adminPlayers'/>
+            {isLogging && <AdminPlayers exac path='/adminPlayers' />}
           </Router>
         </>
       ) : (
