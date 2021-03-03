@@ -2,10 +2,16 @@ const store = require('./store');
 const medailController = require('../medails/controller');
 const rolesController = require('../roles/controller');
 const scoreController = require('../score/controller');
+const calibrationController = require('../calibration/controller');
 
 async function getOnePlayer(playerId) {
   const result = await store.listOne(playerId);
   return result;
+}
+
+async function getAllPlayers() {
+  const results = await store.list();
+  return results;
 }
 
 function addPlayer(player) {
@@ -97,21 +103,27 @@ async function addPlayersWithAllData(players) {
     }
 
     const resultPlayerId = resultPlayer['_id'];
+    const calibration = await calibrationController.addCalibration(player.calibration);
 
-    const roles = await rolesController.getRoles();
-    let results = await player.rolesScore.map(async (rolScore, i) => {
-      let rolId = roles[i]['_id'];
-      let result = await scoreController.addScore(
-        resultPlayerId,
-        rolId,
-        rolScore.score
-      );
-      return result;
-    });
+    const results = await scoreController.addOrUpdateScores(
+      resultPlayerId,
+      player.rolesScore,
+      'add'
+    );
+    // const roles = await rolesController.getRoles();
+    // let results = await player.rolesScore.map(async (rolScore, i) => {
+    //   let rolId = roles[i]['_id'];
+    //   let result = await scoreController.addScore(
+    //     resultPlayerId,
+    //     rolId,
+    //     rolScore.score
+    //   );
+    //   return result;
+    // });
 
-    let resultsPromises = await Promise.all(results);
+    // let resultsPromises = await Promise.all(results);
 
-    return { ...resultPlayer, rolesScore: [...resultsPromises] };
+    return { ...resultPlayer, rolesScore: [...results], calibration };
   });
 
   return Promise.all(promises);
@@ -133,6 +145,7 @@ module.exports = {
   addPlayers,
   addPlayersWithAllData,
   getOnePlayer,
+  getAllPlayers,
   patchPlayer,
   deleteAll,
 };

@@ -17,6 +17,12 @@ function addCalibration(calibration) {
   return store.add(newCalibration);
 }
 
+async function deleteAll() {
+  const result = await store.deleteAll();
+  return result;
+}
+
 module.exports = {
   addCalibration,
+  deleteAll,
 };

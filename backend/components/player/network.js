@@ -13,6 +13,15 @@ router.get('/onePlayer/:playerId', async function (req, res, next) {
   }
 });
 
+router.get('/getAllPlayers', async function (req, res) {
+  try {
+    const players = await controller.getAllPlayers();
+    response.success(req, res, players, 200);
+  } catch (error) {
+    response.error(req, res, 'Unexpected error', 500, error);
+  }
+});
+
 router.post('/newplayer', async function (req, res) {
   const body = req.body;
   try {
@@ -58,6 +67,7 @@ router.post('/playersWithAllData', async function name(req, res) {
     response.error(req, res, 'Unexpected error', 500, error);
   }
 });
+
 router.patch(
   '/patchPlayer/:playerId/updateMedail/:medailId',
   async function (req, res) {
@@ -70,6 +80,7 @@ router.patch(
     }
   }
 );
+
 router.delete('/deleteAll', async function (req, res) {
   try {
     const result = await controller.deleteAll();

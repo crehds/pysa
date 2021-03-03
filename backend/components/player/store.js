@@ -24,6 +24,11 @@ async function getPlayer(playerId) {
   });
 }
 
+async function getAllPlayers() {
+  const players = await Model.find();
+  return players;
+}
+
 //only if the structure of model, change
 // async function updateMedail(newPlayer, playerId) {
 //   return await Model.findByIdAndUpdate(playerId, newPlayer, {
@@ -36,12 +41,13 @@ async function deletePlayers() {
 }
 
 async function patchPlayer(playerId, newPlayer) {
-  return await Model.findByIdAndUpdate(playerId, newPlayer, { new: true });
+  return await Model2.findByIdAndUpdate(playerId, newPlayer, { new: true });
 }
 
 module.exports = {
   add: addPlayer,
   listOne: getPlayer,
+  list: getAllPlayers,
   patch: patchPlayer,
   deleteAll: deletePlayers,
 };

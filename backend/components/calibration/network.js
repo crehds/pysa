@@ -13,4 +13,13 @@ router.post('/addCalibration', async function (req, res) {
   }
 });
 
+router.delete('/deleteAll', async function (req, res) {
+  try {
+    const result = await controller.deleteAll();
+    response.success(req, res, result, 200);
+  } catch (error) {
+    response.error(req, res, 'Unexpected error', 500, error);
+  }
+});
+
 module.exports = router;

@@ -5,6 +5,11 @@ function addCalibration(data) {
   return newCalibration.save();
 }
 
+async function deleteAll() {
+  const result = await Model.deleteMany();
+  return result;
+}
 module.exports = {
   add: addCalibration,
+  deleteAll,
 };
