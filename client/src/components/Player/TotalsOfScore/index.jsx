@@ -2,8 +2,8 @@ import React from 'react';
 import { Total, TotalsWrapper, Partidas } from './styles';
 
 export const TotalsOfScore = ({
-  victorias,
-  derrotas,
+  victories,
+  defeats,
   kills,
   deaths,
   assists,
@@ -13,12 +13,12 @@ export const TotalsOfScore = ({
       <Total>
         <p>TOTAL</p>
       </Total>
-      <p>{victorias} </p>
-      <p>{derrotas}</p>
+      <p>{victories} </p>
+      <p>{defeats}</p>
       <p>{kills}</p>
       <p>{deaths}</p>
       <p>{assists}</p>
-      <Partidas>{victorias + derrotas} </Partidas>
+      <Partidas>{victories + defeats} </Partidas>
     </TotalsWrapper>
   );
 };

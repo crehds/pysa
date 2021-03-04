@@ -9,13 +9,13 @@ export const Player = (props) => {
     <Profile>
       <ContentWrapper>
         <PlayerImageMedail
-          nombre={props.nombre}
+          name={props.nickname}
           medail={props.medail}
-          mmr={props.sumaMMR}
+          mmr={props.mmr}
         />
         <Score>
           <ScoreColumnsName />
-          <ScoreContent roles={props.roles} />
+          <ScoreContent roles={props.rolesScore} />
         </Score>
       </ContentWrapper>
     </Profile>

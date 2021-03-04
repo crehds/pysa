@@ -73,9 +73,21 @@ function playersFiltering(players, score) {
   return playersWithScore;
 }
 
-function setKDAAndMedail(players, medails) {
+function setKDAAndMedail(players, medails, roles) {
+  // console.log(players);
+  // console.log(roles);
   const results = players.map((player) => {
     let partidas = 0;
+    // console.log(players);
+    let rolScoreOrd = roles.map((rol) => {
+      let sortRol = player.rolesScore.find(
+        (rolScore) => rolScore.rol === rol['_id']
+      );
+      return { ...sortRol, rol: rol.name };
+    });
+
+    player.rolesScore = rolScoreOrd;
+    
     let obj = player.rolesScore.reduce(
       (acc, cv) => {
         partidas +=
@@ -98,9 +110,9 @@ function setKDAAndMedail(players, medails) {
   return results;
 }
 
-function dataForRanking({ players, scorePlayers, medails }) {
+function dataForRanking({ players, scorePlayers, medails, roles }) {
   const filteredPlayers = playersFiltering(players, scorePlayers);
-  const playersWithAllData = setKDAAndMedail(filteredPlayers, medails);
+  const playersWithAllData = setKDAAndMedail(filteredPlayers, medails, roles);
 
   const orderedPlayers = sortPlayers(playersWithAllData);
   return orderedPlayers;

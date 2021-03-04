@@ -3,11 +3,11 @@ import { GiMedal } from 'react-icons/gi';
 import { Icon, ImageWrapper, NamePlayer, PlayerImageWrapper } from './styles';
 import user from '../../../assets/default-user.png';
 
-export const PlayerImageMedail = ({ nombre, medail, mmr }) => {
+export const PlayerImageMedail = ({ name, medail, mmr }) => {
   return (
     <PlayerImageWrapper>
       <NamePlayer>
-        <p>{nombre}</p>
+        <p>{name}</p>
       </NamePlayer>
       <Icon>
         <GiMedal />

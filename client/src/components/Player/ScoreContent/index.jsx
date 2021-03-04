@@ -5,8 +5,8 @@ import { ScoreContentWrapper } from './styles';
 
 export const ScoreContent = ({ roles }) => {
   let state = {
-    victorias: 0,
-    derrotas: 0,
+    victories: 0,
+    defeats: 0,
     kills: 0,
     deaths: 0,
     assists: 0,
@@ -15,17 +15,17 @@ export const ScoreContent = ({ roles }) => {
   function reducer(newState) {
     state = {
       ...state,
-      victorias:
-        state.victorias +
-        newState.score.victorias +
-        newState.score.victoriasDouble,
-      derrotas:
-        state.derrotas +
-        newState.score.derrotas +
-        newState.score.derrotasDouble,
-      kills: state.kills + newState.score.kills,
-      deaths: state.deaths + newState.score.deaths,
-      assists: state.assists + newState.score.assists,
+      victories:
+        state.victories +
+        newState.victories +
+        newState.victoriesDouble,
+      defeats:
+        state.defeats +
+        newState.defeats +
+        newState.defeatsDouble,
+      kills: state.kills + newState.kills,
+      deaths: state.deaths + newState.deaths,
+      assists: state.assists + newState.assists,
     };
   }
   return (

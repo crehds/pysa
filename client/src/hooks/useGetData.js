@@ -22,9 +22,12 @@ export function useGetData(loadingApp) {
             'Content-Type': 'application/json',
           },
         }).then((result) => result.json());
+
         const medails = await fetch('/medails/getMedails').then((result) =>
           result.json()
         );
+
+        const roles = await fetch('/roles/getRoles').then(result => result.json());
 
         dispatch({
           type: 'SET_DATA',
@@ -32,6 +35,7 @@ export function useGetData(loadingApp) {
             players: players.body,
             scorePlayers: scorePlayers.body,
             medails: medails.body,
+            roles:roles.body
           },
         });
         setLoading(true);

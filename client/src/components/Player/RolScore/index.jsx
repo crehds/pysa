@@ -3,30 +3,30 @@ import { RolScoreWrapper } from './styles';
 
 export const RolScore = (props) => {
   const {
-    victorias,
-    victoriasDouble,
-    derrotas,
-    derrotasDouble,
+    victories,
+    victoriesDouble,
+    defeats,
+    defeatsDouble,
     kills,
     deaths,
     assists,
-  } = props.score;
+  } = props;
   return (
     <RolScoreWrapper>
       <div>
-        <p>{props.nombre} </p>
+        <p>{props.rol} </p>
       </div>
       <div>
-        <p>{victorias}</p>
+        <p>{victories}</p>
       </div>
       <div>
-        <p>{victoriasDouble}</p>
+        <p>{victoriesDouble}</p>
       </div>
       <div>
-        <p>{derrotas}</p>
+        <p>{defeats}</p>
       </div>
       <div>
-        <p>{derrotasDouble}</p>
+        <p>{defeatsDouble}</p>
       </div>
       <div>
         <p>{kills}</p>

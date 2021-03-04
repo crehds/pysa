@@ -44,13 +44,10 @@ function App() {
         <>
           <NavBar isLogging={isLogging} />
           <Logging handleLogging={handleLogging} isLogging={isLogging} />
-          {/* {console.log(result)} */}
-
-          {/* <div path='/'>Ranking</div> */}
           <Router style={{ height: '100vh' }}>
             <Home exac path='/' />
-            {/* <Players exac path='/players' />
-            {isLogging && <AdminPlayers exac path='/adminPlayers' />} */}
+            <Players exac path='/players' />
+            {/* {isLogging && <AdminPlayers exac path='/adminPlayers' />} */}
           </Router>
         </>
       ) : (
