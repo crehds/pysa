@@ -9,7 +9,7 @@ import { Medails } from '../Medails';
 import { WrapperDiv } from '../WrapperDiv';
 
 export const Ranking = () => {
-  const value = useStateValue();
+  const [state, dispatch] = useStateValue();
   function onMouseEnter() {
     let medails = document.getElementById('medails');
     medails.style.display = 'grid';
@@ -26,8 +26,8 @@ export const Ranking = () => {
           <ImInfo size='30px' />
         </Info>
         <RowsNameRanking />
-        <Positions positions={value.length} />
-        <PlayersInRanking players={value} />
+        <Positions positions={state.ranking.length} />
+        <PlayersInRanking players={state.ranking} />
       </RankingTable>
     </WrapperDiv>
   );

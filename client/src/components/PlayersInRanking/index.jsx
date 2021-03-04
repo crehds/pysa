@@ -8,9 +8,9 @@ export const PlayersInRanking = ({ players }) => {
       {players.map((player, i) => (
         <RowPlayerRanking
           key={i}
-          name={player.nombre}
+          name={player.nickname}
           partidas={player.partidas}
-          mmr={player.sumaMMR}
+          mmr={player.mmr}
           medail={player.medail}
         />
       ))}

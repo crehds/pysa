@@ -10,7 +10,7 @@ export const ListOfPlayers = ({ players }) => {
     let carouselWidth = document.getElementById('app').offsetWidth - 60;
     setWidth(carouselWidth);
   }, []);
-
+  console.log(players);
   return (
     <WrapperDiv>
       <PlayersCarousel id='playersCarousel' size={`${width}px`}>

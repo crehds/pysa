@@ -47,6 +47,14 @@ async function getOneScore(playerId) {
   return await store.listOne(player);
 }
 
+async function getScoresOfPlayersById(playersIds) {
+  const results = await playersIds.map(async (playerId) => {
+    const result = await getOneScore(playerId);
+    return { playerId, rolesScore: result };
+  });
+  return Promise.all(results);
+}
+
 function deleteOne(playerId) {
   return store.deleteOne(playerId);
 }
@@ -59,6 +67,7 @@ module.exports = {
   addScore,
   addOrUpdateScores,
   getOneScore,
+  getScoresOfPlayersById,
   deleteOne,
   deleteAllScore,
 };

@@ -13,6 +13,16 @@ router.get('/getScoreOfOnePlayer/:playerId', async function (req, res) {
   }
 });
 
+router.post('/getScoreOfPlayers', async function (req, res) {
+  const { playersIds } = req.body;
+  try {
+    const results = await controller.getScoresOfPlayersById(playersIds);
+    response.success(req, res, results, 200);
+  } catch (error) {
+    response.error(req, res, 'Unexpected error', 500, error);
+  }
+});
+
 router.post('/setScoreOfOnePlayer/:playerId', async function (req, res) {
   const { playerId } = req.params;
   const { rolesScore } = req.body;

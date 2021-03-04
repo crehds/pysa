@@ -9,10 +9,13 @@ import { Players } from './pages/Players';
 import { AdminPlayers } from './pages/AdminPlayers';
 import './App.css';
 import { Logging } from './components/Logging';
+import { useGetData } from './hooks/useGetData';
 
 function App() {
   const [isLoading, setLoading] = useState(false);
   const [isLogging, setLogging] = useState(false);
+  const loading = useGetData(isLoading);
+
   // async function testHeroku() {
   //   let result = await fetch('/users')
   //     .then((response) => response.text())
@@ -21,9 +24,12 @@ function App() {
   // }
 
   useEffect(() => {
-    // testHeroku();
-    return setTimeout(() => setLoading(true), 4000);
-  }, []);
+    let t = undefined;
+    if (loading) {
+      t = setTimeout(() => setLoading(true), 4000);
+    }
+    return () => clearTimeout(t);
+  }, [loading]);
 
   function handleLogging(value) {
     setLogging(value);
@@ -32,14 +38,19 @@ function App() {
   return (
     <div id='app' className='App'>
       <GlobalStyle />
+      {console.log(loading)}
+      {/* {console.log('holi')} */}
       {isLoading ? (
         <>
           <NavBar isLogging={isLogging} />
           <Logging handleLogging={handleLogging} isLogging={isLogging} />
+          {/* {console.log(result)} */}
+
+          {/* <div path='/'>Ranking</div> */}
           <Router style={{ height: '100vh' }}>
             <Home exac path='/' />
-            <Players exac path='/players' />
-            {isLogging && <AdminPlayers exac path='/adminPlayers' />}
+            {/* <Players exac path='/players' />
+            {isLogging && <AdminPlayers exac path='/adminPlayers' />} */}
           </Router>
         </>
       ) : (
