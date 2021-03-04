@@ -1,4 +1,4 @@
-import { useEffect, useReducer, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useStateValue } from '../Context';
 
 export function useGetData(loadingApp) {
@@ -9,13 +9,13 @@ export function useGetData(loadingApp) {
     async function getDataPlayers() {
       try {
         console.log('trayendo data');
-        const players = await fetch('/player/getAllPlayers').then((result) =>
+        const players = await fetch('/players/getAllPlayers').then((result) =>
           result.json()
         );
 
         const playersIds = players.body.map((player) => player['_id']);
 
-        const scorePlayers = await fetch('/score/getScoreOfPlayers', {
+        const scorePlayers = await fetch('/scores/getScoreOfPlayers', {
           method: 'post',
           body: JSON.stringify({ playersIds: [...playersIds] }),
           headers: {

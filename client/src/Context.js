@@ -43,7 +43,7 @@ function calcMMR(players) {
 function sortPlayers(players) {
   return players.sort((a, b) => {
     if (b.mmr === a.mmr) {
-      return b.kda - b.kda;
+      return b.kda - a.kda;
     }
     return b.mmr - a.mmr;
   });
@@ -60,9 +60,8 @@ function setMedallas(playersOrdenados) {
 }
 
 function playersFiltering(players, score) {
-  // TODO: cambiar medails por medail en mongo y luego aqui
   const filteredPlayers = players.filter(
-    (player) => player.estado === true && player.medails !== 'Sin Calibrar'
+    (player) => player.estado === true && player.medail !== 'Sin Calibrar'
   );
 
   const playersWithScore = filteredPlayers.map((player) => {
@@ -92,7 +91,7 @@ function setKDAAndMedail(players, medails) {
     );
 
     let kda = parseFloat(((obj.kills + obj.assists) / obj.deaths).toFixed(2));
-    let medailName = medails.find((medail) => player.medails === medail['_id'])
+    let medailName = medails.find((medail) => player.medail === medail['_id'])
       .name;
     return { ...player, kda, partidas, medail: medailName };
   });

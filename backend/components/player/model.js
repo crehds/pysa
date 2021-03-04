@@ -7,7 +7,7 @@ const MySchema = new Schema({
     lastName: String,
   },
   nickname: String,
-  medails: String,
+  medail: String,
   mmr: Number,
   estado: Boolean,
 });
@@ -18,7 +18,7 @@ const MySchema2 = new Schema({
     lastName: String,
   },
   nickname: String,
-  medails: {
+  medail: {
     type: Schema.ObjectId,
     ref: 'medails',
   },

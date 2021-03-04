@@ -43,7 +43,7 @@ function addPlayers(players) {
         firstName: player.name.firstName,
         lastName: player.name.lastName,
       },
-      medails: player.medails,
+      medail: player.medail,
       nickname: player.nickname,
       mmr: player.mmr,
       estado: player.estado,
@@ -82,7 +82,7 @@ async function addPlayersWithAllData(players) {
           firstName: player.name.firstName,
           lastName: player.name.lastName,
         },
-        medails: medailId,
+        medail: medailId,
         nickname: player.nickname,
         estado: player.estado,
         mmr: player.mmr,
@@ -94,7 +94,7 @@ async function addPlayersWithAllData(players) {
           firstName: player.name.firstName,
           lastName: player.name.lastName,
         },
-        medails: 'Sin Calibrar',
+        medail: 'Sin Calibrar',
         nickname: player.nickname,
         estado: player.estado,
         mmr: player.mmr,
@@ -131,7 +131,7 @@ async function addPlayersWithAllData(players) {
 
 function patchPlayer(playerId, medailId) {
   const newPlayer = {
-    medails: medailId,
+    medail: medailId,
   };
 
   return store.patch(playerId, newPlayer);

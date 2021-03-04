@@ -13,7 +13,7 @@ function addPlayer(user, calibration) {
 async function getPlayer(playerId) {
   return new Promise((resolve, reject) => {
     Model.find({ _id: playerId })
-      .populate('medails', 'name')
+      .populate('medail', 'name')
       .exec((error, populated) => {
         if (error) {
           reject(error);
