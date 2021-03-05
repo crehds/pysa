@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Player } from '../Player';
 import { WrapperDiv } from '../WrapperDiv';
-import { PlayersCarousel } from './styles';
+import { CarouselWrapper, PlayersCarousel } from './styles';
 
 export const ListOfPlayers = ({ players }) => {
   const [width, setWidth] = useState();
@@ -13,11 +13,13 @@ export const ListOfPlayers = ({ players }) => {
   console.log(players);
   return (
     <WrapperDiv>
-      <PlayersCarousel id='playersCarousel' size={`${width}px`}>
-        {players.map((player, i) => (
-          <Player key={i} {...player} />
-        ))}
-      </PlayersCarousel>
+      <CarouselWrapper size={`${width}px`}>
+        <PlayersCarousel id='playersCarousel'>
+          {players.map((player, i) => (
+            <Player key={i} {...player} />
+          ))}
+        </PlayersCarousel>
+      </CarouselWrapper>
     </WrapperDiv>
   );
 };

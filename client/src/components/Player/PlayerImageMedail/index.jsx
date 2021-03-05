@@ -6,10 +6,10 @@ import user from '../../../assets/default-user.png';
 export const PlayerImageMedail = ({ name, medail, mmr }) => {
   return (
     <PlayerImageWrapper>
-      <NamePlayer>
+      <NamePlayer className='playerName'>
         <p>{name}</p>
       </NamePlayer>
-      <Icon>
+      <Icon className='icon'>
         <GiMedal />
         <p>{medail}</p>
         <p>{mmr}</p>

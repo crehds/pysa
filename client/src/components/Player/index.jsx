@@ -6,7 +6,7 @@ import { ScoreColumnsName } from './ScoreColumnsNames';
 
 export const Player = (props) => {
   return (
-    <Profile>
+    <Profile className='profile'>
       <ContentWrapper>
         <PlayerImageMedail
           name={props.nickname}
@@ -15,7 +15,7 @@ export const Player = (props) => {
         />
         <Score>
           <ScoreColumnsName />
-          <ScoreContent roles={props.rolesScore} />
+          <ScoreContent roles={props.rolesScore} kda={props.kda} />
         </Score>
       </ContentWrapper>
     </Profile>

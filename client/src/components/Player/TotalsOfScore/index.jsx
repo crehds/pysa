@@ -1,5 +1,5 @@
 import React from 'react';
-import { Total, TotalsWrapper, Partidas } from './styles';
+import { Total, TotalsWrapper, Partidas, KDA } from './styles';
 
 export const TotalsOfScore = ({
   victories,
@@ -7,6 +7,7 @@ export const TotalsOfScore = ({
   kills,
   deaths,
   assists,
+  kda,
 }) => {
   return (
     <TotalsWrapper>
@@ -19,6 +20,7 @@ export const TotalsOfScore = ({
       <p>{deaths}</p>
       <p>{assists}</p>
       <Partidas>{victories + defeats} </Partidas>
+      <KDA>{kda} </KDA>
     </TotalsWrapper>
   );
 };
