@@ -8,12 +8,23 @@ export const ListOfPlayers = ({ players }) => {
 
   useEffect(() => {
     let carouselWidth = document.getElementById('app').offsetWidth - 60;
+
+    const onResize = () => {
+      let newCarouselWidth = document.getElementById('app').offsetWidth - 60;
+      setWidth(newCarouselWidth);
+    };
+
+    window.addEventListener('resize', onResize);
     setWidth(carouselWidth);
-  }, []);
+    return () => {
+      return window.removeEventListener('resize', onResize);
+    };
+  }, [width]);
+
   console.log(players);
   return (
     <WrapperDiv>
-      <CarouselWrapper size={`${width}px`}>
+      <CarouselWrapper id='CarouselWrapper' size={`${width}px`}>
         <PlayersCarousel id='playersCarousel'>
           {players.map((player, i) => (
             <Player key={i} {...player} />

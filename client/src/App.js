@@ -4,7 +4,7 @@ import { Loading } from './components/initLoading';
 import { GlobalStyle } from './styles/GlobalStyles';
 import { Home } from './pages/Home';
 import { NavBar } from './components/NavBar';
-import { Router } from '@reach/router';
+import { navigate, Redirect, Router } from '@reach/router';
 import { Players } from './pages/Players';
 import { AdminPlayers } from './pages/AdminPlayers';
 import './App.css';
@@ -33,6 +33,9 @@ function App() {
 
   function handleLogging(value) {
     setLogging(value);
+    if (value) {
+      navigate('/adminPlayers', { replace: true });
+    }
   }
 
   return (
@@ -47,7 +50,8 @@ function App() {
           <Router style={{ height: '100vh' }}>
             <Home exac path='/' />
             <Players exac path='/players' />
-            {isLogging && <AdminPlayers exac path='/adminPlayers' />}
+            {!isLogging && <Redirect noThrow from='/adminPlayers' to='/' />}
+            <AdminPlayers exac path='/adminPlayers' />
           </Router>
         </>
       ) : (
