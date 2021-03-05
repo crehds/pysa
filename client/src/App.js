@@ -47,7 +47,7 @@ function App() {
           <Router style={{ height: '100vh' }}>
             <Home exac path='/' />
             <Players exac path='/players' />
-            {/* {isLogging && <AdminPlayers exac path='/adminPlayers' />} */}
+            {isLogging && <AdminPlayers exac path='/adminPlayers' />}
           </Router>
         </>
       ) : (

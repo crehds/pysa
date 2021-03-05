@@ -10,6 +10,6 @@ export const GetPlayers = ({ user }) => {
   return user === 'player' ? (
     <ListOfPlayers players={state.ranking} />
   ) : (
-    <AdminListOfPlayers players={state} />
+    <AdminListOfPlayers players={state.allPlayers} />
   );
 };

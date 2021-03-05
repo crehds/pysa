@@ -1,61 +1,73 @@
 import React, { useState } from 'react';
 import { RolScoreWrapper } from './styles';
 
-function copyKeys(obj) {
-  let keys = Object.keys(obj);
-  let result = {};
-  for (let key of keys) {
-    result[key] = 0;
-  }
-  return result;
-}
+// function copyKeys(obj) {
+//   let keys = Object.keys(obj);
+//   let result = {};
+//   for (let key of keys) {
+//     result[key] = 0;
+//   }
+//   return result;
+// }
+
+const initialState = {
+  victories: 0,
+  victoriesDouble: 0,
+  defeats: 0,
+  defeatsDouble: 0,
+  kills: 0,
+  deaths: 0,
+  assists: 0,
+};
 
 export const RolScore = (props) => {
-  const [state, setState] = useState(copyKeys({ ...props.rol.score }));
+  const [state, setState] = useState(initialState);
+
   function onChange(event) {
     let value = event.target.value ? parseInt(event.target.value) : 0;
     let name = event.target.name;
-    let rolName = props.rol.nombre;
+    let rolName = props.rol;
     setState({ ...state, [name]: value });
     props.changeState(value, name, rolName);
   }
+  console.log(props);
   return (
     <RolScoreWrapper>
-      <div>{props.rol.nombre}</div>
+      <div>{props.rol}</div>
       <div>
-        <p>{props.rol.score.victorias} </p>
-        <input name='victorias' placeholder='0' onChange={onChange} />
-        <p>{props.rol.score.victorias + state.victorias} </p>
+        <p>{props.victories} </p>
+        <input name='victories' placeholder='0' onChange={onChange} />
+        <p>{props.victories + state.victories} </p>
       </div>
       <div>
-        <p>{props.rol.score.victoriasDouble}</p>
-        <input name='victoriasDouble' placeholder='0' onChange={onChange} />
-        <p>{props.rol.score.victoriasDouble + state.victoriasDouble}</p>
+        <p>{props.victoriesDouble}</p>
+        <input name='victoriesDouble' placeholder='0' onChange={onChange} />
+        <p>{props.victoriesDouble + state.victoriesDouble}</p>
       </div>
       <div>
-        <p>{props.rol.score.derrotas}</p>
-        <input name='derrotas' placeholder='0' onChange={onChange} />
-        <p>{props.rol.score.derrotas + state.derrotas}</p>
+        <p>{props.defeats}</p>
+        <input name='defeats' placeholder='0' onChange={onChange} />
+        <p>{props.defeats + state.defeats}</p>
       </div>
       <div>
-        <p>{props.rol.score.derrotasDouble}</p>
-        <input name='derrotasDouble' placeholder='0' onChange={onChange} />
-        <p>{props.rol.score.derrotasDouble + state.derrotasDouble}</p>
+        <p>{props.defeatsDouble}</p>
+        <input name='defeatsDouble' placeholder='0' onChange={onChange} />
+        <p>{props.defeatsDouble + state.defeatsDouble}</p>
       </div>
       <div>
-        <p>{props.rol.score.kills}</p>
+        <p>{props.kills}</p>
         <input name='kills' placeholder='0' onChange={onChange} />
-        <p>{props.rol.score.kills + state.kills}</p>
+        <p>{props.kills + state.kills}</p>
       </div>
       <div>
-        <p>{props.rol.score.deaths}</p>
+        <p>{props.deaths}</p>
         <input name='deaths' placeholder='0' onChange={onChange} />
-        <p>{props.rol.score.deaths + state.deaths}</p>
+        <p>{props.deaths + state.deaths}</p>
       </div>
       <div>
-        <p>{props.rol.score.assists}</p>
+        <p>{props.assists}</p>
         <input name='assists' placeholder='0' onChange={onChange} />
-        <p>{props.rol.score.assists + state.assists}</p>
+        <p>{props.assists + state.assists}</p>
       </div>
     </RolScoreWrapper>
   );

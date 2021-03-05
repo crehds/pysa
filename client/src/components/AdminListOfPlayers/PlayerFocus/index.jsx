@@ -8,13 +8,13 @@ export const PlayerFocus = ({ player }) => {
     <FocusWrapper>
       <div>
         <NameWrapper>
-          <h1>{player.nombre}</h1>
+          <h1>{player.nickname}</h1>
         </NameWrapper>
         <ImageWrapper>
           <img src={user} alt='imagen del jugador' />
         </ImageWrapper>
       </div>
-      <ScorePlayerFocus roles={player.roles} mmr={player.sumaMMR} />
+      <ScorePlayerFocus roles={player.rolesScore} mmr={player.mmr} />
       
     </FocusWrapper>
   );

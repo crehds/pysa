@@ -14,110 +14,110 @@ import {
 export const PlayerTotals = (props) => {
   console.log(props);
   console.log(props.state);
-  let victorias =
-    props.state['hard carry'].victorias +
-    props.state['midlaner'].victorias +
-    props.state['offlaner'].victorias +
-    props.state['soft support'].victorias +
-    props.state['support'].victorias;
-  let derrotas =
-    props.state['hard carry'].derrotas +
-    props.state['midlaner'].derrotas +
-    props.state['offlaner'].derrotas +
-    props.state['soft support'].derrotas +
-    props.state['support'].derrotas;
-  let victoriasDouble =
-    props.state['hard carry'].victoriasDouble +
-    props.state['midlaner'].victoriasDouble +
-    props.state['offlaner'].victoriasDouble +
-    props.state['soft support'].victoriasDouble +
-    props.state['support'].victoriasDouble;
-  let derrotasDouble =
-    props.state['hard carry'].derrotasDouble +
-    props.state['midlaner'].derrotasDouble +
-    props.state['offlaner'].derrotasDouble +
-    props.state['soft support'].derrotasDouble +
-    props.state['support'].derrotasDouble;
+  let victories =
+    props.state['Hard Carry'].victories +
+    props.state['Mid Laner'].victories +
+    props.state['Off Laner'].victories +
+    props.state['Soft Support'].victories +
+    props.state['Hard Support'].victories;
+  let defeats =
+    props.state['Hard Carry'].defeats +
+    props.state['Mid Laner'].defeats +
+    props.state['Off Laner'].defeats +
+    props.state['Soft Support'].defeats +
+    props.state['Hard Support'].defeats;
+  let victoriesDouble =
+    props.state['Hard Carry'].victoriesDouble +
+    props.state['Mid Laner'].victoriesDouble +
+    props.state['Off Laner'].victoriesDouble +
+    props.state['Soft Support'].victoriesDouble +
+    props.state['Hard Support'].victoriesDouble;
+  let defeatsDouble =
+    props.state['Hard Carry'].defeatsDouble +
+    props.state['Mid Laner'].defeatsDouble +
+    props.state['Off Laner'].defeatsDouble +
+    props.state['Soft Support'].defeatsDouble +
+    props.state['Hard Support'].defeatsDouble;
   let kills =
-    props.state['hard carry'].kills +
-    props.state['midlaner'].kills +
-    props.state['offlaner'].kills +
-    props.state['soft support'].kills +
-    props.state['support'].kills;
+    props.state['Hard Carry'].kills +
+    props.state['Mid Laner'].kills +
+    props.state['Off Laner'].kills +
+    props.state['Soft Support'].kills +
+    props.state['Hard Support'].kills;
   let deaths =
-    props.state['hard carry'].deaths +
-    props.state['midlaner'].deaths +
-    props.state['offlaner'].deaths +
-    props.state['soft support'].deaths +
-    props.state['support'].deaths;
+    props.state['Hard Carry'].deaths +
+    props.state['Mid Laner'].deaths +
+    props.state['Off Laner'].deaths +
+    props.state['Soft Support'].deaths +
+    props.state['Hard Support'].deaths;
   let assists =
-    props.state['hard carry'].assists +
-    props.state['midlaner'].assists +
-    props.state['offlaner'].assists +
-    props.state['soft support'].assists +
-    props.state['support'].assists;
+    props.state['Hard Carry'].assists +
+    props.state['Mid Laner'].assists +
+    props.state['Off Laner'].assists +
+    props.state['Soft Support'].assists +
+    props.state['Hard Support'].assists;
   return (
     <PlayerTotalsWrapper>
-      <TotalDiv>Total</TotalDiv>
+      <TotalDiv><p>Total</p></TotalDiv>
       <SubTotal>
         <Sub2Total>
           <Sub2TotalColumns>
             <TotalColumns>
-              <p>{props.roles.victorias}</p>
-              <p>{props.roles.victorias + victorias}</p>
+              <p>{props.roles.victories}</p>
+              <p>{props.roles.victories + victories}</p>
             </TotalColumns>
             <TotalColumns>
-              <p>{props.roles.victoriasDouble} </p>
-              <p>{props.roles.victoriasDouble + victoriasDouble}</p>
+              <p>{props.roles.victoriesDouble} </p>
+              <p>{props.roles.victoriesDouble + victoriesDouble}</p>
             </TotalColumns>
           </Sub2TotalColumns>
           <TotalColumns>
-            <p>{props.roles.victorias + props.roles.victoriasDouble} </p>
+            <p>{props.roles.victories + props.roles.victoriesDouble} </p>
             <p>
-              {props.roles.victorias +
-                props.roles.victoriasDouble +
-                victorias +
-                victoriasDouble}
+              {props.roles.victories +
+                props.roles.victoriesDouble +
+                victories +
+                victoriesDouble}
             </p>
           </TotalColumns>
         </Sub2Total>
         <Sub2Total>
           <Sub2TotalColumns>
             <TotalColumns>
-              <p>{props.roles.derrotas} </p>
-              <p>{props.roles.derrotas + derrotas}</p>
+              <p>{props.roles.defeats} </p>
+              <p>{props.roles.defeats + defeats}</p>
             </TotalColumns>
             <TotalColumns>
-              <p>{props.roles.derrotasDouble}</p>
-              <p>{props.roles.derrotasDouble + derrotasDouble}</p>
+              <p>{props.roles.defeatsDouble}</p>
+              <p>{props.roles.defeatsDouble + defeatsDouble}</p>
             </TotalColumns>
           </Sub2TotalColumns>
           <TotalColumns>
-            <p>{props.roles.derrotas + props.roles.derrotasDouble} </p>
+            <p>{props.roles.defeats + props.roles.defeatsDouble} </p>
             <p>
-              {props.roles.derrotas +
-                props.roles.derrotasDouble +
-                derrotas +
-                derrotasDouble}
+              {props.roles.defeats +
+                props.roles.defeatsDouble +
+                defeats +
+                defeatsDouble}
             </p>
           </TotalColumns>
         </Sub2Total>
         <TotalColumns style={{ gridColumn: '1 / -1' }}>
           <p>
-            {props.roles.victorias +
-              props.roles.victoriasDouble +
-              props.roles.derrotas +
-              props.roles.derrotasDouble}
+            {props.roles.victories +
+              props.roles.victoriesDouble +
+              props.roles.defeats +
+              props.roles.defeatsDouble}
           </p>
           <p>
-            {props.roles.victorias +
-              props.roles.victoriasDouble +
-              props.roles.derrotas +
-              props.roles.derrotasDouble +
-              victorias +
-              victoriasDouble +
-              derrotas +
-              derrotasDouble}
+            {props.roles.victories +
+              props.roles.victoriesDouble +
+              props.roles.defeats +
+              props.roles.defeatsDouble +
+              victories +
+              victoriesDouble +
+              defeats +
+              defeatsDouble}
           </p>
         </TotalColumns>
       </SubTotal>
@@ -135,7 +135,9 @@ export const PlayerTotals = (props) => {
           <p>{props.roles.assists + assists}</p>
         </TotalColumns>
         <KDA>
-          <p>KDA</p>
+          <div>
+            <p>KDA</p>
+          </div>
           <TotalColumns>
             <p>
               {(
@@ -158,10 +160,10 @@ export const PlayerTotals = (props) => {
         <div>{props.mmr}</div>
         <div>
           {props.mmr +
-            victorias * 100 +
-            victoriasDouble * 200 -
-            derrotas * 100 -
-            derrotasDouble * 200}
+            victories * 100 +
+            victoriesDouble * 200 -
+            defeats * 100 -
+            defeatsDouble * 200}
         </div>
       </ImagesWrapper>
     </PlayerTotalsWrapper>

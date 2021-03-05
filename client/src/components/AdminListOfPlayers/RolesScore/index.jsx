@@ -6,7 +6,7 @@ export const RolesScore = (props) => {
   return (
     <RolesScoreWrapper>
       {props.roles.map((rol, i) => (
-        <RolScore rol={rol} key={i} changeState={props.changeState} />
+        <RolScore {...rol} key={i} changeState={props.changeState} />
       ))}
     </RolesScoreWrapper>
   );

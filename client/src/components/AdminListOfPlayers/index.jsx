@@ -5,11 +5,11 @@ import { SearchBar } from './SearchBar';
 import { AdminPlayersCarousel } from './styles';
 import { PlayerToFocus } from './PlayerToFocus';
 
-function randomPlayer(players) {
-  let max = players.length - 3;
-  let number = Math.floor(Math.random() * (max - 2 + 1) + 2);
+function randomPlayer(playersLength) {
+  // let max = players.length - 3;
+  let number = Math.floor(Math.random() * (playersLength - 2 + 1) + 2);
   return {
-    length: players.length - 1,
+    length: playersLength.length - 1,
     previousPlayer: number - 1,
     focusPlayer: number,
     nextPlayer: number + 1,
@@ -43,7 +43,7 @@ function reducer(state, action) {
   }
 }
 export const AdminListOfPlayers = ({ players }) => {
-  const initialValue = randomPlayer(players);
+  const initialValue = randomPlayer(players.length - 3);
   const [state, dispatch] = useReducer(reducer, initialValue);
   return (
     <WrapperDiv>
@@ -53,13 +53,13 @@ export const AdminListOfPlayers = ({ players }) => {
         <PlayerToFocus
           dispatch={dispatch}
           direction='left'
-          player={players[state.previousPlayer].nombre}
+          player={players[state.previousPlayer].nickname}
         />
         <PlayerFocus player={players[state.focusPlayer]} />
         <PlayerToFocus
           dispatch={dispatch}
           direction='right'
-          player={players[state.nextPlayer].nombre}
+          player={players[state.nextPlayer].nickname}
         />
       </AdminPlayersCarousel>
     </WrapperDiv>

@@ -59,12 +59,9 @@ function setMedallas(playersOrdenados) {
   });
 }
 
-function playersFiltering(players, score) {
-  const filteredPlayers = players.filter(
-    (player) => player.estado === true && player.medail !== 'Sin Calibrar'
-  );
+function setScoreOfPlayers(players, score) {
 
-  const playersWithScore = filteredPlayers.map((player) => {
+  const playersWithScore = players.map((player) => {
     let rolesScore = score.find((score) => player['_id'] === score.playerId)
       .rolesScore;
     return { ...player, rolesScore };
@@ -74,8 +71,7 @@ function playersFiltering(players, score) {
 }
 
 function setKDAAndMedail(players, medails, roles) {
-  // console.log(players);
-  // console.log(roles);
+
   const results = players.map((player) => {
     let partidas = 0;
     // console.log(players);
@@ -87,7 +83,7 @@ function setKDAAndMedail(players, medails, roles) {
     });
 
     player.rolesScore = rolScoreOrd;
-    
+
     let obj = player.rolesScore.reduce(
       (acc, cv) => {
         partidas +=
@@ -103,32 +99,52 @@ function setKDAAndMedail(players, medails, roles) {
     );
 
     let kda = ((obj.kills + obj.assists) / obj.deaths).toFixed(2);
-    kda = kda.length === 4 ? kda : kda.length === 1 ? `${kda}.00` : `${kda}0`
-    let medailName = medails.find((medail) => player.medail === medail['_id'])
-      .name;
-    return { ...player, kda, partidas, medail: medailName };
+    kda = kda.length === 4 ? kda : kda.length === 1 ? `${kda}.00` : `${kda}0`;
+
+    if (player.medail !== 'Sin Calibrar') {
+      player.medail = medails.find(
+        (medail) => player.medail === medail['_id']
+      ).name;
+    }
+
+    return {
+      ...player,
+      kda,
+      partidas,
+    };
   });
   return results;
 }
 
-function dataForRanking({ players, scorePlayers, medails, roles }) {
-  const filteredPlayers = playersFiltering(players, scorePlayers);
-  const playersWithAllData = setKDAAndMedail(filteredPlayers, medails, roles);
+function filteringPlayers(players) {
+  const filteredPlayers = players.filter(
+    (player) => player.estado === true && player.medail !== 'Sin Calibrar'
+  );
 
-  const orderedPlayers = sortPlayers(playersWithAllData);
-  return orderedPlayers;
+  return filteredPlayers;
+}
+
+function dataForApp({ players, scorePlayers, medails, roles }) {
+
+  const playersWithScore = setScoreOfPlayers(players, scorePlayers);
+  const playersWithAllData = setKDAAndMedail(playersWithScore, medails, roles);
+  const filteredPlayers = filteringPlayers(playersWithAllData);
+  const orderedPlayers = sortPlayers(filteredPlayers);
+
+  return {orderedPlayers, playersWithAllData};
 }
 
 const reducer2 = (state, action) => {
   switch (action.type) {
     case 'SET_DATA':
       console.log(action.payload);
-      let ranking = dataForRanking({ ...action.payload });
-      console.log(ranking);
+      let data = dataForApp({ ...action.payload });
+      console.log(data);
       return {
         ...state,
         ...action.payload,
-        ranking,
+        ranking: data.orderedPlayers,
+        allPlayers: data.playersWithAllData
       };
     case 'UNLOGIN':
       window.sessionStorage.removeItem('token');

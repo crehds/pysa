@@ -3,7 +3,7 @@ import styled from 'styled-components'
 export const RolScoreWrapper = styled.div`
   display: grid;
   border: 1px solid gray;
-  grid-template-columns: 1.5fr repeat(7, 1.4fr);
+  grid-template-columns: 1.5fr repeat(7, 1.3fr);
   grid-column-gap: 10px;
   & div {
     text-align: center;
@@ -11,6 +11,7 @@ export const RolScoreWrapper = styled.div`
     grid-template-columns: 1fr 1fr 1fr;
     grid-column-gap: 5px;
     align-items: center;
+    font-family: 'Ubuntu';
     &:nth-of-type(1) {
       display:flex;
       margin: auto;

@@ -8,41 +8,41 @@ function calc(score) {
   return score.reduce((acc, cv) => {
     return (acc = {
       ...acc,
-      victorias: cv.score.victorias + acc.victorias,
-      victoriasDouble: cv.score.victoriasDouble + acc.victoriasDouble,
-      derrotas: cv.score.derrotas + acc.derrotas,
-      derrotasDouble: cv.score.derrotasDouble + acc.derrotasDouble,
-      kills: cv.score.kills + acc.kills,
-      deaths: cv.score.deaths + acc.deaths,
-      assists: cv.score.assists + acc.assists,
+      victories: cv.victories + acc.victories,
+      victoriesDouble: cv.victoriesDouble + acc.victoriesDouble,
+      defeats: cv.defeats + acc.defeats,
+      defeatsDouble: cv.defeatsDouble + acc.defeatsDouble,
+      kills: cv.kills + acc.kills,
+      deaths: cv.deaths + acc.deaths,
+      assists: cv.assists + acc.assists,
     });
   }, Object.assign({}, initialState));
 }
 
 const initialState = {
-  victorias: 0,
-  victoriasDouble: 0,
-  derrotas: 0,
-  derrotasDouble: 0,
+  victories: 0,
+  victoriesDouble: 0,
+  defeats: 0,
+  defeatsDouble: 0,
   kills: 0,
   deaths: 0,
   assists: 0,
 };
 
 const initialRoles = {
-  'hard carry': {
+  'Hard Carry': {
     ...initialState,
   },
-  midlaner: {
+  'Mid Laner': {
     ...initialState,
   },
-  offlaner: {
+  'Off Laner': {
     ...initialState,
   },
-  'soft support': {
+  'Soft Support': {
     ...initialState,
   },
-  support: {
+  'Hard Support': {
     ...initialState,
   },
 };
@@ -58,7 +58,7 @@ export const ScorePlayerFocus = ({ roles , mmr}) => {
   return (
     <ScoreWrapper>
       <NamesScoreWrapper>
-        <div>
+        <div className='rolTitle'>
           <p>Rol</p>
         </div>
         <div>
