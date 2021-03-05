@@ -6,16 +6,19 @@ export const RowsNameRanking = () => {
   return (
     <RowsNames>
       <RowName>
-        <ImTrophy color='gold' size='36px' />
+        <ImTrophy color='gold' size='33px' />
       </RowName>
       <RowName>
         <Name>Player</Name>
       </RowName>
       <RowName>
-        <Name>Nº de partidas</Name>
+        <Name>Nº Partidas</Name>
       </RowName>
       <RowName>
         <Name>MMR</Name>
+      </RowName>
+      <RowName>
+        <Name>KDA</Name>
       </RowName>
       <RowName>
         <Name>Medalla</Name>

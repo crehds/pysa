@@ -12,6 +12,7 @@ export const PlayersInRanking = ({ players }) => {
           partidas={player.partidas}
           mmr={player.mmr}
           medail={player.medail}
+          kda={player.kda}
         />
       ))}
     </PlayersData>

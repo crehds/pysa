@@ -102,7 +102,8 @@ function setKDAAndMedail(players, medails, roles) {
       { kills: 0, deaths: 0, assists: 0 }
     );
 
-    let kda = parseFloat(((obj.kills + obj.assists) / obj.deaths).toFixed(2));
+    let kda = ((obj.kills + obj.assists) / obj.deaths).toFixed(2);
+    kda = kda.length === 4 ? kda : kda.length === 1 ? `${kda}.00` : `${kda}0`
     let medailName = medails.find((medail) => player.medail === medail['_id'])
       .name;
     return { ...player, kda, partidas, medail: medailName };
