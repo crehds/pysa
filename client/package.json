@@ -39,5 +39,5 @@
       "last 1 safari version"
     ]
   },
-  "proxy": "https://pysabackend.herokuapp.com"
+  "proxy": "https://pysabackend.herokuapp.com/"
 }
