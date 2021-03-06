@@ -29,6 +29,7 @@ export const NamesScoreWrapper = styled.div`
   grid-template-columns: 1.5fr repeat(7, 1.3fr);
   grid-column-gap: 10px;
   font-family: 'Source Sans Pro';
+  font-weight:600;
   /* font-size: 17px; */
   & div:nth-of-type(1) {
     margin: auto;

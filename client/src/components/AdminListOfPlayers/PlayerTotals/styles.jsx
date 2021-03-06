@@ -10,7 +10,7 @@ export const PlayerTotalsWrapper = styled.div`
 
 export const SubTotal = styled.div`
   display: grid;
-  grid-template-rows: 2fr 1fr;
+  grid-template-rows: 2fr 1.1fr;
   grid-template-columns: 1fr 1fr;
 `;
 
