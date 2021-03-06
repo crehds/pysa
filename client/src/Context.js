@@ -151,7 +151,7 @@ async function updateScore({
 }) {
   let score = setNameRoles(rolesScore);
 
-  let result = await fetch(`/players/updateScore/${playerId}`, {
+  let result = await fetch(`https://pysabackend.herokuapp.com/players/updateScore/${playerId}`, {
     method: 'PATCH',
     body: JSON.stringify({ score, mmr, medail, partidas }),
     headers: {
