@@ -1,17 +1,18 @@
 import React from 'react';
-import { Player } from '../Player';
+import { RowPlayerRanking } from '../RowPlayerRanking';
 import { PlayersData } from './styles';
 
 export const PlayersInRanking = ({ players }) => {
   return (
     <PlayersData>
       {players.map((player, i) => (
-        <Player
+        <RowPlayerRanking
           key={i}
-          name={player.nombre}
+          name={player.nickname}
           partidas={player.partidas}
-          mmr={player.sumaMMR}
+          mmr={player.mmr}
           medail={player.medail}
+          kda={player.kda}
         />
       ))}
     </PlayersData>

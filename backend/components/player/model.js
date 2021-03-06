@@ -7,7 +7,18 @@ const MySchema = new Schema({
     lastName: String,
   },
   nickname: String,
-  medails: {
+  medail: String,
+  mmr: Number,
+  estado: Boolean,
+});
+
+const MySchema2 = new Schema({
+  name: {
+    firstName: String,
+    lastName: String,
+  },
+  nickname: String,
+  medail: {
     type: Schema.ObjectId,
     ref: 'medails',
   },
@@ -15,6 +26,7 @@ const MySchema = new Schema({
   estado: Boolean,
 });
 
-const model = mongoose.model('players', MySchema);
+const model = mongoose.model('playerWithOutMedail', MySchema, 'players');
+const model2 = mongoose.model('playerWithMedail', MySchema2, 'players');
 
-module.exports = model;
+module.exports = { model, model2 };

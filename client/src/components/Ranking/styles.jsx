@@ -4,9 +4,9 @@ export const RankingTable = styled.div`
   /* border: 1px solid red; */
   display: grid;
   grid-template-rows: auto 1fr;
-  grid-template-columns: 1fr 4fr;
+  grid-template-columns: 1fr 5fr;
   /* margin: 1em; */
-  padding: 50px;
+  padding: 50px 40px;
   text-align: center;
   margin: 10px;
   box-shadow: 0 0 10px 5px rgba(0, 0, 0, 0.09);

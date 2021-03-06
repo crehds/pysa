@@ -6,9 +6,10 @@ import { PlayersInRanking } from '../PlayersInRanking';
 import { RowsNameRanking } from '../RowsNameRanking';
 import { ImInfo } from 'react-icons/im';
 import { Medails } from '../Medails';
+import { WrapperDiv } from '../WrapperDiv';
 
 export const Ranking = () => {
-  const value = useStateValue();
+  const [state, dispatch] = useStateValue();
   function onMouseEnter() {
     let medails = document.getElementById('medails');
     medails.style.display = 'grid';
@@ -18,14 +19,16 @@ export const Ranking = () => {
     medails.style.display = 'none';
   }
   return (
-    <RankingTable>
-      <Medails />
-      <Info onMouseEnter={onMouseEnter} onMouseLeave={onMouseLeave}>
-        <ImInfo size='30px' />
-      </Info>
-      <RowsNameRanking />
-      <Positions positions={value.length} />
-      <PlayersInRanking players={value} />
-    </RankingTable>
+    <WrapperDiv>
+      <RankingTable>
+        <Medails />
+        <Info onMouseEnter={onMouseEnter} onMouseLeave={onMouseLeave}>
+          <ImInfo size='30px' />
+        </Info>
+        <RowsNameRanking />
+        <Positions positions={state.ranking.length} />
+        <PlayersInRanking players={state.ranking} />
+      </RankingTable>
+    </WrapperDiv>
   );
 };

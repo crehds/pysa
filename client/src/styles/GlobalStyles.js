@@ -35,11 +35,13 @@ export const GlobalStyle = createGlobalStyle`
   }
 
   .App {
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    display: grid;
+    grid-template-columns: auto 1fr;
+    /* align-items: center; */
+    /* justify-content: center; */
     height: 100vh;
-    /* position: relative;
-    height: 100vh; */
+    position: relative;
+    overflow:hidden;
+    /*height: 100vh; */
   }
 `;

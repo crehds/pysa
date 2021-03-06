@@ -5,6 +5,11 @@ function addRole(role) {
   return oneRole.save();
 }
 
+async function getRoles() {
+  const models = await Model.find();
+  return models;
+}
 module.exports = {
   add: addRole,
+  list: getRoles
 };
