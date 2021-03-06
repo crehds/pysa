@@ -9,13 +9,13 @@ export function useGetData(loadingApp) {
     async function getDataPlayers() {
       try {
         console.log('trayendo data');
-        const players = await fetch('/players/getAllPlayers').then((result) =>
+        const players = await fetch('https://pysabackend.herokuapp.com/players/getAllPlayers').then((result) =>
           result.json()
         );
 
         const playersIds = players.body.map((player) => player['_id']);
 
-        const scorePlayers = await fetch('/scores/getScoreOfPlayers', {
+        const scorePlayers = await fetch('https://pysabackend.herokuapp.com/scores/getScoreOfPlayers', {
           method: 'post',
           body: JSON.stringify({ playersIds: [...playersIds] }),
           headers: {
@@ -23,11 +23,11 @@ export function useGetData(loadingApp) {
           },
         }).then((result) => result.json());
 
-        const medails = await fetch('/medails/getMedails').then((result) =>
+        const medails = await fetch('https://pysabackend.herokuapp.com/medails/getMedails').then((result) =>
           result.json()
         );
 
-        const roles = await fetch('/roles/getRoles').then(result => result.json());
+        const roles = await fetch('https://pysabackend.herokuapp.com/roles/getRoles').then(result => result.json());
 
         dispatch({
           type: 'SET_DATA',
