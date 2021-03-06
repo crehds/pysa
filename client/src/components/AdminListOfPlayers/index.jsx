@@ -7,7 +7,7 @@ import { PlayerToFocus } from './PlayerToFocus';
 
 function randomPlayer(playersLength) {
   // let max = players.length - 3;
-  let number = Math.floor(Math.random() * (playersLength - 2 + 1) + 2);
+  let number = Math.floor(Math.random() * (playersLength - 2 - 2 + 1) + 2);
   return {
     length: playersLength - 1,
     previousPlayer: number - 1,
@@ -22,21 +22,21 @@ function reducer(state, action) {
       return {
         ...state,
         previousPlayer:
-          state.previousPlayer === state.length ? 0 : state.previousPlayer + 1,
-        focusPlayer:
-          state.focusPlayer === state.length ? 0 : state.focusPlayer + 1,
-        nextPlayer:
-          state.nextPlayer === state.length ? 0 : state.nextPlayer + 1,
-      };
-    case 'right':
-      return {
-        ...state,
-        previousPlayer:
           state.previousPlayer === 0 ? state.length : state.previousPlayer - 1,
         focusPlayer:
           state.focusPlayer === 0 ? state.length : state.focusPlayer - 1,
         nextPlayer:
           state.nextPlayer === 0 ? state.length : state.nextPlayer - 1,
+      };
+    case 'right':
+      return {
+        ...state,
+        previousPlayer:
+          state.previousPlayer === state.length ? 0 : state.previousPlayer + 1,
+        focusPlayer:
+          state.focusPlayer === state.length ? 0 : state.focusPlayer + 1,
+        nextPlayer:
+          state.nextPlayer === state.length ? 0 : state.nextPlayer + 1,
       };
     case 'search':
       const nickname = action.payload;
