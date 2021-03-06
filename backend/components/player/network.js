@@ -68,6 +68,27 @@ router.post('/playersWithAllData', async function name(req, res) {
   }
 });
 
+router.patch('/updateScore/:playerId', async function (req, res) {
+  const { playerId } = req.params;
+  const { body } = req;
+  console.log(body);
+  try {
+    const result = await controller.updatePlayer(playerId, body);
+    response.success(req, res, result, 200);
+  } catch (error) {
+    response.error(req, res, 'Unexpected error', 500, error);
+  }
+});
+
+router.patch('/setNotCalibrated/:playerId', async function (req, res) {
+  const { playerId } = req.params;
+  try {
+    const result = await controller.setNotCalibrated(playerId);
+    response.success(req, res, result, 200);
+  } catch (error) {
+    response.error(req, res, 'Unexpected error', 500, error);
+  }
+});
 router.patch(
   '/patchPlayer/:playerId/updateMedail/:medailId',
   async function (req, res) {

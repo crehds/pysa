@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useStateValue } from '../../../Context';
 import { NamesScoreWrapper } from '../PlayerFocus/styles';
 import { PlayerTotals } from '../PlayerTotals';
 import { RolesScore } from '../RolesScore';
@@ -46,13 +47,25 @@ const initialRoles = {
     ...initialState,
   },
 };
-export const ScorePlayerFocus = ({ roles , mmr}) => {
+export const ScorePlayerFocus = ({ roles, mmr, playerId, medail }) => {
   let [state, setState] = useState({ ...initialRoles });
+  const [{}, dispatch] = useStateValue();
 
   function changeState(value, name, rolName) {
     console.log(rolName);
-    console.log({...state[rolName] });
+    console.log({ ...state[rolName] });
     setState({ ...state, [rolName]: { ...state[rolName], [name]: value } });
+  }
+
+  function test(mmr, partidas) {
+    // console.log(mmr);
+    // console.log(roles);
+    // console.log(playerId);
+    dispatch({
+      type: 'SEND_DATA',
+      payload: { playerId, state, mmr, medail, partidas },
+    });
+    console.log('boton clickeado');
   }
 
   return (
@@ -119,7 +132,13 @@ export const ScorePlayerFocus = ({ roles , mmr}) => {
         </div>
       </NamesScoreWrapper>
       <RolesScore roles={roles} changeState={changeState} />
-      <PlayerTotals state={{ ...state }} roles={calc(roles)} mmr={mmr} />
+      <PlayerTotals
+        state={{ ...state }}
+        roles={calc(roles)}
+        mmr={mmr}
+        test={test}
+        medail={medail}
+      />
     </ScoreWrapper>
   );
 };

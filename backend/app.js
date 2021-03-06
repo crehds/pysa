@@ -13,6 +13,7 @@ const db = require('./db')
 db(
   `mongodb+srv://db_admin_nodebackend:3FnBbWRvQFrWX1Zg@cluster0-blzmi.mongodb.net/pysa?retryWrites=true&w=majority`
 )
+
 app.use(cors())
 console.log('servidor encendido');
 app.use(logger('dev'));

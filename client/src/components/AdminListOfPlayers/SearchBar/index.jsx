@@ -13,7 +13,7 @@ export const SearchBar = (props) => {
   return (
     <SearchWrapper>
       <InputWrapper onSubmit={(e) => onSubmit(e, props.searchPlayer)}>
-        <Input id='searchInput' placeholder='Ingresa el nickname del jugador a buscar' autoCorrect='off'/>
+        <Input id='searchInput' placeholder='Ingresa el nickname del jugador a buscar' autoCorrect='off' autoComplete='off'/>
         <Icon>
           <BsSearch />
         </Icon>

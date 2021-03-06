@@ -8,6 +8,12 @@ async function getMedailByMMR(mmr) {
   const medails = await store.list();
   return medails.find((medail) => medail.minimo <= mmr && medail.maximo >= mmr)['_id'];
 }
+
+// async function getMedailByMMR2(mmr) {
+//   const medails = await store.list();
+//   return medails.find((medail) => medail.minimo <= mmr && medail.maximo >= mmr);
+// }
+
 async function getMedails() {
   return await store.list();
 }

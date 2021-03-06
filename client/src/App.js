@@ -10,10 +10,12 @@ import { AdminPlayers } from './pages/AdminPlayers';
 import './App.css';
 import { Logging } from './components/Logging';
 import { useGetData } from './hooks/useGetData';
+import { useStateValue } from './Context';
 
 function App() {
+  const [{ isAuth }] = useStateValue()
   const [isLoading, setLoading] = useState(false);
-  const [isLogging, setLogging] = useState(false);
+  const [isLogging, setLogging] = useState(isAuth);
   const loading = useGetData(isLoading);
 
   // async function testHeroku() {

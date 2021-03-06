@@ -1,5 +1,6 @@
 import React from 'react';
 import {
+  ButtonsWrapper,
   ImagesWrapper,
   KDA,
   PlayerTotalsWrapper,
@@ -12,8 +13,11 @@ import {
 } from './styles';
 
 export const PlayerTotals = (props) => {
-  console.log(props);
-  console.log(props.state);
+  // console.log(props);
+  // console.log(props.state);
+  function onClick(event, mmr, partidas) {
+    props.test(mmr, partidas);
+  }
   let victories =
     props.state['Hard Carry'].victories +
     props.state['Mid Laner'].victories +
@@ -56,9 +60,27 @@ export const PlayerTotals = (props) => {
     props.state['Off Laner'].assists +
     props.state['Soft Support'].assists +
     props.state['Hard Support'].assists;
+  let mmr =
+    props.medail === 'Sin Calibrar'
+      ? 1800 +
+        props.roles.victories * 100 +
+        props.roles.victoriesDouble * 200 -
+        props.roles.defeats * 100 -
+        props.roles.defeatsDouble * 200
+      : props.mmr;
+  let newMMR =
+    mmr +
+    victories * 100 +
+    victoriesDouble * 200 -
+    defeats * 100 -
+    defeatsDouble * 200;
+  let newPartidas = victories + victoriesDouble + defeats + defeatsDouble;
+
   return (
     <PlayerTotalsWrapper>
-      <TotalDiv><p>Total</p></TotalDiv>
+      <TotalDiv>
+        <p>Total</p>
+      </TotalDiv>
       <SubTotal>
         <Sub2Total>
           <Sub2TotalColumns>
@@ -157,15 +179,15 @@ export const PlayerTotals = (props) => {
       </SubTotalKDA>
       <ImagesWrapper>
         <div>MMR</div>
-        <div>{props.mmr}</div>
-        <div>
-          {props.mmr +
-            victories * 100 +
-            victoriesDouble * 200 -
-            defeats * 100 -
-            defeatsDouble * 200}
-        </div>
+        <div>{mmr}</div>
+        <div>{newMMR}</div>
       </ImagesWrapper>
+      <ButtonsWrapper>
+        <button onClick={(e) => onClick(e, newMMR, newPartidas)}>
+          Guardar
+        </button>
+        <button>Reset</button>
+      </ButtonsWrapper>
     </PlayerTotalsWrapper>
   );
 };

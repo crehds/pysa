@@ -44,10 +44,15 @@ async function patchPlayer(playerId, newPlayer) {
   return await Model2.findByIdAndUpdate(playerId, newPlayer, { new: true });
 }
 
+async function patchPlayer2(playerId, notCalibrated) {
+  return await Model.findByIdAndUpdate(playerId, notCalibrated, { new: true });
+}
+
 module.exports = {
   add: addPlayer,
   listOne: getPlayer,
   list: getAllPlayers,
   patch: patchPlayer,
+  notCalibrated:patchPlayer2,
   deleteAll: deletePlayers,
 };

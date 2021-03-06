@@ -14,7 +14,7 @@ export const PlayerFocus = ({ player }) => {
           <img src={user} alt='imagen del jugador' />
         </ImageWrapper>
       </div>
-      <ScorePlayerFocus roles={player.rolesScore} mmr={player.mmr} />
+      <ScorePlayerFocus playerId={player['_id']} roles={player.rolesScore} mmr={player.mmr} medail={player.medail} />
       
     </FocusWrapper>
   );

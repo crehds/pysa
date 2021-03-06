@@ -103,7 +103,10 @@ async function addPlayersWithAllData(players) {
     }
 
     const resultPlayerId = resultPlayer['_id'];
-    const calibration = await calibrationController.addCalibration(player.calibration);
+    const calibration = await calibrationController.addCalibration(
+      resultPlayerId,
+      player.calibration
+    );
 
     const results = await scoreController.addOrUpdateScores(
       resultPlayerId,
@@ -129,13 +132,68 @@ async function addPlayersWithAllData(players) {
   return Promise.all(promises);
 }
 
-function patchPlayer(playerId, medailId) {
+function patchPlayer(playerId, medailId, mmr) {
   const newPlayer = {
     medail: medailId,
+    mmr,
   };
 
   return store.patch(playerId, newPlayer);
 }
+
+async function updatePlayer(playerId, player) {
+  if (player.medail === 'Sin Calibrar') {
+    let result = await calibrationController.getCalibration(playerId);
+
+    if (result.remainingGames < player.partidas) {
+      return Promise.reject('Invalid number of remaining games');
+    }
+    if (result.remainingGames > player.partidas) {
+      const calibration = await calibrationController.patchCalibration(
+        playerId,
+        { remainingGames: result.remainingGames - player.partidas }
+      );
+      const updateScore = await scoreController.addOrUpdateScores(
+        playerId,
+        player.score,
+        'update'
+      );
+      return Promise.resolve(updateScore);
+    }
+    if (result.remainingGames === player.partidas) {
+      const medail = await medailController.getMedailByMMR(player.mmr);
+      const setMedail = await patchPlayer(playerId, medail, player.mmr);
+      const calibration = await calibrationController.patchCalibration(
+        playerId,
+        { remainingGames: 0, estado: 0 }
+      );
+      const updateScore = await scoreController.addOrUpdateScores(
+        playerId,
+        player.score,
+        'update'
+      );
+      return Promise.resolve(updateScore);
+    }
+  }
+
+  const medail = await medailController.getMedailByMMR(player.mmr);
+  const setMedail = await patchPlayer(playerId, medail, player.mmr);
+
+  const updateScore = await scoreController.addOrUpdateScores(
+    playerId,
+    player.score,
+    'update'
+  );
+  return Promise.resolve('Todo Ok');
+}
+
+function setNotCalibrated(playerId) {
+  const newPlayer = {
+    medail: 'Sin Calibrar',
+  };
+  return store.notCalibrated(playerId, newPlayer);
+}
+
 function deleteAll() {
   return store.deleteAll();
 }
@@ -146,6 +204,8 @@ module.exports = {
   addPlayersWithAllData,
   getOnePlayer,
   getAllPlayers,
+  setNotCalibrated,
+  updatePlayer,
   patchPlayer,
   deleteAll,
 };

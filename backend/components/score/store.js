@@ -11,11 +11,33 @@ async function getOneScore(player) {
   return result;
 }
 
+
 async function updateOneScore(playerId, rolId, score) {
   const result = await Model.findOneAndUpdate(
     { player: playerId, rol: rolId },
     { ...score },
     { new: true }
+  );
+  return result;
+}
+
+//Se reescribió el update para testear  desde el cliente
+async function updateOneScore2(playerId, rolId, score) {
+  const result = await Model.findOneAndUpdate(
+    { player: playerId, rol: rolId },
+    {},
+    { new: true },
+    function (err, doc) {
+      if (err) return `[Error] Details:${err}`;
+      doc.victories += score.victories;
+      doc.victoriesDouble += score.victoriesDouble;
+      doc.defeats += score.defeats;
+      doc.defeatsDouble += score.defeatsDouble;
+      doc.kills += score.kills;
+      doc.deaths += score.deaths;
+      doc.assists += score.assists;
+      doc.save();
+    }
   );
 
   return result;
@@ -35,6 +57,7 @@ module.exports = {
   add: addScore,
   listOne: getOneScore,
   updateOne: updateOneScore,
+  updateOne2: updateOneScore2,
   deleteAll,
   deleteOne,
 };

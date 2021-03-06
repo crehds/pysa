@@ -32,7 +32,7 @@ async function addOrUpdateScores(playerId, rolesScore, action) {
     const result =
       action === 'add'
         ? await addScore(playerId, rolId, rolScore.score)
-        : await store.updateOne(playerId, rolId, rolScore.score);
+        : await store.updateOne2(playerId, rolId, rolScore.score);
 
     return result;
   });

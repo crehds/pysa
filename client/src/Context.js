@@ -3,7 +3,9 @@ import { players } from './api/players2.json';
 import { medallas } from './api/medallas.json';
 const Context = createContext();
 
-let initialState = {};
+let initialState = {
+  isAuth: window.sessionStorage.getItem('token'),
+};
 
 const reducer = function reducer(roles, mmrPerV, mmrPerD, initialMMR) {
   let partidas = 0;
@@ -60,7 +62,6 @@ function setMedallas(playersOrdenados) {
 }
 
 function setScoreOfPlayers(players, score) {
-
   const playersWithScore = players.map((player) => {
     let rolesScore = score.find((score) => player['_id'] === score.playerId)
       .rolesScore;
@@ -71,7 +72,6 @@ function setScoreOfPlayers(players, score) {
 }
 
 function setKDAAndMedail(players, medails, roles) {
-
   const results = players.map((player) => {
     let partidas = 0;
     // console.log(players);
@@ -125,13 +125,40 @@ function filteringPlayers(players) {
 }
 
 function dataForApp({ players, scorePlayers, medails, roles }) {
-
   const playersWithScore = setScoreOfPlayers(players, scorePlayers);
   const playersWithAllData = setKDAAndMedail(playersWithScore, medails, roles);
   const filteredPlayers = filteringPlayers(playersWithAllData);
   const orderedPlayers = sortPlayers(filteredPlayers);
 
-  return {orderedPlayers, playersWithAllData};
+  return { orderedPlayers, playersWithAllData };
+}
+
+function setNameRoles(rolesScore) {
+  let keys = Object.keys(rolesScore);
+  let newRolesScore = [];
+  for (let key of keys) {
+    newRolesScore.push({ name: key, score: rolesScore[key] });
+  }
+  return newRolesScore;
+}
+
+async function updateScore({
+  playerId,
+  state: rolesScore,
+  mmr,
+  medail,
+  partidas,
+}) {
+  let score = setNameRoles(rolesScore);
+
+  let result = await fetch(`/players/updateScore/${playerId}`, {
+    method: 'PATCH',
+    body: JSON.stringify({ score, mmr, medail, partidas }),
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  }).then((result) => result.json());
+  console.log(result);
 }
 
 const reducer2 = (state, action) => {
@@ -144,7 +171,18 @@ const reducer2 = (state, action) => {
         ...state,
         ...action.payload,
         ranking: data.orderedPlayers,
-        allPlayers: data.playersWithAllData
+        allPlayers: data.playersWithAllData,
+      };
+    case 'SEND_DATA':
+      updateScore({ ...action.payload });
+
+      return {
+        ...state,
+      };
+    case 'LOGIN':
+      return {
+        ...state,
+        isAuth: true,
       };
     case 'UNLOGIN':
       window.sessionStorage.removeItem('token');

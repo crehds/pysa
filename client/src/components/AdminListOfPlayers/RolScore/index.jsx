@@ -30,7 +30,7 @@ export const RolScore = (props) => {
     setState({ ...state, [name]: value });
     props.changeState(value, name, rolName);
   }
-  console.log(props);
+  // console.log(props);
   return (
     <RolScoreWrapper>
       <div>{props.rol}</div>

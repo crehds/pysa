@@ -3,8 +3,10 @@ import { LoggingWrapper } from './style';
 import Swal from 'sweetalert2';
 import { login } from '../../api/login.json';
 import { BiLogIn, BiLogOut } from 'react-icons/bi';
+import { useStateValue } from '../../Context';
 
 export const Logging = (props) => {
+  const [{}, dispatch] = useStateValue();
   function handleLogging(user, password) {
     return login.some(
       (element) => element.id === user && element.password === password
@@ -31,6 +33,8 @@ export const Logging = (props) => {
     }
     if (value.status) {
       props.handleLogging(value.status);
+      window.sessionStorage.setItem('token', true);
+      dispatch({ type: 'LOGIN' });
       Swal.fire({
         icon: 'success',
         text: 'Bienvenido papu',
@@ -51,6 +55,7 @@ export const Logging = (props) => {
       cancelButtonText: `Me quedo un rato más`,
     }).then((result) => {
       if (result.isConfirmed) {
+        dispatch({ type: 'UNLOGIN' });
         props.handleLogging(false);
         Swal.fire('Hasta pronto papu', '', 'success');
       }

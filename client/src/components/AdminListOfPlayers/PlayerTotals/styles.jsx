@@ -6,6 +6,7 @@ export const PlayerTotalsWrapper = styled.div`
   grid-template-rows: 3fr 1fr;
   font-family: 'Ubuntu';
   font-size: 16px;
+  position: relative;
 `;
 
 export const SubTotal = styled.div`
@@ -32,19 +33,18 @@ export const KDA = styled.div`
   }
 `;
 
-export const Sub2Total = styled.div` 
-`;
+export const Sub2Total = styled.div``;
 
 export const Sub2TotalColumns = styled.div`
-  display:grid;
+  display: grid;
   grid-template-columns: 1fr 1fr;
-`
+`;
 
 export const TotalColumns = styled.div`
   display: flex;
   justify-content: space-around;
-  border:1px solid black;
-  padding:1px;
+  border: 1px solid black;
+  padding: 1px;
   /* &:nth-of-type(1) {
     margin:auto 0;
   } */
@@ -53,15 +53,29 @@ export const TotalColumns = styled.div`
 export const TotalDiv = styled.div`
   display: flex;
   justify-content: center;
-  align-items:center;
+  align-items: center;
   border: 1px solid black;
   & p {
     font-size: 20px;
   }
-`
+`;
 
 export const ImagesWrapper = styled.div`
   display: flex;
   grid-column: 1 / -1;
   justify-content: space-around;
+  border: 1px solid black;
+`;
+
+export const ButtonsWrapper = styled.div`
+  position: absolute;
+  right: 35%;
+  bottom: -30px;
+  & button {
+    border: 1px solid gray;
+    border-radius: 5px;
+    background-color: lightcyan;
+    padding: 5px 15px;
+    margin-right: 10px;
+  }
 `;
