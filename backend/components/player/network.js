@@ -13,6 +13,7 @@ router.get('/onePlayer/:playerId', async function (req, res, next) {
   }
 });
 
+
 router.get('/getAllPlayers', async function (req, res) {
   try {
     const players = await controller.getAllPlayers();
