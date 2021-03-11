@@ -36,37 +36,67 @@ export const RolScore = (props) => {
       <div>{props.rol}</div>
       <div>
         <p>{props.victories} </p>
-        <input name='victories' placeholder='0' onChange={onChange} />
+        <input
+          name='victories'
+          type='number'
+          placeholder='0'
+          onChange={onChange}
+        />
         <p>{props.victories + state.victories} </p>
       </div>
       <div>
         <p>{props.victoriesDouble}</p>
-        <input name='victoriesDouble' placeholder='0' onChange={onChange} />
+        <input
+          name='victoriesDouble'
+          placeholder='0'
+          type='number'
+          onChange={onChange}
+        />
         <p>{props.victoriesDouble + state.victoriesDouble}</p>
       </div>
       <div>
         <p>{props.defeats}</p>
-        <input name='defeats' placeholder='0' onChange={onChange} />
+        <input
+          name='defeats'
+          placeholder='0'
+          type='number'
+          onChange={onChange}
+        />
         <p>{props.defeats + state.defeats}</p>
       </div>
       <div>
         <p>{props.defeatsDouble}</p>
-        <input name='defeatsDouble' placeholder='0' onChange={onChange} />
+        <input
+          name='defeatsDouble'
+          placeholder='0'
+          type='number'
+          onChange={onChange}
+        />
         <p>{props.defeatsDouble + state.defeatsDouble}</p>
       </div>
       <div>
         <p>{props.kills}</p>
-        <input name='kills' placeholder='0' onChange={onChange} />
+        <input name='kills' placeholder='0' type='number' onChange={onChange} />
         <p>{props.kills + state.kills}</p>
       </div>
       <div>
         <p>{props.deaths}</p>
-        <input name='deaths' placeholder='0' onChange={onChange} />
+        <input
+          name='deaths'
+          placeholder='0'
+          type='number'
+          onChange={onChange}
+        />
         <p>{props.deaths + state.deaths}</p>
       </div>
       <div>
         <p>{props.assists}</p>
-        <input name='assists' placeholder='0' onChange={onChange} />
+        <input
+          name='assists'
+          placeholder='0'
+          type='number'
+          onChange={onChange}
+        />
         <p>{props.assists + state.assists}</p>
       </div>
     </RolScoreWrapper>

@@ -12,12 +12,16 @@ function addPlayer(user, calibration) {
 
 async function getPlayer(playerId) {
   return new Promise((resolve, reject) => {
-    Model.find({ _id: playerId })
+    Model.findOne({ _id: playerId })
       .populate('medail', 'name')
       .exec((error, populated) => {
         if (error) {
+          console.log('Hubo un error');
           reject(error);
           return false;
+        }
+        if (populated.medail === null) {
+          populated.medail = 'Sin Calibrar';
         }
         resolve(populated);
       });
@@ -53,6 +57,6 @@ module.exports = {
   listOne: getPlayer,
   list: getAllPlayers,
   patch: patchPlayer,
-  notCalibrated:patchPlayer2,
+  notCalibrated: patchPlayer2,
   deleteAll: deletePlayers,
 };

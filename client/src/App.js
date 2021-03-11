@@ -13,7 +13,7 @@ import { useGetData } from './hooks/useGetData';
 import { useStateValue } from './Context';
 
 function App() {
-  const [{ isAuth }] = useStateValue()
+  const [{ isAuth }] = useStateValue();
   const [isLoading, setLoading] = useState(false);
   const [isLogging, setLogging] = useState(isAuth);
   const loading = useGetData(isLoading);
@@ -43,8 +43,6 @@ function App() {
   return (
     <div id='app' className='App'>
       <GlobalStyle />
-      {console.log(loading)}
-      {/* {console.log('holi')} */}
       {isLoading ? (
         <>
           <NavBar isLogging={isLogging} />

@@ -75,6 +75,15 @@ export const PlayerTotals = (props) => {
     defeats * 100 -
     defeatsDouble * 200;
   let newPartidas = victories + victoriesDouble + defeats + defeatsDouble;
+  let kda = (props.roles.assists + props.roles.kills) / props.roles.deaths;
+  let newkda = undefined;
+  if (props.roles.deaths === 0 && deaths === 0) {
+    newkda = props.roles.assists + assists + props.roles.kills + kills;
+  } else {
+    newkda =
+      (props.roles.assists + assists + props.roles.kills + kills) /
+      (props.roles.deaths + deaths);
+  }
 
   return (
     <PlayerTotalsWrapper>
@@ -162,17 +171,14 @@ export const PlayerTotals = (props) => {
           </div>
           <TotalColumns>
             <p>
-              {(
-                (props.roles.assists + props.roles.kills) /
-                props.roles.deaths
-              ).toFixed(2)}
+              {typeof kda === 'number' && isFinite(kda) ? kda.toFixed(2) : 0}
             </p>
             <p>
-              {(
-                (props.roles.assists + assists + props.roles.kills + kills) /
-                  props.roles.deaths +
-                deaths
-              ).toFixed(2)}
+              {typeof newkda === 'number' && isFinite(newkda)
+                ? newkda === 0
+                  ? 0
+                  : newkda.toFixed(2)
+                : 'Inválido'}
             </p>
           </TotalColumns>
         </KDA>
