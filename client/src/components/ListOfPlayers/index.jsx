@@ -1,26 +1,11 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { Player } from '../Player';
 import { WrapperDiv } from '../WrapperDiv';
+import { useGetWidth } from '../../hooks/useGetWidth';
 import { CarouselWrapper, PlayersCarousel } from './styles';
 
 export const ListOfPlayers = ({ players }) => {
-  const [width, setWidth] = useState();
-
-  useEffect(() => {
-    let carouselWidth = document.getElementById('app').offsetWidth - 60;
-
-    const onResize = () => {
-      let newCarouselWidth = document.getElementById('app').offsetWidth - 60;
-      setWidth(newCarouselWidth);
-    };
-
-    window.addEventListener('resize', onResize);
-    setWidth(carouselWidth);
-    return () => {
-      return window.removeEventListener('resize', onResize);
-    };
-  }, [width]);
-
+  const width = useGetWidth();
   console.log(players);
   return (
     <WrapperDiv>
