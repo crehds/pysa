@@ -71,7 +71,6 @@ router.post('/playersWithAllData', async function name(req, res) {
 router.patch('/updateScore/:playerId', async function (req, res) {
   const { playerId } = req.params;
   const { body } = req;
-  console.log(body);
   try {
     const result = await controller.updatePlayer(playerId, body);
     response.success(req, res, result, 200);

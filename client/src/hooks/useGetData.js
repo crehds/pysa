@@ -9,13 +9,15 @@ export function useGetData(loadingApp) {
     async function getDataPlayers() {
       try {
         console.log('trayendo data');
-        const players = await fetch('https://pysabackend.herokuapp.com/players/getAllPlayers').then((result) =>
-          result.json()
-        );
+        const uri =
+          process.env.NODE_ENV === 'development'
+            ? '/'
+            : 'https://pysabackend.herokuapp.com/';
+        const players = await fetch(`${uri}players/getAllPlayers`).then((result) => result.json());
 
         const playersIds = players.body.map((player) => player['_id']);
 
-        const scorePlayers = await fetch('https://pysabackend.herokuapp.com/scores/getScoreOfPlayers', {
+        const scorePlayers = await fetch(`${uri}scores/getScoreOfPlayers`, {
           method: 'post',
           body: JSON.stringify({ playersIds: [...playersIds] }),
           headers: {
@@ -23,11 +25,13 @@ export function useGetData(loadingApp) {
           },
         }).then((result) => result.json());
 
-        const medails = await fetch('https://pysabackend.herokuapp.com/medails/getMedails').then((result) =>
+        const medails = await fetch(`${uri}medails/getMedails`).then((result) =>
           result.json()
         );
 
-        const roles = await fetch('https://pysabackend.herokuapp.com/roles/getRoles').then(result => result.json());
+        const roles = await fetch(`${uri}roles/getRoles`).then((result) =>
+          result.json()
+        );
 
         dispatch({
           type: 'SET_DATA',
@@ -35,7 +39,7 @@ export function useGetData(loadingApp) {
             players: players.body,
             scorePlayers: scorePlayers.body,
             medails: medails.body,
-            roles:roles.body
+            roles: roles.body,
           },
         });
         setLoading(true);

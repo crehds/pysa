@@ -8,7 +8,7 @@ export const RolScoreWrapper = styled.div`
   & div {
     text-align: center;
     display: grid;
-    grid-template-columns: 1fr 1fr 1fr;
+    grid-template-columns: 1fr 2fr 1fr;
     grid-column-gap: 5px;
     align-items: center;
     font-family: 'Ubuntu';

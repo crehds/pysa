@@ -8,9 +8,9 @@
     "start": "concurrently 'cd backend  && npm run start ' 'cd client && yarn start '",
     "dev": "concurrently 'cd backend  && npm run dev ' 'cd client && yarn start '",
     "frontend": "cd client && yarn start",
-    "backend":"cd backend  && npm run start",
+    "backend": "cd backend  && npm run start",
     "backend:dev": "cd backend  && npm run dev"
-    },
+  },
   "keywords": [
     "pysa",
     "lanes",

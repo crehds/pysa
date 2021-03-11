@@ -153,12 +153,15 @@ async function updatePlayer(playerId, player) {
         playerId,
         { remainingGames: result.remainingGames - player.partidas }
       );
+
+      const currentPlayer = await getOnePlayer(playerId);
       const updateScore = await scoreController.addOrUpdateScores(
         playerId,
         player.score,
         'update'
       );
-      return Promise.resolve(updateScore);
+
+      return Promise.resolve({ updatePlayer: currentPlayer, updateScore });
     }
     if (result.remainingGames === player.partidas) {
       const medail = await medailController.getMedailByMMR(player.mmr);
@@ -172,7 +175,7 @@ async function updatePlayer(playerId, player) {
         player.score,
         'update'
       );
-      return Promise.resolve(updateScore);
+      return Promise.resolve({ updatePlayer: setMedail, updateScore });
     }
   }
 
@@ -184,7 +187,8 @@ async function updatePlayer(playerId, player) {
     player.score,
     'update'
   );
-  return Promise.resolve('Todo Ok');
+
+  return Promise.resolve({ updatePlayer: setMedail, updateScore });
 }
 
 function setNotCalibrated(playerId) {

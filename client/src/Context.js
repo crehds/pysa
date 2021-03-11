@@ -63,52 +63,82 @@ function setMedallas(playersOrdenados) {
 
 function setScoreOfPlayers(players, score) {
   const playersWithScore = players.map((player) => {
-    let rolesScore = score.find((score) => player['_id'] === score.playerId)
-      .rolesScore;
-    return { ...player, rolesScore };
+    return scoreOnePlayer(player, score);
   });
 
   return playersWithScore;
 }
 
+function scoreOnePlayer(player, score) {
+  let rolesScore = score.find((score) => player['_id'] === score.playerId)
+    .rolesScore;
+  return { ...player, rolesScore };
+}
+
+function orderedRoles(player, roles) {
+  let playerWithOrderedRoles = Object.assign({}, player);
+  let orderedRoles = roles.map((rol) => {
+    let sortRol = playerWithOrderedRoles.rolesScore.find(
+      (rolScore) => rolScore.rol === rol['_id']
+    );
+    return { ...sortRol, rol: rol.name };
+  });
+  playerWithOrderedRoles.rolesScore = orderedRoles;
+  return playerWithOrderedRoles;
+}
+
+function calcKdaAndGames(rolesScore) {
+  let partidas = 0;
+  let obj = rolesScore.reduce(
+    (acc, cv) => {
+      partidas +=
+        cv.victories + cv.victoriesDouble + cv.defeats + cv.defeatsDouble;
+      return (acc = {
+        ...acc,
+        kills: acc.kills + cv.kills,
+        deaths: acc.deaths + cv.deaths,
+        assists: acc.assists + cv.assists,
+      });
+    },
+    { kills: 0, deaths: 0, assists: 0 }
+  );
+
+  let kda = ((obj.kills + obj.assists) / obj.deaths).toFixed(2);
+  kda = kda.length === 4 ? kda : kda.length === 1 ? `${kda}.00` : `${kda}0`;
+  return { partidas, kda };
+}
+
+function isCalibrated(player) {
+  if (player.medail !== 'Sin Calibrar') {
+    return true;
+  } else {
+    return false;
+  }
+}
+
+function setMedail(player, medails) {
+  let newPlayer = Object.assign({}, player);
+  let calibrated = isCalibrated(player);
+  if (calibrated) {
+    newPlayer.medail = medails.find(
+      (medail) => newPlayer.medail === medail['_id']
+    ).name;
+  }
+  return newPlayer;
+}
+
 function setKDAAndMedail(players, medails, roles) {
   const results = players.map((player) => {
-    let partidas = 0;
-    // console.log(players);
-    let rolScoreOrd = roles.map((rol) => {
-      let sortRol = player.rolesScore.find(
-        (rolScore) => rolScore.rol === rol['_id']
-      );
-      return { ...sortRol, rol: rol.name };
-    });
+    let playerWithOrderedRoles = orderedRoles(player, roles);
 
-    player.rolesScore = rolScoreOrd;
+    // player.rolesScore = rolScoreOrd;
 
-    let obj = player.rolesScore.reduce(
-      (acc, cv) => {
-        partidas +=
-          cv.victories + cv.victoriesDouble + cv.defeats + cv.defeatsDouble;
-        return (acc = {
-          ...acc,
-          kills: acc.kills + cv.kills,
-          deaths: acc.deaths + cv.deaths,
-          assists: acc.assists + cv.assists,
-        });
-      },
-      { kills: 0, deaths: 0, assists: 0 }
-    );
+    let { partidas, kda } = calcKdaAndGames(playerWithOrderedRoles.rolesScore);
 
-    let kda = ((obj.kills + obj.assists) / obj.deaths).toFixed(2);
-    kda = kda.length === 4 ? kda : kda.length === 1 ? `${kda}.00` : `${kda}0`;
-
-    if (player.medail !== 'Sin Calibrar') {
-      player.medail = medails.find(
-        (medail) => player.medail === medail['_id']
-      ).name;
-    }
+    let playerWithMedail = setMedail(playerWithOrderedRoles, medails);
 
     return {
-      ...player,
+      ...playerWithMedail,
       kda,
       partidas,
     };
@@ -151,7 +181,11 @@ async function updateScore({
 }) {
   let score = setNameRoles(rolesScore);
 
-  let result = await fetch(`https://pysabackend.herokuapp.com/players/updateScore/${playerId}`, {
+  const uri =
+    process.env.NODE_ENV === 'development'
+      ? '/'
+      : 'https://pysabackend.herokuapp.com/';
+  let result = await fetch(`${uri}players/updateScore/${playerId}`, {
     method: 'PATCH',
     body: JSON.stringify({ score, mmr, medail, partidas }),
     headers: {
@@ -159,6 +193,22 @@ async function updateScore({
     },
   }).then((result) => result.json());
   console.log(result);
+}
+
+function updatingPlayer(state, dataForUpdate) {
+  let player = dataForUpdate.updatePlayer;
+  let rolesScore = dataForUpdate.updateScore;
+  player.rolesScore = rolesScore;
+
+  let playerWithOrderedRoles = orderedRoles(player, state.roles);
+  let { partidas, kda } = calcKdaAndGames(playerWithOrderedRoles.rolesScore);
+  let playerWithMedail = setMedail(playerWithOrderedRoles, state.medails);
+
+  return { ...playerWithMedail, kda, partidas };
+}
+
+function findPlayer(arrayToSearch = [], playerId) {
+  return arrayToSearch.findIndex((player) => player['_id'] === playerId);
 }
 
 const reducer2 = (state, action) => {
@@ -173,11 +223,42 @@ const reducer2 = (state, action) => {
         ranking: data.orderedPlayers,
         allPlayers: data.playersWithAllData,
       };
-    case 'SEND_DATA':
-      updateScore({ ...action.payload });
+    case 'UPDATE_DATA':
+      if (action.payload.updatePlayer.medail !== 'Sin Calibrar') {
+        let updatedPlayer = updatingPlayer(state, action.payload);
+
+        let indexInRanking = findPlayer(state.ranking, updatedPlayer['_id']);
+        if (indexInRanking === -1) {
+          state.ranking.push(updatedPlayer);
+          sortPlayers(state.ranking);
+        } else {
+          state.ranking[indexInRanking] = updatedPlayer;
+        }
+        let indexInAllPlayers = findPlayer(
+          state.allPlayers,
+          updatedPlayer['_id']
+        );
+        
+        state.allPlayers[indexInAllPlayers] = updatedPlayer;
+        return {
+          ...state,
+          updateplayer: action.payload,
+        };
+      }
+
+      let indexInAllPlayers = findPlayer(state.allPlayers, action.playerId);
+      state.allPlayers[indexInAllPlayers].rolesScore =
+        action.payload.updateScore;
+      let playerWithOrderedRoles = orderedRoles(
+        state.allPlayers[indexInAllPlayers],
+        state.roles
+      );
+
+      state.allPlayers[indexInAllPlayers] = playerWithOrderedRoles;
 
       return {
         ...state,
+        updateplayer: action.payload,
       };
     case 'LOGIN':
       return {
