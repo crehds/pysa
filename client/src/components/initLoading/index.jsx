@@ -1,5 +1,5 @@
 import React from 'react';
-import logo from '../../assets/logo_pysa_5.png';
+import logo from '../../assets/logo_pysa_6.png';
 import { Div, Img, ImgWrapper, Overlay } from './styles.jsx';
 
 export const Loading = () => {
