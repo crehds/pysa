@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Info, RankingTable } from './styles';
 import { useStateValue } from '../../Context';
 import { Positions } from '../Positions';
@@ -10,6 +10,7 @@ import { WrapperDiv } from '../WrapperDiv';
 
 export const Ranking = () => {
   const [state, dispatch] = useStateValue();
+  const [width, setWidth] = useState();
   function onMouseEnter() {
     let medails = document.getElementById('medails');
     medails.style.display = 'grid';
@@ -18,9 +19,25 @@ export const Ranking = () => {
     let medails = document.getElementById('medails');
     medails.style.display = 'none';
   }
+
+  useEffect(() => {
+    let rankingWidth = document.getElementById('app').offsetWidth - 60;
+
+    const onResize = () => {
+      let newRankingWidth = document.getElementById('app').offsetWidth - 60;
+      setWidth(newRankingWidth);
+    };
+
+    window.addEventListener('resize', onResize);
+    setWidth(rankingWidth);
+    return () => {
+      return window.removeEventListener('resize', onResize);
+    };
+  }, [width]);
+
   return (
     <WrapperDiv>
-      <RankingTable>
+      <RankingTable size={width}>
         <Medails />
         <Info onMouseEnter={onMouseEnter} onMouseLeave={onMouseLeave}>
           <ImInfo size='30px' />
