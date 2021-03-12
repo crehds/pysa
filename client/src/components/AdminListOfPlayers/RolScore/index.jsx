@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { RolScoreWrapper } from './styles';
 
 // function copyKeys(obj) {
@@ -30,7 +30,10 @@ export const RolScore = (props) => {
     setState({ ...state, [name]: value });
     props.changeState(value, name, rolName);
   }
-  // console.log(props);
+  useEffect(() => {
+    props.getFunction(setState)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
   return (
     <RolScoreWrapper>
       <div>{props.rol}</div>

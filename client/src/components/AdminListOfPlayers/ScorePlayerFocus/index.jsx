@@ -51,7 +51,8 @@ const initialRoles = {
 export const ScorePlayerFocus = ({ roles, mmr, playerId, medail }) => {
   let [state, setState] = useState({ ...initialRoles });
   const [stateGlobal, dispatch] = useStateValue();
-
+  const [functions, setFunction] = useState([]);
+  // let functions = [];
   function changeState(value, name, rolName) {
     console.log(rolName);
     console.log({ ...state[rolName] });
@@ -118,6 +119,7 @@ export const ScorePlayerFocus = ({ roles, mmr, playerId, medail }) => {
       if (result.isConfirmed) {
         dispatch({ type: 'UPDATE_DATA', payload: result.value.body, playerId });
         console.log(stateGlobal);
+        resetInputs();
         Swal.fire({
           title: `Guardado y actualizado con éxito`,
           icon: 'success',
@@ -126,6 +128,30 @@ export const ScorePlayerFocus = ({ roles, mmr, playerId, medail }) => {
     });
   }
 
+  function resetInputs() {
+    let inputs = document.querySelectorAll('input[type=number]');
+    for (let input of inputs) {
+      input.value = '';
+    }
+
+    for (let fn of functions) {
+      fn({
+        victories: 0,
+        victoriesDouble: 0,
+        defeats: 0,
+        defeatsDouble: 0,
+        kills: 0,
+        deaths: 0,
+        assists: 0,
+      });
+    }
+    setState({ ...initialRoles });
+  }
+
+  function getFunction(fn) {
+    setFunction([...functions, fn]);
+    // functions.push(fn);
+  }
   return (
     <ScoreWrapper>
       <NamesScoreWrapper>
@@ -189,13 +215,18 @@ export const ScorePlayerFocus = ({ roles, mmr, playerId, medail }) => {
           </div>
         </div>
       </NamesScoreWrapper>
-      <RolesScore roles={roles} changeState={changeState} />
+      <RolesScore
+        roles={roles}
+        changeState={changeState}
+        getFunction={getFunction}
+      />
       <PlayerTotals
         state={{ ...state }}
         roles={calc(roles)}
         mmr={mmr}
         test={test}
         medail={medail}
+        resetInputs={resetInputs}
       />
     </ScoreWrapper>
   );

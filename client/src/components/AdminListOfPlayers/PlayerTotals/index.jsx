@@ -192,7 +192,7 @@ export const PlayerTotals = (props) => {
         <button onClick={(e) => onClick(e, newMMR, newPartidas)}>
           Guardar
         </button>
-        <button>Reset</button>
+        <button onClick={(e) => props.resetInputs()}>Reset</button>
       </ButtonsWrapper>
     </PlayerTotalsWrapper>
   );
