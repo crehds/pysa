@@ -1,21 +1,24 @@
 import styled from 'styled-components';
 
-export const PositionsContainer = styled.div``;
+export const PositionsContainer = styled.div`
+  display: grid;
+  align-items: center;
+`;
 
 export const Position = styled.div`
   color: #b39999;
   font-family: 'Ubuntu';
   margin: 8px 0;
   &:nth-of-type(1) {
-    color:gold;
+    color: gold;
     font-weight: bold;
   }
   &:nth-of-type(2) {
-    color:silver;
+    color: silver;
     font-weight: bold;
   }
   &:nth-of-type(3) {
-    color: #CD7F32;
+    color: #cd7f32;
     font-weight: bold;
   }
 `;

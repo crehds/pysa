@@ -7,9 +7,12 @@ import { RowsNameRanking } from '../RowsNameRanking';
 import { ImInfo } from 'react-icons/im';
 import { Medails } from '../Medails';
 import { WrapperDiv } from '../WrapperDiv';
+import { useGetWidth } from '../../hooks/useGetWidth';
 
 export const Ranking = () => {
   const [state, dispatch] = useStateValue();
+  const width = useGetWidth();
+
   function onMouseEnter() {
     let medails = document.getElementById('medails');
     medails.style.display = 'grid';
@@ -18,9 +21,10 @@ export const Ranking = () => {
     let medails = document.getElementById('medails');
     medails.style.display = 'none';
   }
+
   return (
     <WrapperDiv>
-      <RankingTable>
+      <RankingTable size={width}>
         <Medails />
         <Info onMouseEnter={onMouseEnter} onMouseLeave={onMouseLeave}>
           <ImInfo size='30px' />

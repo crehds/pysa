@@ -6,6 +6,14 @@ const Eclipse = keyframes`
   }
 `;
 
+const Shadow = keyframes`
+  from {
+    box-shadow: -20px -20px 30px -10px rgba(25, 40, 36, 1);
+  }
+  to {
+    box-shadow: 20px 20px 30px -10px rgba(25, 40, 36, 1);
+  }
+`
 export const Div = styled.div`
   position: relative;
   min-height: 100vh;
@@ -40,4 +48,6 @@ export const Img = styled.img`
 export const ImgWrapper = styled.div`
   color: red;
   z-index: 5000;
+  animation: ${Shadow} 2s alternate infinite;
+  box-shadow: 0px 0px 30px -10px rgb(25, 40, 36);
 `;

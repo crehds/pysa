@@ -6,6 +6,9 @@ export const FocusWrapper = styled.div`
   display: grid;
   grid-template-rows: 3fr 5fr;
   font-size: 15px;
+  box-shadow: 0 0px 2px 2px rgba(34,40,49,.9);
+  /* padding: 4px; */
+  /* margin: 4px; */
 `;
 
 export const ImageWrapper = styled.div`
@@ -17,35 +20,18 @@ export const ImageWrapper = styled.div`
 `;
 
 export const NameWrapper = styled.div`
-  & p {
-    font-size: 20px;
+  background-image: radial-gradient(
+    circle 929px at 0.6% 1.3%,
+    rgba(247, 251, 10, 0.726) 0.6%,
+    rgba(204, 158, 33, 0.984) 78%
+  );
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  & h1 {
+    /* font-size: 20px; */
     padding: 5px 0;
     font-weight: bold;
   }
-`
-
-export const NamesScoreWrapper = styled.div`
-  display: grid;
-  grid-template-columns: 1.5fr repeat(7, 1.3fr);
-  grid-column-gap: 10px;
-  font-family: 'Source Sans Pro';
-  font-weight:600;
-  /* font-size: 17px; */
-  & div:nth-of-type(1) {
-    margin: auto;
-    &.rolTitle {
-      font-size: 20px;
-    }
-    
-  }
-  & div {
-    /* margin: auto; */
-    text-align:center;
-  }
-  & div div {
-    display: grid;
-    grid-template-columns: 1fr 2fr 1fr;
-    grid-column-gap: 5px;
-  }
-`
+`;
 

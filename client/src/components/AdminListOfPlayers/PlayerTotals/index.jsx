@@ -1,8 +1,8 @@
 import React from 'react';
 import {
   ButtonsWrapper,
-  ImagesWrapper,
   KDA,
+  MMRWrapper,
   PlayerTotalsWrapper,
   Sub2Total,
   Sub2TotalColumns,
@@ -183,16 +183,16 @@ export const PlayerTotals = (props) => {
           </TotalColumns>
         </KDA>
       </SubTotalKDA>
-      <ImagesWrapper>
+      <MMRWrapper>
         <div>MMR</div>
         <div>{mmr}</div>
         <div>{newMMR}</div>
-      </ImagesWrapper>
+      </MMRWrapper>
       <ButtonsWrapper>
         <button onClick={(e) => onClick(e, newMMR, newPartidas)}>
           Guardar
         </button>
-        <button>Reset</button>
+        <button onClick={(e) => props.resetInputs()}>Reset</button>
       </ButtonsWrapper>
     </PlayerTotalsWrapper>
   );
