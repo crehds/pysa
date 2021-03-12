@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import { useStateValue } from '../../../Context';
-import { NamesScoreWrapper } from '../PlayerFocus/styles';
+// import { NamesScoreWrapper } from '../PlayerFocus/styles';
 import { PlayerTotals } from '../PlayerTotals';
 import { RolesScore } from '../RolesScore';
-import { ScoreWrapper } from './styles';
+import { ScoreWrapper, NamesScoreWrapper } from './styles';
 import Swal from 'sweetalert2';
 
 function calc(score) {
@@ -129,10 +129,10 @@ export const ScorePlayerFocus = ({ roles, mmr, playerId, medail }) => {
   return (
     <ScoreWrapper>
       <NamesScoreWrapper>
-        <div className='rolTitle'>
+        <div className='nameScoreColumn'>
           <p>Rol</p>
         </div>
-        <div>
+        <div className='nameScoreColumn'>
           <p>Victorias</p>
           <div>
             <p>A</p>
@@ -140,7 +140,7 @@ export const ScorePlayerFocus = ({ roles, mmr, playerId, medail }) => {
             <p>M</p>
           </div>
         </div>
-        <div>
+        <div className='nameScoreColumn'>
           <p>x2</p>
           <div>
             <p>A</p>
@@ -148,7 +148,7 @@ export const ScorePlayerFocus = ({ roles, mmr, playerId, medail }) => {
             <p>M</p>
           </div>
         </div>
-        <div>
+        <div className='nameScoreColumn'>
           <p>Derrotas</p>
           <div>
             <p>A</p>
@@ -156,7 +156,7 @@ export const ScorePlayerFocus = ({ roles, mmr, playerId, medail }) => {
             <p>M</p>
           </div>
         </div>
-        <div>
+        <div className='nameScoreColumn'>
           <p>x2</p>
           <div>
             <p>A</p>
@@ -164,7 +164,7 @@ export const ScorePlayerFocus = ({ roles, mmr, playerId, medail }) => {
             <p>M</p>
           </div>
         </div>
-        <div>
+        <div className='nameScoreColumn'>
           <p>Kills</p>
           <div>
             <p>A</p>
@@ -172,7 +172,7 @@ export const ScorePlayerFocus = ({ roles, mmr, playerId, medail }) => {
             <p>M</p>
           </div>
         </div>
-        <div>
+        <div className='nameScoreColumn'>
           <p>Deaths</p>
           <div>
             <p>A</p>
@@ -180,7 +180,7 @@ export const ScorePlayerFocus = ({ roles, mmr, playerId, medail }) => {
             <p>M</p>
           </div>
         </div>
-        <div>
+        <div className='nameScoreColumn'>
           <p>Assists</p>
           <div>
             <p>A</p>
