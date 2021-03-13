@@ -19,10 +19,25 @@ const reducer2 = (state, action) => {
       };
     case 'UPDATE_DATA':
       if (action.payload.updatePlayer.medail !== 'Sin Calibrar') {
+<<<<<<< HEAD
         let stateWithUpdatedPlayer = updatingPlayer(
           state,
           action.payload,
           'Calibrado'
+=======
+        let updatedPlayer = updatingPlayer(state, action.payload);
+
+        let indexInRanking = findPlayer(state.ranking, updatedPlayer['_id']);
+        if (indexInRanking === -1) {
+          state.ranking.push(updatedPlayer);
+        } else {
+          state.ranking[indexInRanking] = updatedPlayer;
+        }
+        sortPlayers(state.ranking);
+        let indexInAllPlayers = findPlayer(
+          state.allPlayers,
+          updatedPlayer['_id']
+>>>>>>> master
         );
         return {
           ...stateWithUpdatedPlayer,
