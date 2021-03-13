@@ -3,8 +3,10 @@ import { useStateValue } from '../../../Context';
 // import { NamesScoreWrapper } from '../PlayerFocus/styles';
 import { PlayerTotals } from '../PlayerTotals';
 import { RolesScore } from '../RolesScore';
-import { ScoreWrapper, NamesScoreWrapper } from './styles';
+import { ScoreWrapper, NamesScoreWrapper, Icon } from './styles';
+import { BsInfoCircle } from 'react-icons/bs';
 import Swal from 'sweetalert2';
+import { Info } from '../Info';
 
 function calc(score) {
   return score.reduce((acc, cv) => {
@@ -56,8 +58,6 @@ export const ScorePlayerFocus = ({ roles, mmr, playerId, medail }) => {
   // let functions = []
   // let functions = [];
   function changeState(value, name, rolName) {
-    console.log(rolName);
-    console.log({ ...state[rolName] });
     setState({ ...state, [rolName]: { ...state[rolName], [name]: value } });
   }
 
@@ -156,16 +156,32 @@ export const ScorePlayerFocus = ({ roles, mmr, playerId, medail }) => {
     // setFunction([...functions, fn]);
     functions.push(fn);
   }
+
+  function onMouseEnter() {
+    let info = document.getElementById('info');
+    info.style.display = 'block';
+  }
+  function onMouseLeave() {
+    let info = document.getElementById('info');
+    info.style.display = 'none';
+  }
+
   console.log(functions);
   return (
     <ScoreWrapper>
       <NamesScoreWrapper>
         <div className='nameScoreColumn'>
-          <p>Rol</p>
+          <div className='wrapperScoreRol'>
+            <Info/>
+            <Icon onMouseEnter={onMouseEnter} onMouseLeave={onMouseLeave}>
+              <BsInfoCircle />
+            </Icon>
+            <p>Rol</p>
+          </div>
         </div>
         <div className='nameScoreColumn'>
           <p>Victorias</p>
-          <div>
+          <div className='scoreColumn__div'>
             <p>A</p>
             <p>E</p>
             <p>M</p>
@@ -173,7 +189,7 @@ export const ScorePlayerFocus = ({ roles, mmr, playerId, medail }) => {
         </div>
         <div className='nameScoreColumn'>
           <p>x2</p>
-          <div>
+          <div className='scoreColumn__div'>
             <p>A</p>
             <p>E</p>
             <p>M</p>
@@ -181,7 +197,7 @@ export const ScorePlayerFocus = ({ roles, mmr, playerId, medail }) => {
         </div>
         <div className='nameScoreColumn'>
           <p>Derrotas</p>
-          <div>
+          <div className='scoreColumn__div'>
             <p>A</p>
             <p>E</p>
             <p>M</p>
@@ -189,7 +205,7 @@ export const ScorePlayerFocus = ({ roles, mmr, playerId, medail }) => {
         </div>
         <div className='nameScoreColumn'>
           <p>x2</p>
-          <div>
+          <div className='scoreColumn__div'>
             <p>A</p>
             <p>E</p>
             <p>M</p>
@@ -197,7 +213,7 @@ export const ScorePlayerFocus = ({ roles, mmr, playerId, medail }) => {
         </div>
         <div className='nameScoreColumn'>
           <p>Kills</p>
-          <div>
+          <div className='scoreColumn__div'>
             <p>A</p>
             <p>E</p>
             <p>M</p>
@@ -205,7 +221,7 @@ export const ScorePlayerFocus = ({ roles, mmr, playerId, medail }) => {
         </div>
         <div className='nameScoreColumn'>
           <p>Deaths</p>
-          <div>
+          <div className='scoreColumn__div'>
             <p>A</p>
             <p>E</p>
             <p>M</p>
@@ -213,7 +229,7 @@ export const ScorePlayerFocus = ({ roles, mmr, playerId, medail }) => {
         </div>
         <div className='nameScoreColumn'>
           <p>Assists</p>
-          <div>
+          <div className='scoreColumn__div'>
             <p>A</p>
             <p>E</p>
             <p>M</p>

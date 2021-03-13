@@ -19,7 +19,11 @@ export const NamesScoreWrapper = styled.div`
     justify-content: center;
     align-items: center;
     font-size: 20px;
+    /* position: relative; */
     /* color: rgb(10, 13, 19); */
+    & .wrapperScoreRol {
+      position: relative;
+    }
   }
   & .nameScoreColumn {
     /* margin: auto; */
@@ -30,7 +34,7 @@ export const NamesScoreWrapper = styled.div`
     display: flex;
     flex-direction: column;
     justify-content: space-around;
-    & div {
+    & .scoreColumn__div {
       display: grid;
       grid-template-columns: 1fr 2fr 1fr;
       grid-column-gap: 5px;
@@ -43,6 +47,19 @@ export const NamesScoreWrapper = styled.div`
       & p:nth-of-type(3) {
         color: rgba(194, 132, 132, 0.945);
       }
+    }
+  }
+`;
+
+export const Icon = styled.div`
+  position: absolute;
+  top: 1px;
+  right: -30px;
+  font-size: 25px;
+  color: rgba(255, 255, 255, 0.815);
+  &:hover {
+    & svg {
+      fill: rgba(185, 164, 41, 0.836);
     }
   }
 `;
