@@ -51,7 +51,9 @@ const initialRoles = {
 export const ScorePlayerFocus = ({ roles, mmr, playerId, medail }) => {
   let [state, setState] = useState({ ...initialRoles });
   const [stateGlobal, dispatch] = useStateValue();
+  // TODO: Analizar
   const [functions, setFunction] = useState([]);
+  // let functions = []
   // let functions = [];
   function changeState(value, name, rolName) {
     console.log(rolName);
@@ -135,6 +137,7 @@ export const ScorePlayerFocus = ({ roles, mmr, playerId, medail }) => {
     }
 
     for (let fn of functions) {
+      console.log(fn);
       fn({
         victories: 0,
         victoriesDouble: 0,
@@ -149,9 +152,11 @@ export const ScorePlayerFocus = ({ roles, mmr, playerId, medail }) => {
   }
 
   function getFunction(fn) {
-    setFunction([...functions, fn]);
-    // functions.push(fn);
+    // TODO: Analizar
+    // setFunction([...functions, fn]);
+    functions.push(fn);
   }
+  console.log(functions);
   return (
     <ScoreWrapper>
       <NamesScoreWrapper>
