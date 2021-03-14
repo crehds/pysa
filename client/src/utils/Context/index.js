@@ -1,0 +1,40 @@
+import {
+  filteringPlayers,
+  findPlayer,
+  orderedRoles,
+  setKDAAndMedail,
+  setScoreOfPlayers,
+  sortPlayers,
+  updatingPlayerCalibrated,
+} from './functions';
+
+export function dataForApp({ players, scorePlayers, medails, roles }) {
+  const playersWithScore = setScoreOfPlayers(players, scorePlayers);
+  const playersWithAllData = setKDAAndMedail(playersWithScore, medails, roles);
+  const filteredPlayers = filteringPlayers(playersWithAllData);
+  const orderedPlayers = sortPlayers(filteredPlayers);
+
+  return { orderedPlayers, playersWithAllData };
+}
+
+export function updatingPlayer(state, playerforUpdate, calibration) {
+  let newState = JSON.parse(JSON.stringify(state));
+  let player = JSON.parse(JSON.stringify(playerforUpdate.updatePlayer));
+  let rolesScore = JSON.parse(JSON.stringify(playerforUpdate.updateScore));
+
+  player.rolesScore = rolesScore;
+
+  let playerWithOrderedRoles = orderedRoles(player, newState.roles);
+
+  switch (calibration) {
+    case 'Calibrado':
+      newState = updatingPlayerCalibrated(newState, playerWithOrderedRoles);
+      return newState;
+    case 'Sin Calibrar':
+      let indexInAllPlayers = findPlayer(newState.allPlayers, player['_id']);
+      newState.allPlayers[indexInAllPlayers] = playerWithOrderedRoles;
+      return newState;
+    default:
+      break;
+  }
+}

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import {
   ButtonsWrapper,
   KDA,
@@ -85,6 +85,9 @@ export const PlayerTotals = (props) => {
       (props.roles.deaths + deaths);
   }
 
+  useEffect(() => {
+    props.handleUpdateMedail(newMMR, newPartidas)
+  }, [newMMR])
   return (
     <PlayerTotalsWrapper>
       <TotalDiv>

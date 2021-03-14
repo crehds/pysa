@@ -30,6 +30,12 @@ export const Icon = styled(LinkRouter)`
   justify-content: center;
   align-items: center;
   text-decoration: none;
+  &:hover {
+    box-shadow: 0px 0px 2px 2px rgba(25, 40, 36, 1);
+    > svg {
+      fill: rgba(185, 164, 41, 0.836);
+    }
+  }
   & svg {
     color: rgba(211, 211, 211, 0.6);
     font-size: 30px;

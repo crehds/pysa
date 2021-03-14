@@ -8,7 +8,7 @@ export function useGetData(loadingApp) {
   useEffect(() => {
     async function getDataPlayers() {
       try {
-        console.log('trayendo data');
+        // console.log('trayendo data');
         const uri =
           process.env.NODE_ENV === 'development'
             ? '/'

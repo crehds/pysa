@@ -74,7 +74,7 @@ export const AdminListOfPlayers = ({ players }) => {
   return (
     <WrapperDiv>
       <AdminPlayersCarousel>
-        {console.log('renderizado')}
+        {/* {console.log('renderizado')} */}
         <SearchBar searchPlayer={searchPlayer} />
         <PlayerToFocus
           dispatch={dispatch}
