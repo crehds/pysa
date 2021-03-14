@@ -50,7 +50,13 @@ const initialRoles = {
     ...initialState,
   },
 };
-export const ScorePlayerFocus = ({ roles, mmr, playerId, medail }) => {
+export const ScorePlayerFocus = ({
+  roles,
+  mmr,
+  playerId,
+  medail,
+  handleUpdateMedail,
+}) => {
   let [state, setState] = useState({ ...initialRoles });
   const [stateGlobal, dispatch] = useStateValue();
   // TODO: Analizar
@@ -166,13 +172,12 @@ export const ScorePlayerFocus = ({ roles, mmr, playerId, medail }) => {
     info.style.display = 'none';
   }
 
-  console.log(functions);
   return (
     <ScoreWrapper>
       <NamesScoreWrapper>
         <div className='nameScoreColumn'>
           <div className='wrapperScoreRol'>
-            <Info/>
+            <Info />
             <Icon onMouseEnter={onMouseEnter} onMouseLeave={onMouseLeave}>
               <BsInfoCircle />
             </Icon>
@@ -248,6 +253,7 @@ export const ScorePlayerFocus = ({ roles, mmr, playerId, medail }) => {
         test={test}
         medail={medail}
         resetInputs={resetInputs}
+        handleUpdateMedail={handleUpdateMedail}
       />
     </ScoreWrapper>
   );

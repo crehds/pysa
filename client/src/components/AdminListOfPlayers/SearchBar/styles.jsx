@@ -3,7 +3,7 @@ import styled from 'styled-components';
 export const SearchWrapper = styled.div`
   /* border: 1px solid red; */
   grid-column: 2 / 3;
-  padding: 0px 0;
+  padding: 10px 0;
   display: flex;
   justify-content: center;
 `;

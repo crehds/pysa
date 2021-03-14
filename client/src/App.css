@@ -4,8 +4,9 @@
 
 @font-face {
   font-family: 'icomoon';
-  src:  url('./assets/icomoon/fonts/icomoon.eot?g13h9s');
-  src:  url('./assets/icomoon/fonts/icomoon.eot?g13h9s#iefix') format('embedded-opentype'),
+  src: url('./assets/icomoon/fonts/icomoon.eot?g13h9s');
+  src: url('./assets/icomoon/fonts/icomoon.eot?g13h9s#iefix')
+      format('embedded-opentype'),
     url('./assets/icomoon/fonts/icomoon.ttf?g13h9s') format('truetype'),
     url('./assets/icomoon/fonts/icomoon.woff?g13h9s') format('woff'),
     url('./assets/icomoon/fonts/icomoon.svg?g13h9s#icomoon') format('svg');
@@ -14,7 +15,8 @@
   font-display: block;
 }
 
-[class^="icon-"], [class*=" icon-"] {
+[class^='icon-'],
+[class*=' icon-'] {
   /* use !important to prevent issues with browser extensions that change fonts */
   font-family: 'icomoon' !important;
   speak: never;
@@ -30,10 +32,28 @@
 }
 
 .icon-keyboard_arrow_right:before {
-  content: "\e902";
+  content: '\e902';
 }
 .icon-keyboard_arrow_left:before {
-  content: "\e903";
+  content: '\e903';
+}
+.icon-medal:before {
+  content: '\e900';
+}
+.icon-medal1:before {
+  content: '\e901';
+}
+.icon-medal2:before {
+  content: '\e904';
+}
+.icon-medal3:before {
+  content: '\e905';
+}
+.icon-medal4:before {
+  content: '\e906';
+}
+.icon-medal5:before {
+  content: '\e907';
 }
 /* .App-logo {
   height: 40vmin;
