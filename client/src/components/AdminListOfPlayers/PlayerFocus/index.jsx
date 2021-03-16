@@ -63,7 +63,7 @@ export const PlayerFocus = ({ player }) => {
       body: form,
     }).then((result) => result.json());
 
-    console.log(updated);
+    return updated;
   }
   function onSubmit(event) {
     event.preventDefault();
@@ -80,10 +80,11 @@ export const PlayerFocus = ({ player }) => {
       },
     }).then((result) => {
       handleShowIcons('none');
+      const imgURL = result.value.body.imgURL;
       if (result.isConfirmed) {
         dispatch({
           type: 'UPDATE_IMAGE',
-          payload: { id: player['_id'], newImgURL: `/static/${src.path}` },
+          payload: { id: player['_id'], newImgURL: imgURL },
         });
         Swal.fire({
           title: `Guardado y actualizado con éxito`,

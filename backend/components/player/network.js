@@ -4,7 +4,6 @@ const router = express.Router();
 const response = require('../../response/index');
 const controller = require('./controller');
 
-
 router.get('/onePlayer/:playerId', async function (req, res, next) {
   const { playerId } = req.params;
   try {
@@ -75,7 +74,11 @@ var storage = multer.diskStorage({
     cb(null, './uploads');
   },
   filename: function (req, file, cb) {
-    cb(null, file.originalname);
+    console.log(file);
+    const { playerId } = req.params;
+    const ext = file.mimetype.match(/[a-z]+/gi);
+    const ImageURL = `${playerId}.${ext[1]}`;
+    cb(null, ImageURL);
   },
 });
 var upload = multer({ storage: storage });
@@ -85,7 +88,9 @@ router.post(
   upload.single('image'),
   async function (req, res) {
     const { playerId } = req.params;
-    const pathImageURL = '/static/' + req.file.originalname;
+    const ext = req.file.mimetype.match(/[a-z]+/gi);
+    const pathImageURL = `/static/${playerId}.${ext[1]}`;
+
     console.log(req.file.originalname);
     try {
       const result = await controller.updateImagePlayer(playerId, pathImageURL);
