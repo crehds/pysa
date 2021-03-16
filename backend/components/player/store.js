@@ -40,6 +40,16 @@ async function getAllPlayers() {
 //   });
 // }
 
+async function updateImage(playerId, playerWithPath) {
+  const doc = await Model2.findOneAndUpdate(
+    { _id: playerId },
+    { ...playerWithPath },
+    { new: true, strict: false }
+  );
+  console.log(doc);
+  return doc;
+}
+
 async function deletePlayers() {
   return await Model.deleteMany();
 }
@@ -57,6 +67,7 @@ module.exports = {
   listOne: getPlayer,
   list: getAllPlayers,
   patch: patchPlayer,
+  setImage: updateImage,
   notCalibrated: patchPlayer2,
   deleteAll: deletePlayers,
 };
