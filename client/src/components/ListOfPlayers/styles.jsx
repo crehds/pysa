@@ -5,7 +5,7 @@ export const CarouselWrapper = styled.div`
   /* margin: 30px 0; */
   ${({ size }) =>
     css`
-      max-width: ${size};
+      max-width: ${size}px;
     `}
   overflow-x: scroll;
   overflow-y: hidden;
@@ -31,7 +31,7 @@ export const CarouselWrapper = styled.div`
 
 export const PlayersCarousel = styled.div`
   white-space: nowrap;
-  margin: 40px 0;
+  margin: 60px 0;
   &:hover article:hover {
     transform: scale(1.2);
     opacity: 1;

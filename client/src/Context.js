@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useReducer } from 'react';
-import { dataForApp, updatingPlayer } from './utils/Context';
+import { dataForApp, updateImagePlayer, updatingPlayer } from './utils/Context';
 const Context = createContext();
 
 let initialState = {
@@ -36,6 +36,11 @@ const reducer2 = (state, action) => {
 
       return {
         ...stateWithUpdatedPlayer,
+      };
+    case 'UPDATE_IMAGE':
+      let stateWithUpdatedImage = updateImagePlayer(state, action.payload);
+      return {
+        ...stateWithUpdatedImage,
       };
     case 'LOGIN':
       return {

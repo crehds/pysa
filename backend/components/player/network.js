@@ -1,4 +1,5 @@
 const express = require('express');
+const multer = require('multer');
 const router = express.Router();
 const response = require('../../response/index');
 const controller = require('./controller');
@@ -68,16 +69,37 @@ router.post('/playersWithAllData', async function name(req, res) {
   }
 });
 
-router.patch('/updateScore/:playerId', async function (req, res) {
-  const { playerId } = req.params;
-  const { body } = req;
-  try {
-    const result = await controller.updatePlayer(playerId, body);
-    response.success(req, res, result, 200);
-  } catch (error) {
-    response.error(req, res, 'Unexpected error', 500, error);
-  }
+var storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, './uploads');
+  },
+  filename: function (req, file, cb) {
+    console.log(file);
+    const { playerId } = req.params;
+    const ext = file.mimetype.match(/[a-z]+/gi);
+    const ImageURL = `${playerId}.${ext[1]}`;
+    cb(null, ImageURL);
+  },
 });
+var upload = multer({ storage: storage });
+
+router.post(
+  '/updateImage/:playerId',
+  upload.single('image'),
+  async function (req, res) {
+    const { playerId } = req.params;
+    const ext = req.file.mimetype.match(/[a-z]+/gi);
+    const pathImageURL = `/static/${playerId}.${ext[1]}`;
+
+    console.log(req.file.originalname);
+    try {
+      const result = await controller.updateImagePlayer(playerId, pathImageURL);
+      response.success(req, res, result, 200);
+    } catch (error) {
+      response.error(req, res, 'Unexpected error', 500, error);
+    }
+  }
+);
 
 router.patch('/setNotCalibrated/:playerId', async function (req, res) {
   const { playerId } = req.params;

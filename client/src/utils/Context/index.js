@@ -38,3 +38,17 @@ export function updatingPlayer(state, playerforUpdate, calibration) {
       break;
   }
 }
+
+export function updateImagePlayer(state, player) {
+  let newState = JSON.parse(JSON.stringify(state));
+
+  let indexInRanking = findPlayer(newState.ranking, player.id);
+
+  if (indexInRanking !== -1) {
+    newState.ranking[indexInRanking].imgURL = player.newImgURL;
+  }
+  let indexInAllPlayers = findPlayer(newState.allPlayers, player.id);
+  newState.allPlayers[indexInAllPlayers].imgURL = player.newImgURL;
+
+  return newState;
+}

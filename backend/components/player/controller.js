@@ -191,6 +191,12 @@ async function updatePlayer(playerId, player) {
   return Promise.resolve({ updatePlayer: setMedail, updateScore });
 }
 
+function updateImagePlayer(playerId, pathImageURL) {
+  const player = {
+    imgURL: pathImageURL,
+  };
+  return store.setImage(playerId, player);
+}
 function setNotCalibrated(playerId) {
   const newPlayer = {
     medail: 'Sin Calibrar',
@@ -212,4 +218,5 @@ module.exports = {
   updatePlayer,
   patchPlayer,
   deleteAll,
+  updateImagePlayer,
 };
