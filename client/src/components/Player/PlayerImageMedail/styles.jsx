@@ -1,10 +1,13 @@
-import styled from 'styled-components';
+import styled, { css } from 'styled-components';
 
 export const PlayerImageWrapper = styled.div`
   /* border: 1px solid red; */
   display: grid;
-  grid-template-rows: 1fr 7fr;
-  grid-template-columns: 1fr 3fr;
+  /* grid-template-columns: 1fr 3fr; */
+  ${({size}) => css`
+    grid-template-rows: 1fr ${size / 7}px;
+    grid-template-columns: 1fr ${size / 6.5}px;
+  `}
   grid-row-gap: 5px;
   text-align: center;
 
@@ -55,12 +58,15 @@ export const Icon = styled.div`
   }
 `;
 export const ImageWrapper = styled.div`
-  max-width: 100%;
+  width: 100%;
   height: auto;
   display: flex;
   justify-content: center;
+  padding: 0px 5px;
   & img {
-    width: 60%;
+    width: 100%;
+    border-radius: 10px;
+
     /* max-height: 10%; */
   }
 `;
