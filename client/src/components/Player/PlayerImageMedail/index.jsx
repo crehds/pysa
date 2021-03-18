@@ -4,7 +4,10 @@ import { Icon, ImageWrapper, NamePlayer, PlayerImageWrapper } from './styles';
 import user from '../../../assets/default-user.png';
 
 export const PlayerImageMedail = ({ name, medail, mmr, src, size }) => {
-  console.log(size);
+  const imageSrc =
+    process.env.NODE_ENV === 'development'
+      ? 'http://localhost:4000'
+      : 'https://pysabackend.herokuapp.com';
   return (
     <PlayerImageWrapper size={size}>
       <NamePlayer className='playerName'>
@@ -16,7 +19,7 @@ export const PlayerImageMedail = ({ name, medail, mmr, src, size }) => {
         <p>{mmr}</p>
       </Icon>
       <ImageWrapper>
-        <img src={src} alt='foto del jugador' />
+        <img src={`${imageSrc}${src}`} alt='foto del jugador' />
       </ImageWrapper>
     </PlayerImageWrapper>
   );

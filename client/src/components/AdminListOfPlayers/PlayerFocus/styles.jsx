@@ -7,6 +7,7 @@ export const FocusWrapper = styled.div`
   grid-template-rows: 3fr 5fr;
   font-size: 15px;
   box-shadow: 0 0px 2px 2px rgba(34, 40, 49, 0.9);
+  position:relative;
   /* padding: 4px; */
   /* margin: 4px; */
 `;
@@ -96,3 +97,4 @@ export const IconsWrapper = styled.div`
     }
   }
 `;
+

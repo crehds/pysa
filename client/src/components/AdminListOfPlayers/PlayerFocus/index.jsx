@@ -17,11 +17,12 @@ import { AiFillCamera, AiOutlineCheck } from 'react-icons/ai';
 import { BsX } from 'react-icons/bs';
 import Swal from 'sweetalert2';
 
+
 export const PlayerFocus = ({ player }) => {
   const imageSrc =
     process.env.NODE_ENV === 'development'
       ? 'http://localhost:4000'
-      : 'https://pysabackend.herokuapp.com/';
+      : 'https://pysabackend.herokuapp.com';
   const [medail, setMedail] = useState(player.medail);
   const [src, setSrc] = useState({
     path: '',

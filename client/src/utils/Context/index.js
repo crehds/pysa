@@ -52,3 +52,16 @@ export function updateImagePlayer(state, player) {
 
   return newState;
 }
+
+export function addPlayers(state, playersForAdd) {
+  let newState = JSON.parse(JSON.stringify(state));
+  let newPlayers = JSON.parse(JSON.stringify(playersForAdd));
+
+  newPlayers.map((newPlayer) => {
+    let newPlayerWithOrdRoles = orderedRoles(newPlayer, state.roles);
+    newState.allPlayers.push(newPlayerWithOrdRoles);
+    return newPlayer;
+  });
+
+  return newState;
+}

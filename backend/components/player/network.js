@@ -43,26 +43,21 @@ router.post('/newPlayers', async function (req, res) {
   }
 });
 
-// only if the structure of model, change
-// router.put(
-//   '/updatePlayer/:playerId/updateMedail/:medailId',
-//   async function (req, res) {
-//     const { medailId, playerId } = req.params;
-//     const { body } = req;
-//     try {
-//       const result = await controller.updateMedail(medailId, playerId, body);
-//       // const result = { medailId, playerId}
-//       response.success(req, res, result, 200);
-//     } catch (error) {
-//       response.error(req, res, 'Unexpected error', 500, error);
-//     }
-//   }
-// );
+router.post('/addNewPlayers', async function (req, res) {
+  const { players } = req.body;
+  try {
+    const result = await controller.addNewPlayers(players);
+    response.success(req, res, result, 200);
+  } catch (error) {
+    response.error(req, res, 'Unexpected error', 500, error);
+  }
+});
 
 router.post('/playersWithAllData', async function name(req, res) {
   const { players } = req.body;
   try {
     const result = await controller.addPlayersWithAllData(players);
+    console.log(result);
     response.success(req, res, result, 200);
   } catch (error) {
     response.error(req, res, 'Unexpected error', 500, error);
@@ -74,7 +69,6 @@ var storage = multer.diskStorage({
     cb(null, './uploads');
   },
   filename: function (req, file, cb) {
-    console.log(file);
     const { playerId } = req.params;
     const ext = file.mimetype.match(/[a-z]+/gi);
     const ImageURL = `${playerId}.${ext[1]}`;
@@ -91,7 +85,6 @@ router.post(
     const ext = req.file.mimetype.match(/[a-z]+/gi);
     const pathImageURL = `/static/${playerId}.${ext[1]}`;
 
-    console.log(req.file.originalname);
     try {
       const result = await controller.updateImagePlayer(playerId, pathImageURL);
       response.success(req, res, result, 200);
@@ -110,6 +103,7 @@ router.patch('/setNotCalibrated/:playerId', async function (req, res) {
     response.error(req, res, 'Unexpected error', 500, error);
   }
 });
+
 router.patch(
   '/patchPlayer/:playerId/updateMedail/:medailId',
   async function (req, res) {
@@ -122,6 +116,16 @@ router.patch(
     }
   }
 );
+
+router.delete('/deleteAllDataOfPlayers', async function (req, res) {
+  const { playersIds } = req.body;
+  try {
+    const result = await controller.deleteAllDataOfPlayers(playersIds);
+    response.success(req, res, result, 200);
+  } catch (error) {
+    response.error(req, res, 'Unexpected error', 500, error);
+  }
+});
 
 router.delete('/deleteAll', async function (req, res) {
   try {

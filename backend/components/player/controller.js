@@ -32,6 +32,29 @@ function addPlayer(player) {
   return store.add(newPlayer);
 }
 
+async function addNewPlayers(newPlayers) {
+  const arrPlayers = JSON.parse(JSON.stringify(newPlayers));
+  const savedNewPlayers = await store.addNews(arrPlayers);
+
+  const result = savedNewPlayers.map(async (savedNewPlayer, index) => {
+    const savedPlayerId = savedNewPlayer['_id'];
+    const calibration = await calibrationController.addCalibration(
+      savedPlayerId,
+      newPlayers[index].calibration
+    );
+
+    const score = await scoreController.addOrUpdateScores(
+      savedPlayerId,
+      newPlayers[index].rolesScore,
+      'add'
+    );
+
+    return { ...savedNewPlayer, rolesScore: [...score], calibration };
+  });
+
+  return Promise.all(result);
+}
+
 function addPlayers(players) {
   if (!players || players.length === 0) {
     return Promise.reject('Invalid data');
@@ -72,7 +95,6 @@ function addPlayers(players) {
 async function addPlayersWithAllData(players) {
   let newPlayer = {};
   let resultPlayer = {};
-
   const promises = players.map(async (player) => {
     if (player.calibration.estado === 0) {
       const medailId = await medailController.getMedailByMMR(player.mmr);
@@ -86,6 +108,7 @@ async function addPlayersWithAllData(players) {
         nickname: player.nickname,
         estado: player.estado,
         mmr: player.mmr,
+        imgURL: player.imgURL,
       };
       resultPlayer = await store.add(newPlayer, false);
     } else {
@@ -98,10 +121,10 @@ async function addPlayersWithAllData(players) {
         nickname: player.nickname,
         estado: player.estado,
         mmr: player.mmr,
+        imgURL: player.imgURL,
       };
       resultPlayer = await store.add(newPlayer, true);
     }
-
     const resultPlayerId = resultPlayer['_id'];
     const calibration = await calibrationController.addCalibration(
       resultPlayerId,
@@ -204,6 +227,23 @@ function setNotCalibrated(playerId) {
   return store.notCalibrated(playerId, newPlayer);
 }
 
+async function deleteAllDataOfPlayers(playersIds) {
+  let result = playersIds.map(async (playerId) => {
+    let deletedPlayer = await deleteAllDataOfPlayer(playerId);
+    return deletedPlayer;
+  });
+
+  return Promise.all(result);
+}
+
+async function deleteAllDataOfPlayer(playerId) {
+  const deletedScore = await scoreController.deleteOne(playerId);
+  const deletedCalibration = await calibrationController.deleteOne(playerId);
+  const deletedPlayer = await store.deleteOne(playerId);
+
+  return { deletedScore, deletedCalibration, deletedPlayer };
+}
+
 function deleteAll() {
   return store.deleteAll();
 }
@@ -219,4 +259,6 @@ module.exports = {
   patchPlayer,
   deleteAll,
   updateImagePlayer,
+  addNewPlayers,
+  deleteAllDataOfPlayers,
 };
