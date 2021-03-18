@@ -18,19 +18,10 @@ function App() {
   const [isLogging, setLogging] = useState(isAuth);
   const loading = useGetData(isLoading);
 
-  // async function testHeroku() {
-  //   let result = await fetch('/users')
-  //     .then((response) => response.text())
-  //     .then((result) => result);
-  //   console.log(result);
-  // }
-
   useEffect(() => {
-    let t = undefined;
     if (loading) {
-      t = setTimeout(() => setLoading(true), 4000);
+      setLoading(true);
     }
-    return () => clearTimeout(t);
   }, [loading]);
 
   function handleLogging(value) {
