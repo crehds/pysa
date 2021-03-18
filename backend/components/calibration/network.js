@@ -13,10 +13,12 @@ router.get('/getCalibrationOfOnePlayer/:playerId', async function (req, res) {
   }
 });
 
-router.post('/addCalibration', async function (req, res) {
+router.post('/addCalibration/:playerId', async function (req, res) {
+  const { playerId } = req.params;
   const { body: calibration } = req;
+
   try {
-    const result = await controller.addCalibration(calibration);
+    const result = await controller.addCalibration(playerId, calibration);
     response.success(req, res, result, 200);
   } catch (error) {
     response.error(req, res, 'Unexpected error', 500, error);

@@ -52,7 +52,7 @@ async function updateOneScore2(playerId, rolId, score) {
 }
 
 async function deleteOne(playerId) {
-  const result = await Model.deleteOne({ player: playerId });
+  const result = await Model.deleteMany({ player: playerId });
   return result;
 }
 

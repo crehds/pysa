@@ -9,10 +9,10 @@ export const ListOfPlayers = ({ players }) => {
   console.log(players);
   return (
     <WrapperDiv>
-      <CarouselWrapper id='CarouselWrapper' size={`${width}px`}>
+      <CarouselWrapper id='CarouselWrapper' size={width}>
         <PlayersCarousel id='playersCarousel'>
           {players.map((player, i) => (
-            <Player key={i} {...player} />
+            <Player key={i} {...player} size={width}/>
           ))}
         </PlayersCarousel>
       </CarouselWrapper>

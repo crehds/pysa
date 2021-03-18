@@ -10,6 +10,7 @@ const MySchema = new Schema({
   medail: String,
   mmr: Number,
   estado: Boolean,
+  imgURL: String,
 });
 
 const MySchema2 = new Schema({
@@ -24,6 +25,7 @@ const MySchema2 = new Schema({
   },
   mmr: Number,
   estado: Boolean,
+  imgURL: String,
 });
 
 const model = mongoose.model('playerWithOutMedail', MySchema, 'players');

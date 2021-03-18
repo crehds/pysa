@@ -5,7 +5,7 @@ function addCalibration(playerId, calibration) {
     return Promise.reject('Invalid data');
   }
 
-  const { player, estado, remainingGames, initialMMR } = calibration;
+  const { estado, remainingGames, initialMMR } = calibration;
 
   const newCalibration = {
     player: playerId,
@@ -27,9 +27,15 @@ function getCalibration(playerId) {
 function patchCalibration(playerId, calibration) {
   const newCalibration = {
     ...calibration,
-  }
-  return store.patch(playerId, newCalibration)
+  };
+  return store.patch(playerId, newCalibration);
 }
+
+async function deleteOne(playerId) {
+  const result = await store.deleteOne(playerId);
+  return result;
+}
+
 async function deleteAll() {
   const result = await store.deleteAll();
   return result;
@@ -40,4 +46,5 @@ module.exports = {
   getCalibration,
   patchCalibration,
   deleteAll,
+  deleteOne,
 };

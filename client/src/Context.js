@@ -1,5 +1,10 @@
 import React, { createContext, useContext, useReducer } from 'react';
-import { dataForApp, updatingPlayer } from './utils/Context';
+import {
+  addPlayers,
+  dataForApp,
+  updateImagePlayer,
+  updatingPlayer,
+} from './utils/Context';
 const Context = createContext();
 
 let initialState = {
@@ -33,9 +38,26 @@ const reducer2 = (state, action) => {
         action.payload,
         'Sin Calibrar'
       );
-
       return {
         ...stateWithUpdatedPlayer,
+      };
+    case 'ADD_PLAYER':
+      console.log(action.payload);
+      let stateWithNewPlayers = addPlayers(state, action.payload);
+
+      console.log(stateWithNewPlayers);
+      return {
+        ...stateWithNewPlayers,
+      };
+
+      // console.log(action.payload);
+      // return {
+      //   ...state,
+      // }
+    case 'UPDATE_IMAGE':
+      let stateWithUpdatedImage = updateImagePlayer(state, action.payload);
+      return {
+        ...stateWithUpdatedImage,
       };
     case 'LOGIN':
       return {

@@ -29,9 +29,11 @@ const boxShadowAnimated = ({
 
 export const Profile = styled.article`
   /* border: 1px solid blue; */
-  width: 300px;
+  ${({ size }) => css`
+    width: ${size / 4.35}px;
+    height: ${size / 3.26}px;
+  `}
   margin: 5px 10px;
-  height: 400px;
   display: inline-block;
   transition: 450ms all;
   transition: box-shadow 1s transform 450ms;
@@ -43,7 +45,7 @@ export const Profile = styled.article`
     transform-origin: center right;
   }
   &:hover ~ .profile {
-    transform: translate3d(80px, 0, 0);
+    transform: translate3d(90px, 0, 0);
   }
   &:nth-of-type(1) {
     /* border: 1px solid gold; */

@@ -24,11 +24,11 @@ const ArrowMovement = ({ direction, type = 'ease' } = {}) => css`
 export const ToFocusWrapper = styled.div`
   position: relative;
   /* background: rgba(87, 47, 47, 0.447); */
-  &:nth-of-type(2) {
+  &:nth-of-type(3) {
     grid-column: 1 / 2;
     grid-row: 2 / 3;
   }
-  &:nth-of-type(4) {
+  &:nth-of-type(5) {
     grid-column: 3 / 4;
     grid-row: 2 / 3;
   }

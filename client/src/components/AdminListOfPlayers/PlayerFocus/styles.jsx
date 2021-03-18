@@ -1,4 +1,4 @@
-import styled from 'styled-components';
+import styled, { css } from 'styled-components';
 
 export const FocusWrapper = styled.div`
   grid-column: 2 / 3;
@@ -7,6 +7,7 @@ export const FocusWrapper = styled.div`
   grid-template-rows: 3fr 5fr;
   font-size: 15px;
   box-shadow: 0 0px 2px 2px rgba(34, 40, 49, 0.9);
+  position:relative;
   /* padding: 4px; */
   /* margin: 4px; */
 `;
@@ -17,18 +18,26 @@ export const ImgNameMedailWrapper = styled.div`
 `;
 
 export const ImageWrapper = styled.div`
-  max-width: 60%;
+  width: 100%;
+  height: 100%;
   /* margin: 0 auto; */
+  /* grid-column: 2 / -1; */
   & img {
     width: 100%;
+    height: 100%;
+    border-radius: 5%;
   }
 `;
 
 export const ImgNameWrapper = styled.div`
   display: grid;
-  grid-template-columns: 1fr 2fr;
+  ${({size}) => css`
+    grid-template-columns: .8fr ${size / 7}px;
+    grid-template-rows: ${size / 6.5}px;
+  `}
   justify-items: center;
   align-items: center;
+  position: relative;
 `;
 export const NameWrapper = styled.div`
   background-image: radial-gradient(
@@ -71,3 +80,21 @@ export const MedailWrapper = styled.div`
     }
   }
 `;
+
+export const Form = styled.form`
+  display: none;
+`;
+
+export const IconsWrapper = styled.div`
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  font-size: 25px;
+  & svg {
+    color: gray;
+    &.icon__control {
+      display:none;
+    }
+  }
+`;
+

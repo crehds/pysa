@@ -10,6 +10,18 @@ function addPlayer(user, calibration) {
   }
 }
 
+async function addNewPlayers(newPlayers) {
+  return new Promise((resolve, reject) => {
+    Model.insertMany(newPlayers, function (error, docs) {
+      if (error) {
+        return reject(error);
+      }
+
+      resolve(docs);
+    });
+  });
+}
+
 async function getPlayer(playerId) {
   return new Promise((resolve, reject) => {
     Model.findOne({ _id: playerId })
@@ -20,10 +32,13 @@ async function getPlayer(playerId) {
           reject(error);
           return false;
         }
+        if (populated === null) {
+          return resolve('No se encontró al jugador');
+        }
         if (populated.medail === null) {
           populated.medail = 'Sin Calibrar';
         }
-        resolve(populated);
+        return resolve(populated);
       });
   });
 }
@@ -40,6 +55,19 @@ async function getAllPlayers() {
 //   });
 // }
 
+async function updateImage(playerId, playerWithPath) {
+  const doc = await Model2.findOneAndUpdate(
+    { _id: playerId },
+    { ...playerWithPath },
+    { new: true, strict: false }
+  );
+  return doc;
+}
+
+async function deletePlayer(playerId) {
+  const result = await Model.deleteOne({ _id: playerId });
+  return result;
+}
 async function deletePlayers() {
   return await Model.deleteMany();
 }
@@ -57,6 +85,9 @@ module.exports = {
   listOne: getPlayer,
   list: getAllPlayers,
   patch: patchPlayer,
+  setImage: updateImage,
   notCalibrated: patchPlayer2,
+  deleteOne: deletePlayer,
   deleteAll: deletePlayers,
+  addNews: addNewPlayers,
 };
