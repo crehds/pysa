@@ -131,7 +131,7 @@ const Roles = [
 export const AdminListOfPlayers = ({ players }) => {
   const initialValue = randomPlayer(players.length);
   const [state, dispatch] = useReducer(reducer, initialValue);
-  const [{}, contextdispatch] = useStateValue();
+  const [contextState, contextdispatch] = useStateValue();
 
   function searchPlayer(player) {
     dispatch({ type: 'search', payload: player, array: players });
@@ -175,7 +175,50 @@ export const AdminListOfPlayers = ({ players }) => {
     return result;
   }
 
-  async function handleShowModal() {
+  async function deletePlayer(arrPlayers) {
+    const uri =
+      process.env.NODE_ENV === 'development'
+        ? '/'
+        : 'https://pysabackend.herokuapp.com/';
+    const arrNamesPlayers = arrPlayers.split(',');
+    const arrIdPlayers = contextState.allPlayers
+      .filter((element) =>
+        arrNamesPlayers.some(
+          (namePlayer) =>
+            namePlayer.toLowerCase() === element.nickname.toLowerCase()
+        )
+      )
+      .map((playerFiltred) => playerFiltred['_id']);
+    let result = await fetch(`${uri}players/deleteAllDataOfPlayers`, {
+      method: 'DELETE',
+      body: JSON.stringify({ playersIds: arrIdPlayers }),
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    }).then((result) => result.json());
+    return result;
+  }
+
+  async function handleDeletePlayer() {
+    Swal.fire({
+      title: 'Eliminar jugador(es)',
+      input: 'text',
+      inputLabel: 'Nickname(s)',
+      inputPlaceholder: 'Jugador1,jugador2,... o solo Jugador1',
+      showCancelButton: true,
+      inputValidator: (value) => {
+        if (!value) {
+          return 'Ningún nombre ingresado';
+        }
+      },
+      showLoaderOnConfirm: true,
+      preConfirm: async (playersString) => {
+        return await deletePlayer(playersString);
+      },
+    });
+  }
+
+  async function handleAddNewPlayer() {
     Swal.fire({
       title: 'Añadir jugador(es)',
       input: 'text',
@@ -212,12 +255,11 @@ export const AdminListOfPlayers = ({ players }) => {
       <AdminPlayersCarousel>
         <IconUserOverlay>
           <IconUserWrapper>
-            <FaUserPlus onClick={handleShowModal} />
-            <FaUserMinus onClick={showInfoDev} />
+            <FaUserPlus onClick={handleAddNewPlayer} />
+            <FaUserMinus onClick={handleDeletePlayer} />
           </IconUserWrapper>
         </IconUserOverlay>
 
-        {/* {console.log('renderizado')} */}
         <SearchBar searchPlayer={searchPlayer} />
         <PlayerToFocus
           dispatch={dispatch}
