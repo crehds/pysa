@@ -49,7 +49,7 @@ function reducer(state, action) {
       const nickname = action.payload;
       const players = action.array;
       let playerSearched = players.findIndex((player) => {
-        return player.nickname === nickname;
+        return player.nickname.toLowerCase() === nickname.toLowerCase();
       });
 
       if (playerSearched === -1) {
@@ -132,6 +132,7 @@ export const AdminListOfPlayers = ({ players }) => {
   const initialValue = randomPlayer(players.length);
   const [state, dispatch] = useReducer(reducer, initialValue);
   const [{}, contextdispatch] = useStateValue();
+
   function searchPlayer(player) {
     dispatch({ type: 'search', payload: player, array: players });
   }
