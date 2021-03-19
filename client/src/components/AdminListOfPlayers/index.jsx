@@ -66,16 +66,36 @@ function reducer(state, action) {
         };
       }
     case 'update':
-      return {
-        ...state,
-        length: action.payload - 1,
-        previousPlayer:
-          state.previousPlayer === state.length
-            ? action.payload - 1
-            : state.previousPlayer,
-        nextPlayer:
-          state.nextPlayer === 0 ? action.payload - 1 : state.nextPlayer,
-      };
+      if (action.payload - 1 > state.length) {
+        return {
+          ...state,
+          length: action.payload - 1,
+          previousPlayer:
+            state.previousPlayer === state.length
+              ? action.payload - 1
+              : state.previousPlayer,
+          nextPlayer:
+            state.nextPlayer === 0 ? action.payload - 1 : state.nextPlayer,
+        };
+      } else {
+        return {
+          ...state,
+          length: action.payload - 1,
+          previousPlayer:
+            state.previousPlayer === state.length
+              ? action.payload - 1
+              : state.previousPlayer,
+          focusPlayer:
+            state.focusPlayer === state.length
+              ? action.payload - 1
+              : state.focusPlayer,
+          nextPlayer:
+            state.focusPlayer === state.length
+              ? action.payload - 1
+              : state.nextPlayer,
+        };
+      }
+
     default:
       break;
   }
@@ -215,6 +235,12 @@ export const AdminListOfPlayers = ({ players }) => {
       preConfirm: async (playersString) => {
         return await deletePlayer(playersString);
       },
+    }).then((result) => {
+      if (result.isConfirmed) {
+        const payload = result.value.body.map((e) => e.deletedPlayer.playerId);
+        contextdispatch({ type: 'DELETE_PLAYER', payload });
+        Swal.fire('Elimiando(s) y actualizado con éxito', '', 'success');
+      }
     });
   }
 
