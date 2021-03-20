@@ -66,40 +66,31 @@ function reducer(state, action) {
         };
       }
     case 'update':
-      if (action.payload - 1 > state.length) {
-        return {
-          ...state,
-          length: action.payload - 1,
-          previousPlayer:
-            state.previousPlayer === state.length
-              ? action.payload - 1
-              : state.previousPlayer,
-          nextPlayer:
-            state.nextPlayer === 0 ? action.payload - 1 : state.nextPlayer,
-        };
-      } else {
-        return {
-          ...state,
-          length: action.payload - 1,
-          previousPlayer:
-            state.previousPlayer === state.length
-              ? action.payload - 1
-              : state.previousPlayer,
-          focusPlayer:
-            state.focusPlayer === state.length
-              ? action.payload - 1
-              : state.focusPlayer,
-          nextPlayer:
-            state.focusPlayer === state.length
-              ? action.payload - 1
-              : state.nextPlayer,
-        };
-      }
+      console.log('update');
+      return {
+        ...state,
+        length: action.payload - 1,
+        previousPlayer:
+          state.previousPlayer === state.length
+            ? action.payload - 1
+            : state.previousPlayer,
+        nextPlayer:
+          state.nextPlayer === 0 ? action.payload - 1 : state.nextPlayer,
+      };
+    case 'delete':
+      const initValue = randomPlayer(action.payload);
+      return {
+        ...initValue,
+      };
 
     default:
       break;
   }
 }
+
+// function init(players) {
+//   return { ...initValue };
+// }
 
 function showInfoDev() {
   Swal.fire('En Desarrollo', '', 'info');
@@ -150,6 +141,7 @@ const Roles = [
 
 export const AdminListOfPlayers = ({ players }) => {
   const initialValue = randomPlayer(players.length);
+  console.log(initialValue);
   const [state, dispatch] = useReducer(reducer, initialValue);
   const [contextState, contextdispatch] = useStateValue();
 
@@ -157,9 +149,10 @@ export const AdminListOfPlayers = ({ players }) => {
     dispatch({ type: 'search', payload: player, array: players });
   }
 
-  useEffect(() => {
-    dispatch({ type: 'update', payload: players.length });
-  }, [players]);
+  // useEffect(() => {
+  //   // console.log(state);
+  //   console.log('aqui');
+  // }, [players]);
 
   async function addNewPlayer(arrPlayers) {
     console.log(arrPlayers);
@@ -237,8 +230,14 @@ export const AdminListOfPlayers = ({ players }) => {
       },
     }).then((result) => {
       if (result.isConfirmed) {
+        const deletedPlayersLength = result.value.body.length;
+        console.log(deletedPlayersLength);
         const payload = result.value.body.map((e) => e.deletedPlayer.playerId);
         contextdispatch({ type: 'DELETE_PLAYER', payload });
+        dispatch({
+          type: 'delete',
+          payload: state.length + 1 - deletedPlayersLength,
+        });
         Swal.fire('Elimiando(s) y actualizado con éxito', '', 'success');
       }
     });
@@ -263,12 +262,16 @@ export const AdminListOfPlayers = ({ players }) => {
     }).then((results) => {
       if (results.isConfirmed) {
         console.log(results);
+        const newPlayersLength = results.value.body.length;
         let savedPlayers = results.value.body.map((e) => ({
           ...e['_doc'],
           rolesScore: [...e.rolesScore],
         }));
-
         contextdispatch({ type: 'ADD_PLAYER', payload: savedPlayers });
+        dispatch({
+          type: 'update',
+          payload: state.length + 1 + newPlayersLength,
+        });
         Swal.fire('Guardado y actualizado con éxito', '', 'success');
       }
     });
@@ -276,6 +279,7 @@ export const AdminListOfPlayers = ({ players }) => {
     // const arrPlayers = players.split(',');
   }
 
+  console.log(state);
   return (
     <WrapperDiv>
       <AdminPlayersCarousel>
