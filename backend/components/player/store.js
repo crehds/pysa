@@ -66,7 +66,7 @@ async function updateImage(playerId, playerWithPath) {
 
 async function deletePlayer(playerId) {
   const result = await Model.deleteOne({ _id: playerId });
-  return result;
+  return { result, playerId };
 }
 async function deletePlayers() {
   return await Model.deleteMany();
