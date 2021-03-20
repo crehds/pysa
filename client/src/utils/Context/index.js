@@ -65,3 +65,17 @@ export function addPlayers(state, playersForAdd) {
 
   return newState;
 }
+
+export function deletePlayers(state, playersIds) {
+  let newState = JSON.parse(JSON.stringify(state));
+  let arrPlayersIds = JSON.parse(JSON.stringify(playersIds));
+
+  arrPlayersIds.forEach((playerId) => {
+    let index = newState.allPlayers.findIndex(
+      (element) => element['_id'] === playerId
+    );
+    newState.allPlayers.splice(index, 1);
+  });
+
+  return newState;
+}

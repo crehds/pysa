@@ -1,4 +1,4 @@
-import React, { useEffect, useReducer, useState } from 'react';
+import React, { useReducer } from 'react';
 import { WrapperDiv } from '../WrapperDiv';
 import { PlayerFocus } from './PlayerFocus';
 import { SearchBar } from './SearchBar';
@@ -13,7 +13,6 @@ import Swal from 'sweetalert2';
 import { useStateValue } from '../../Context';
 
 function randomPlayer(playersLength) {
-  // let max = players.length - 3;
   let number = Math.floor(Math.random() * (playersLength - 2 - 2 + 1) + 2);
   return {
     length: playersLength - 1,
@@ -49,7 +48,7 @@ function reducer(state, action) {
       const nickname = action.payload;
       const players = action.array;
       let playerSearched = players.findIndex((player) => {
-        return player.nickname === nickname;
+        return player.nickname.toLowerCase() === nickname.toLowerCase();
       });
 
       if (playerSearched === -1) {
@@ -66,6 +65,7 @@ function reducer(state, action) {
         };
       }
     case 'update':
+      console.log('update');
       return {
         ...state,
         length: action.payload - 1,
@@ -76,14 +76,15 @@ function reducer(state, action) {
         nextPlayer:
           state.nextPlayer === 0 ? action.payload - 1 : state.nextPlayer,
       };
+
     default:
       break;
   }
 }
 
-function showInfoDev() {
-  Swal.fire('En Desarrollo', '', 'info');
-}
+// function showInfoDev() {
+//   Swal.fire('En Desarrollo', '', 'info');
+// }
 
 const dataforRol = {
   victories: 0,
@@ -128,17 +129,15 @@ const Roles = [
   },
 ];
 
-export const AdminListOfPlayers = ({ players }) => {
+export const AdminListOfPlayers = ({ players, handleLoading }) => {
   const initialValue = randomPlayer(players.length);
+  console.log(initialValue);
   const [state, dispatch] = useReducer(reducer, initialValue);
-  const [{}, contextdispatch] = useStateValue();
+  const [contextState, contextdispatch] = useStateValue();
+
   function searchPlayer(player) {
     dispatch({ type: 'search', payload: player, array: players });
   }
-
-  useEffect(() => {
-    dispatch({ type: 'update', payload: players.length });
-  }, [players]);
 
   async function addNewPlayer(arrPlayers) {
     console.log(arrPlayers);
@@ -174,7 +173,60 @@ export const AdminListOfPlayers = ({ players }) => {
     return result;
   }
 
-  async function handleShowModal() {
+  async function deletePlayer(arrPlayers) {
+    const uri =
+      process.env.NODE_ENV === 'development'
+        ? '/'
+        : 'https://pysabackend.herokuapp.com/';
+    const arrNamesPlayers = arrPlayers.split(',');
+    const arrIdPlayers = contextState.allPlayers
+      .filter((element) =>
+        arrNamesPlayers.some(
+          (namePlayer) =>
+            namePlayer.toLowerCase() === element.nickname.toLowerCase()
+        )
+      )
+      .map((playerFiltred) => playerFiltred['_id']);
+    let result = await fetch(`${uri}players/deleteAllDataOfPlayers`, {
+      method: 'DELETE',
+      body: JSON.stringify({ playersIds: arrIdPlayers }),
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    }).then((result) => result.json());
+    return result;
+  }
+
+  async function handleDeletePlayer() {
+    Swal.fire({
+      title: 'Eliminar jugador(es)',
+      input: 'text',
+      inputLabel: 'Nickname(s)',
+      inputPlaceholder: 'Jugador1,jugador2,... o solo Jugador1',
+      showCancelButton: true,
+      inputValidator: (value) => {
+        if (!value) {
+          return 'Ningún nombre ingresado';
+        }
+      },
+      showLoaderOnConfirm: true,
+      preConfirm: async (playersString) => {
+        handleLoading(false);
+        return await deletePlayer(playersString);
+      },
+    }).then((result) => {
+      if (result.isConfirmed) {
+        const deletedPlayersLength = result.value.body.length;
+        console.log(deletedPlayersLength);
+        const payload = result.value.body.map((e) => e.deletedPlayer.playerId);
+        contextdispatch({ type: 'DELETE_PLAYER', payload });
+        handleLoading(true);
+        Swal.fire('Elimiando(s) y actualizado con éxito', '', 'success');
+      }
+    });
+  }
+
+  async function handleAddNewPlayer() {
     Swal.fire({
       title: 'Añadir jugador(es)',
       input: 'text',
@@ -193,17 +245,19 @@ export const AdminListOfPlayers = ({ players }) => {
     }).then((results) => {
       if (results.isConfirmed) {
         console.log(results);
+        const newPlayersLength = results.value.body.length;
         let savedPlayers = results.value.body.map((e) => ({
           ...e['_doc'],
           rolesScore: [...e.rolesScore],
         }));
-
         contextdispatch({ type: 'ADD_PLAYER', payload: savedPlayers });
+        dispatch({
+          type: 'update',
+          payload: state.length + 1 + newPlayersLength,
+        });
         Swal.fire('Guardado y actualizado con éxito', '', 'success');
       }
     });
-    // contextdispatch({ type: 'ADD_PLAYER', payload: 'holi' });
-    // const arrPlayers = players.split(',');
   }
 
   return (
@@ -211,12 +265,11 @@ export const AdminListOfPlayers = ({ players }) => {
       <AdminPlayersCarousel>
         <IconUserOverlay>
           <IconUserWrapper>
-            <FaUserPlus onClick={handleShowModal} />
-            <FaUserMinus onClick={showInfoDev} />
+            <FaUserPlus onClick={handleAddNewPlayer} />
+            <FaUserMinus onClick={handleDeletePlayer} />
           </IconUserWrapper>
         </IconUserOverlay>
 
-        {/* {console.log('renderizado')} */}
         <SearchBar searchPlayer={searchPlayer} />
         <PlayerToFocus
           dispatch={dispatch}

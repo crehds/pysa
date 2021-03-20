@@ -2,6 +2,7 @@ import React, { createContext, useContext, useReducer } from 'react';
 import {
   addPlayers,
   dataForApp,
+  deletePlayers,
   updateImagePlayer,
   updatingPlayer,
 } from './utils/Context';
@@ -49,11 +50,12 @@ const reducer2 = (state, action) => {
       return {
         ...stateWithNewPlayers,
       };
+    case 'DELETE_PLAYER':
+      const stateWithDeletedPlayers = deletePlayers(state, action.payload);
 
-      // console.log(action.payload);
-      // return {
-      //   ...state,
-      // }
+      return {
+        ...stateWithDeletedPlayers,
+      };
     case 'UPDATE_IMAGE':
       let stateWithUpdatedImage = updateImagePlayer(state, action.payload);
       return {
