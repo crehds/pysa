@@ -3,7 +3,7 @@ const multer = require('multer');
 const router = express.Router();
 const response = require('../../response/index');
 const controller = require('./controller');
-
+console.log(__dirname);
 router.get('/onePlayer/:playerId', async function (req, res, next) {
   const { playerId } = req.params;
   try {
@@ -97,7 +97,7 @@ var upload = multer({ storage: storage });
 
 router.post(
   '/updateImage/:playerId',
-  multer({ dest: '../../uploads/' }).single('image'),
+  upload.single('image'),
   async function (req, res) {
     const { playerId } = req.params;
     const { file: image } = req;
