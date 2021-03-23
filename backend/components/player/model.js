@@ -25,10 +25,29 @@ const MySchema2 = new Schema({
   },
   mmr: Number,
   estado: Boolean,
-  imgURL: String,
+  imgURL: {
+    data: Buffer,
+    mimetype: String,
+  },
 });
+
+//Modelo implementado para evitar que mis métodos
+// de búsqueda retornen los datos de manera incorrecta
+const MySchema3 = new Schema(
+  {
+    name: {
+      firstName: String,
+      lastName: String,
+    },
+    nickname: String,
+    mmr: Number,
+    estado: Boolean,
+  },
+  { strict: false }
+);
 
 const model = mongoose.model('playerWithOutMedail', MySchema, 'players');
 const model2 = mongoose.model('playerWithMedail', MySchema2, 'players');
+const model3 = mongoose.model('playerTest', MySchema3, 'players');
 
-module.exports = { model, model2 };
+module.exports = { model, model2, model3 };

@@ -13,8 +13,9 @@ export function useGetData(loadingApp) {
           process.env.NODE_ENV === 'development'
             ? '/'
             : 'https://pysabackend.herokuapp.com/';
-        const players = await fetch(`${uri}players/getAllPlayers`).then((result) => result.json());
-
+        const players = await fetch(
+          `${uri}players/getAllPlayers`
+        ).then((result) => result.json());
         const playersIds = players.body.map((player) => player['_id']);
 
         const scorePlayers = await fetch(`${uri}scores/getScoreOfPlayers`, {

@@ -3,7 +3,7 @@ const multer = require('multer');
 const router = express.Router();
 const response = require('../../response/index');
 const controller = require('./controller');
-
+console.log(__dirname);
 router.get('/onePlayer/:playerId', async function (req, res, next) {
   const { playerId } = req.params;
   try {
@@ -77,16 +77,34 @@ var storage = multer.diskStorage({
 });
 var upload = multer({ storage: storage });
 
+//método implementado antes de enterarme que heroku borraba las imágenes en al versión gratuita
+// router.post(
+//   '/updateImage/:playerId',
+//   upload.single('image'),
+//   async function (req, res) {
+//     const { playerId } = req.params;
+//     const ext = req.file.mimetype.match(/[a-z]+/gi);
+//     const pathImageURL = `/static/${playerId}.${ext[1]}`;
+
+//     try {
+//       const result = await controller.updateImagePlayer(playerId, pathImageURL);
+//       response.success(req, res, result, 200);
+//     } catch (error) {
+//       response.error(req, res, 'Unexpected error', 500, error);
+//     }
+//   }
+// );
+
 router.post(
   '/updateImage/:playerId',
   upload.single('image'),
   async function (req, res) {
     const { playerId } = req.params;
-    const ext = req.file.mimetype.match(/[a-z]+/gi);
-    const pathImageURL = `/static/${playerId}.${ext[1]}`;
-
+    const { file: image } = req;
     try {
-      const result = await controller.updateImagePlayer(playerId, pathImageURL);
+      const result = await controller.updateImagePlayer(playerId, image);
+      //Para ver la imagen en postman
+      // res.status(200).type('image/jpeg').send(result.imgURL);
       response.success(req, res, result, 200);
     } catch (error) {
       response.error(req, res, 'Unexpected error', 500, error);
