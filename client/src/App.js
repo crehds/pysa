@@ -16,13 +16,13 @@ function App() {
   const [{ isAuth }] = useStateValue();
   const [isLoading, setLoading] = useState(false);
   const [isLogging, setLogging] = useState(isAuth);
-  const loading = useGetData(isLoading);
+  const [loadingData, setLoadingData] = useGetData(isLoading);
 
   useEffect(() => {
-    if (loading) {
+    if (loadingData) {
       setLoading(true);
     }
-  }, [loading]);
+  }, [loadingData]);
 
   function handleLogging(value) {
     setLogging(value);
@@ -31,13 +31,23 @@ function App() {
     }
   }
 
+  function handleRefreshApp() {
+    setLoadingData(false);
+    setLoading(false);
+  }
+
+  console.log(loadingData);
   return (
     <div id='app' className='App'>
       <GlobalStyle />
       {isLoading ? (
         <>
           <NavBar isLogging={isLogging} />
-          <Logging handleLogging={handleLogging} isLogging={isLogging} />
+          <Logging
+            handleLogging={handleLogging}
+            isLogging={isLogging}
+            handleRefreshApp={handleRefreshApp}
+          />
           <Router style={{ height: '100vh' }}>
             <Home exac path='/' />
             <Players exac path='/players' />
