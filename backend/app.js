@@ -15,8 +15,8 @@ db(
   `mongodb+srv://db_admin_nodebackend:3FnBbWRvQFrWX1Zg@cluster0-blzmi.mongodb.net/pysa?retryWrites=true&w=majority`
 );
 
-const uploadsPath = `./uploads`;
-fs.mkdirSync(uploadsPath, { recursive: true });
+// const uploadsPath = `./uploads`;
+// fs.mkdirSync(uploadsPath, { recursive: true });
 app.use(cors());
 console.log('servidor encendido');
 app.use(logger('dev'));
