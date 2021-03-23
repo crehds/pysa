@@ -1,4 +1,4 @@
-const { model: Model, model2: Model2 } = require('./model');
+const { model: Model, model2: Model2, model3: Model3 } = require('./model');
 
 function addPlayer(user, calibration) {
   if (calibration) {
@@ -24,7 +24,7 @@ async function addNewPlayers(newPlayers) {
 
 async function getPlayer(playerId) {
   return new Promise((resolve, reject) => {
-    Model.findOne({ _id: playerId })
+    Model2.findOne({ _id: playerId })
       .populate('medail', 'name')
       .exec((error, populated) => {
         if (error) {
@@ -44,7 +44,7 @@ async function getPlayer(playerId) {
 }
 
 async function getAllPlayers() {
-  const players = await Model.find();
+  const players = await Model3.find();
   return players;
 }
 
@@ -55,14 +55,25 @@ async function getAllPlayers() {
 //   });
 // }
 
-async function updateImage(playerId, playerWithPath) {
-  const doc = await Model2.findOneAndUpdate(
-    { _id: playerId },
-    { ...playerWithPath },
-    { new: true, strict: false }
-  );
+async function updateImage(playerId, playerWithImg) {
+  const doc = await Model3.findByIdAndUpdate(playerId, playerWithImg, {
+    new: true,
+    strict: false,
+    upsert: true,
+  });
+
   return doc;
 }
+
+//método implementado antes de enterarme que heroku borraba las imágenes en al versión gratuita
+// async function updateImage(playerId, playerWithPath) {
+//   const doc = await Model2.findOneAndUpdate(
+//     { _id: playerId },
+//     { ...playerWithPath },
+//     { new: true, strict: false }
+//   );
+//   return doc;
+// }
 
 async function deletePlayer(playerId) {
   const result = await Model.deleteOne({ _id: playerId });

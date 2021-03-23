@@ -17,16 +17,20 @@ import { AiFillCamera, AiOutlineCheck } from 'react-icons/ai';
 import { BsX } from 'react-icons/bs';
 import Swal from 'sweetalert2';
 
-
 export const PlayerFocus = ({ player }) => {
+  console.log(player);
+  const regex = /^[/][a-z]+[/].*/gi;
   const imageSrc =
     process.env.NODE_ENV === 'development'
       ? 'http://localhost:4000'
       : 'https://pysabackend.herokuapp.com';
+  const imgData = regex.test(player.imgURL)
+    ? `${imageSrc}${player.imgURL}`
+    : `data:image/${player.imgURL.mimetype};base64,${player.imgURL.data}`;
   const [medail, setMedail] = useState(player.medail);
   const [src, setSrc] = useState({
     path: '',
-    imgURL: `${imageSrc}${player.imgURL}`,
+    imgURL: imgData,
     oldImgURL: '',
   });
   const [{ medails }, dispatch] = useStateValue();
@@ -148,10 +152,10 @@ export const PlayerFocus = ({ player }) => {
     setMedail(player.medail);
     setSrc(() => ({
       path: '',
-      imgURL: `${imageSrc}${player.imgURL}`,
+      imgURL: imgData,
       oldImgURL: '',
     }));
-  }, [player, imageSrc]);
+  }, [player, imgData]);
 
   return (
     <FocusWrapper>

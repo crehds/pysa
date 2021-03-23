@@ -3,6 +3,7 @@ const medailController = require('../medails/controller');
 const rolesController = require('../roles/controller');
 const scoreController = require('../score/controller');
 const calibrationController = require('../calibration/controller');
+const { fileToBuffer } = require('../../utils');
 
 async function getOnePlayer(playerId) {
   const result = await store.listOne(playerId);
@@ -214,12 +215,26 @@ async function updatePlayer(playerId, player) {
   return Promise.resolve({ updatePlayer: setMedail, updateScore });
 }
 
-function updateImagePlayer(playerId, pathImageURL) {
+async function updateImagePlayer(playerId, image) {
+  const buffer = await fileToBuffer(image);
   const player = {
-    imgURL: pathImageURL,
+    imgURL: {
+      data: buffer,
+      mimetype: image.mimetype,
+    },
   };
+
   return store.setImage(playerId, player);
 }
+
+//método implementado antes de enterarme que heroku borraba las imágenes en al versión gratuita
+// function updateImagePlayer(playerId, pathImageURL) {
+//   const player = {
+//     imgURL: pathImageURL,
+//   };
+//   return store.setImage(playerId, player);
+// }
+
 function setNotCalibrated(playerId) {
   const newPlayer = {
     medail: 'Sin Calibrar',
