@@ -209,15 +209,17 @@ export const AdminListOfPlayers = ({ players, handleLoading }) => {
           return 'Ningún nombre ingresado';
         }
       },
-      showLoaderOnConfirm: true,
       preConfirm: async (playersString) => {
+        const html = document.getElementsByClassName(
+          'swal2-container swal2-center swal2-backdrop-show'
+        );
+        html[0].style.display = 'none';
         handleLoading(false);
         return await deletePlayer(playersString);
       },
     }).then((result) => {
       if (result.isConfirmed) {
         const deletedPlayersLength = result.value.body.length;
-        console.log(deletedPlayersLength);
         const payload = result.value.body.map((e) => e.deletedPlayer.playerId);
         contextdispatch({ type: 'DELETE_PLAYER', payload });
         handleLoading(true);

@@ -9,7 +9,7 @@ import {
   MedailWrapper,
   NameWrapper,
 } from './styles';
-import user from '../../../assets/default-user.png';
+
 import { ScorePlayerFocus } from '../ScorePlayerFocus';
 import { useStateValue } from '../../../Context';
 import { useGetWidth } from '../../../hooks/useGetWidth';
