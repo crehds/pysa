@@ -4,12 +4,14 @@ export const LoggingWrapper = styled.div`
   position: absolute;
   top: 10px;
   right: 20px;
+  z-index: 3000;
+  display: flex;
   & div {
     cursor: pointer;
     display: flex;
     align-items: center;
     :hover {
-      > svg {
+      > .logging__door {
         fill: white;
       }
       > p {
@@ -22,6 +24,13 @@ export const LoggingWrapper = styled.div`
     }
     & svg {
       color: gray;
+    }
+  }
+  & .logging__refresh {
+    cursor: pointer;
+    margin-right: 15px;
+    &:hover {
+      fill: white;
     }
   }
 `;

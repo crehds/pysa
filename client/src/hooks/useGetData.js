@@ -55,5 +55,5 @@ export function useGetData(loadingApp) {
     }
   }, [loadingApp, dispatch]);
 
-  return loading;
+  return [loading, setLoading];
 }

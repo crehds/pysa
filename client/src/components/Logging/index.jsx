@@ -3,6 +3,7 @@ import { LoggingWrapper } from './style';
 import Swal from 'sweetalert2';
 import { login } from '../../api/login.json';
 import { BiLogIn, BiLogOut } from 'react-icons/bi';
+import { BiRefresh } from 'react-icons/bi';
 import { useStateValue } from '../../Context';
 
 export const Logging = (props) => {
@@ -63,15 +64,21 @@ export const Logging = (props) => {
   }
   return (
     <LoggingWrapper>
+      <BiRefresh
+        size='35px'
+        color='gray'
+        className='logging__refresh'
+        onClick={props.handleRefreshApp}
+      />
       {props.isLogging ? (
         <div onClick={logoutMod}>
-          <BiLogOut size='35px' title='Login' />
+          <BiLogOut size='35px' title='Login' className='logging__door' />
           <p>Desloguéate</p>
         </div>
       ) : (
         <div onClick={loginMod}>
           <p>Loguéate</p>
-          <BiLogIn size='35px' />
+          <BiLogIn size='35px' className='logging__door' />
         </div>
       )}
     </LoggingWrapper>
