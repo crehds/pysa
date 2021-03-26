@@ -15,6 +15,7 @@ export const NavBarContainer = styled.div`
     rgba(30, 29, 29, 0.9) 120.3%
   );
   border-right: 3px solid rgba(30, 29, 29, 0.85);
+  position: relative;
 `;
 
 export const ImgWrapper = styled.div`
@@ -34,6 +35,24 @@ export const Icon = styled(LinkRouter)`
     box-shadow: 0px 0px 2px 2px rgba(25, 40, 36, 1);
     > svg {
       fill: rgba(185, 164, 41, 0.836);
+    }
+  }
+  & svg {
+    color: rgba(211, 211, 211, 0.6);
+    font-size: 30px;
+  }
+`;
+
+export const Anchor = styled.a`
+  position: absolute;
+  left: 10px;
+  bottom: 10px;
+  padding: 4px;
+  &:hover {
+    box-shadow: 0px 0px 2px 2px rgba(25, 40, 36, 1);
+    > svg {
+      /* fill: rgba(185, 164, 41, 0.836); */
+      color: rgba(185, 164, 41, 0.836);
     }
   }
   & svg {
