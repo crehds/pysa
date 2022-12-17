@@ -12,7 +12,7 @@ export function useGetData(loadingApp) {
         const uri =
           process.env.NODE_ENV === 'development'
             ? '/'
-            : 'https://pysabackend.herokuapp.com/';
+            : 'https://pysa-production.up.railway.app/';
         const players = await fetch(
           `${uri}players/getAllPlayers`
         ).then((result) => result.json());

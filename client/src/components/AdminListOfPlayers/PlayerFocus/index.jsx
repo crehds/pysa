@@ -62,7 +62,7 @@ export const PlayerFocus = ({ player }) => {
     const uri =
       process.env.NODE_ENV === 'development'
         ? '/'
-        : 'https://pysabackend.herokuapp.com/';
+        : 'https://pysa-production.up.railway.app/';
     const updated = await fetch(`${uri}players/updateImage/${player['_id']}`, {
       method: 'POST',
       body: form,

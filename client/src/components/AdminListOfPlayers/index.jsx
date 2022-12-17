@@ -144,7 +144,7 @@ export const AdminListOfPlayers = ({ players, handleLoading }) => {
     const uri =
       process.env.NODE_ENV === 'development'
         ? '/'
-        : 'https://pysabackend.herokuapp.com/';
+        : 'https://pysa-production.up.railway.app/';
     const arrNamesPlayers = arrPlayers.split(',');
     const body = arrNamesPlayers.map((e) => ({
       name: {
@@ -177,7 +177,7 @@ export const AdminListOfPlayers = ({ players, handleLoading }) => {
     const uri =
       process.env.NODE_ENV === 'development'
         ? '/'
-        : 'https://pysabackend.herokuapp.com/';
+        : 'https://pysa-production.up.railway.app/';
     const arrNamesPlayers = arrPlayers.split(',');
     const arrIdPlayers = contextState.allPlayers
       .filter((element) =>

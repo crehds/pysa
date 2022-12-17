@@ -88,7 +88,7 @@ export const ScorePlayerFocus = ({
     const uri =
       process.env.NODE_ENV === 'development'
         ? '/'
-        : 'https://pysabackend.herokuapp.com/';
+        : 'https://pysa-production.up.railway.app/';
     let result = await fetch(`${uri}players/updateScore/${playerId}`, {
       method: 'PATCH',
       body: JSON.stringify({ score, mmr, medail, partidas }),
