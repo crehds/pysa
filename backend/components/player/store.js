@@ -11,36 +11,28 @@ function addPlayer(user, calibration) {
 }
 
 async function addNewPlayers(newPlayers) {
-  return new Promise((resolve, reject) => {
-    Model.insertMany(newPlayers, function (error, docs) {
-      if (error) {
-        return reject(error);
-      }
-
-      resolve(docs);
-    });
-  });
+  return Model.insertMany(newPlayers);
 }
 
 async function getPlayer(playerId) {
-  return new Promise((resolve, reject) => {
-    Model2.findOne({ _id: playerId })
-      .populate('medail', 'name')
-      .exec((error, populated) => {
-        if (error) {
-          console.log('Hubo un error');
-          reject(error);
-          return false;
-        }
-        if (populated === null) {
-          return resolve('No se encontró al jugador');
-        }
-        if (populated.medail === null) {
-          populated.medail = 'Sin Calibrar';
-        }
-        return resolve(populated);
-      });
-  });
+  let populated;
+  try {
+    populated = await Model2.findOne({ _id: playerId }).populate(
+      'medail',
+      'name'
+    );
+  } catch (error) {
+    console.log('Hubo un error');
+    throw error;
+  }
+
+  if (populated === null) {
+    return 'No se encontró al jugador';
+  }
+  if (populated.medail === null) {
+    populated.medail = 'Sin Calibrar';
+  }
+  return populated;
 }
 
 async function getAllPlayers() {
