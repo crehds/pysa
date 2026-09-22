@@ -12,7 +12,7 @@ async function getCalibration(playerId) {
 
 async function patchCalibration(player, calibration) {
   const result = await Model.findOneAndUpdate({ player }, calibration, {
-    new: true,
+    returnDocument: 'after',
   });
   return result;
 }

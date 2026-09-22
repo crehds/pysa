@@ -49,7 +49,7 @@ async function getAllPlayers() {
 
 async function updateImage(playerId, playerWithImg) {
   const doc = await Model3.findByIdAndUpdate(playerId, playerWithImg, {
-    new: true,
+    returnDocument: 'after',
     strict: false,
     upsert: true,
   });
@@ -76,11 +76,15 @@ async function deletePlayers() {
 }
 
 async function patchPlayer(playerId, newPlayer) {
-  return await Model2.findByIdAndUpdate(playerId, newPlayer, { new: true });
+  return await Model2.findByIdAndUpdate(playerId, newPlayer, {
+    returnDocument: 'after',
+  });
 }
 
 async function patchPlayer2(playerId, notCalibrated) {
-  return await Model.findByIdAndUpdate(playerId, notCalibrated, { new: true });
+  return await Model.findByIdAndUpdate(playerId, notCalibrated, {
+    returnDocument: 'after',
+  });
 }
 
 module.exports = {
