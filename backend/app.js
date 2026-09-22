@@ -11,9 +11,12 @@ var app = express();
 
 const db = require('./db');
 
-db(
-  `mongodb+srv://db_admin_nodebackend:3FnBbWRvQFrWX1Zg@cluster0-blzmi.mongodb.net/pysa?retryWrites=true&w=majority`
-);
+if (!process.env.MONGODB_URI) {
+  throw new Error(
+    'MONGODB_URI is not set (e.g. mongodb://127.0.0.1:27017/pysa)'
+  );
+}
+db(process.env.MONGODB_URI);
 
 const uploadsPath = `./uploads`;
 fs.mkdirSync(uploadsPath, { recursive: true });
