@@ -19,15 +19,24 @@ Requirements: Node.js 24 and Docker.
    MONGODB_URI=mongodb://127.0.0.1:27017/pysa
    ```
 
-3. Install and start the backend:
+3. Install, seed and start the backend:
 
    ```bash
    cd backend
    npm ci
+   npm run seed   # optional: fills medails/roles/players/scores/calibrations with sample data
    npm run dev
    ```
 
-   The API listens on `http://localhost:4000`.
+   The API listens on `http://localhost:4000`. `npm run seed` only touches the
+   collections it owns and is safe to run again (it resets them first), and it
+   refuses to run against a non-local `MONGODB_URI` unless you pass `--force`.
+
+### Tests
+
+`npm test` (inside `backend/`) runs the integration test suite against
+`TEST_MONGODB_URI` (defaults to `mongodb://127.0.0.1:27017/pysa_test`), so the
+Docker MongoDB from step 1 must be running first.
 
 ### Backend environment variables
 

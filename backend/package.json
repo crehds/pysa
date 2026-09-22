@@ -8,7 +8,8 @@
   "scripts": {
     "start": "node --env-file-if-exists=.env ./bin/www",
     "dev": "node --watch --env-file-if-exists=.env ./bin/www",
-    "test": "node --test --test-concurrency=1"
+    "test": "node --test --test-concurrency=1",
+    "seed": "node --env-file-if-exists=.env seed/index.js"
   },
   "dependencies": {
     "cookie-parser": "^1.4.7",
