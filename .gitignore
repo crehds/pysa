@@ -27,6 +27,8 @@ node_modules
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+# Chromium's crash reporter drops these wherever a browser is launched
+debug.log
 
 # local tooling
 /.codegraph/
