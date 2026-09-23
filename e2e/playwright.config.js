@@ -9,6 +9,19 @@ const BACKEND_URL = `http://localhost:${BACKEND_PORT}`;
 const CLIENT_URL = `http://localhost:${CLIENT_PORT}`;
 export const E2E_MONGODB_URI = 'mongodb://127.0.0.1:27017/pysa_e2e';
 
+// Test-only admin credentials for the isolated e2e backend (port 4100)
+// only: they unlock nothing else and are safe to commit. Specs log in
+// through the real UI or via page.request.post('/auth/login', ...) with
+// E2E_ADMIN_USERNAME/E2E_ADMIN_PASSWORD (see e2e/tests/admin-players.spec.js).
+export const E2E_ADMIN_USERNAME = 'e2e-admin';
+export const E2E_ADMIN_PASSWORD = 'E2E-Admin-Passw0rd!';
+// bcrypt hash (cost 10) of E2E_ADMIN_PASSWORD above.
+const E2E_ADMIN_PASSWORD_HASH =
+  '$2b$10$ywEhDuDjV4JZobu8X3p8ZOaFqebJpqh9NYjqJNLBlCiuuWajMQkkO';
+// Test-only signing secret, well over the 32-char minimum; never used
+// outside this isolated e2e backend.
+const E2E_JWT_SECRET = '106e3aeadefe9bbbe004956d73f092a5fe48ad8a1e87f43bb4a5af7f7039be9f';
+
 export default defineConfig({
   testDir: './tests',
   globalSetup: './global-setup.js',
@@ -43,6 +56,10 @@ export default defineConfig({
       env: {
         PORT: String(BACKEND_PORT),
         MONGODB_URI: E2E_MONGODB_URI,
+        ALLOWED_ORIGINS: CLIENT_URL,
+        ADMIN_USERNAME: E2E_ADMIN_USERNAME,
+        ADMIN_PASSWORD_HASH: E2E_ADMIN_PASSWORD_HASH,
+        JWT_SECRET: E2E_JWT_SECRET,
       },
       reuseExistingServer: false,
     },

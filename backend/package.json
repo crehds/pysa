@@ -9,13 +9,17 @@
     "start": "node --env-file-if-exists=.env ./bin/www",
     "dev": "node --watch --env-file-if-exists=.env ./bin/www",
     "test": "node --test --test-concurrency=1",
-    "seed": "node --env-file-if-exists=.env seed/index.js"
+    "seed": "node --env-file-if-exists=.env seed/index.js",
+    "hash-password": "node scripts/hash-password.js"
   },
   "dependencies": {
+    "bcryptjs": "^3.0.3",
     "cookie-parser": "^1.4.7",
     "cors": "^2.8.6",
     "debug": "^4.4.3",
     "express": "^5.2.1",
+    "express-rate-limit": "^8.7.0",
+    "jsonwebtoken": "^9.0.3",
     "mongoose": "^9.10.2",
     "morgan": "^1.12.1",
     "multer": "^2.4.0"

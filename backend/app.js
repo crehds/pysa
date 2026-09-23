@@ -10,6 +10,9 @@ const fs = require('fs')
 var app = express();
 
 const db = require('./db');
+const { loadAdminConfig, loadAllowedOrigins } = require('./auth/config');
+const { createCorsOptions } = require('./auth/cors');
+const { createAuthRouter } = require('./auth/network');
 
 if (!process.env.MONGODB_URI) {
   throw new Error(
@@ -18,14 +21,30 @@ if (!process.env.MONGODB_URI) {
 }
 db(process.env.MONGODB_URI);
 
+// Loaded once at startup, not per-request: env vars never change while the
+// process is running. Fails closed rather than crashing the process, so a
+// missing/invalid admin setup never takes the public (read-only) site down
+// (see backend/auth/middleware.js and backend/auth/network.js for how
+// adminConfig.valid gates every protected route and POST /auth/login).
+const adminConfig = loadAdminConfig(process.env);
+if (!adminConfig.valid) {
+  console.warn(
+    `[auth] admin login is not configured (${adminConfig.errors.join('; ')}). ` +
+      'POST /auth/login will answer 503 and every protected route will answer 401 ' +
+      'until ADMIN_USERNAME, ADMIN_PASSWORD_HASH and JWT_SECRET are set.'
+  );
+}
+
 const uploadsPath = `./uploads`;
 fs.mkdirSync(uploadsPath, { recursive: true });
-app.use(cors());
+app.use(cors(createCorsOptions(loadAllowedOrigins(process.env))));
 console.log('servidor encendido');
 app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
+
+app.use('/auth', createAuthRouter(adminConfig));
 
 app.use('/default', express.static(path.join(__dirname, 'public/images/')));
 app.use('/static', express.static(path.join(__dirname, 'uploads')));
