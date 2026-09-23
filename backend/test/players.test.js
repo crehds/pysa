@@ -187,8 +187,7 @@ test('players: a player created without a medail field defaults to "Sin Calibrar
   await resetDatabase();
 
   // Unlike playerNoMedail above (medail: null), this omits the key
-  // entirely, matching the shape of the real seed data, where players never
-  // have a medail field until they are calibrated.
+  // entirely, which /newPlayers stores as-is when a caller sends no medail.
   const created = await request(app)
     .post('/players/newPlayers')
     .send({

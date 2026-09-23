@@ -108,6 +108,32 @@ test('seed: populates medails, roles, players, scores and calibrations consisten
     assert.equal(inDb.calibrations, expectedPlayers);
   });
 
+  await t.test('gives calibrated players the medail for their mmr and the rest "Sin Calibrar"', async () => {
+    await seed(TEST_MONGODB_URI);
+
+    // Raw documents, because GET /players/getAllPlayers hands this field to
+    // the client exactly as stored: it must be the 'Sin Calibrar' marker or
+    // the id of an existing medail, never absent.
+    const stored = await mongoose.connection.db.collection('players').find().toArray();
+    const storedByNickname = new Map(stored.map((player) => [player.nickname, player]));
+    const medailNamesById = new Map(
+      (await MedailModel.find().lean()).map((medail) => [String(medail._id), medail.name])
+    );
+
+    for (const player of playersData.players) {
+      const { medail } = storedByNickname.get(player.nickname);
+      // calibration.estado 0 means the player finished calibrating.
+      if (player.calibration.estado === 0) {
+        const expected = medallasData.medallas.find(
+          (medalla) => medalla.minimo <= player.mmr && player.mmr <= medalla.maximo
+        );
+        assert.equal(medailNamesById.get(String(medail)), expected.nombre, player.nickname);
+      } else {
+        assert.equal(medail, 'Sin Calibrar', player.nickname);
+      }
+    }
+  });
+
   await t.test('does not touch a collection it does not own', async () => {
     const untouched = mongoose.connection.db.collection('untouched');
     await untouched.insertOne({ marker: 'keep-me' });

@@ -85,10 +85,13 @@ async function seed(uri, { force = false } = {}) {
       roleNames.map((name) => ({ name }))
     );
 
-    // Goes through the same controller addNewPlayers() uses, so the created
-    // players, their scores and their calibrations stay consistent with each
-    // other exactly like a real POST /players/addNewPlayers call would.
-    const players = await playerController.addNewPlayers(playersData.players);
+    // Goes through the same controller POST /players/playersWithAllData uses,
+    // so the created players, their scores and their calibrations stay
+    // consistent with each other. It is also the only path that derives the
+    // medail from the calibration (the medail for the player's mmr once
+    // calibrated, 'Sin Calibrar' before that); addNewPlayers() stores
+    // whatever medail the caller sends, and this data carries none.
+    const players = await playerController.addPlayersWithAllData(playersData.players);
 
     return { medails: medails.length, roles: roles.length, players: players.length };
   } finally {

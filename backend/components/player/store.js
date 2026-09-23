@@ -32,8 +32,9 @@ async function getPlayer(playerId) {
   if (populated === null) {
     return 'No se encontró al jugador';
   }
-  // Real players never get a medail field until they are calibrated (the
-  // seed data omits it entirely), so check for "unset" rather than only the
+  // The client always sends 'Sin Calibrar' for an uncalibrated player, but
+  // POST /players/newPlayers and /addNewPlayers store whatever medail the
+  // caller sends, including none, so check for "unset" rather than only the
   // explicit null a caller might send.
   if (!populated.medail) {
     populated.medail = 'Sin Calibrar';
