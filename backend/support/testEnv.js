@@ -23,16 +23,26 @@ process.env.MONGODB_URI = TEST_MONGODB_URI;
 const mongoose = require('mongoose');
 const app = require('../app');
 
-// mongoose.connection.asPromise() only exists from Mongoose 6 on, so use the
-// readyState/event API that has been stable since Mongoose 5 to stay
-// compatible with the pre-upgrade characterization run.
-function waitForConnection() {
-  if (mongoose.connection.readyState === 1) {
-    return Promise.resolve();
-  }
+function waitForConnection(timeoutMs = 5000) {
   return new Promise((resolve, reject) => {
-    mongoose.connection.once('connected', resolve);
-    mongoose.connection.once('error', reject);
+    const timer = setTimeout(() => {
+      reject(
+        new Error(`Timed out waiting for the mongoose connection after ${timeoutMs}ms`)
+      );
+    }, timeoutMs);
+    // Only the wait itself should hold the process open, never this timer.
+    timer.unref?.();
+
+    mongoose.connection
+      .asPromise()
+      .then((connection) => {
+        clearTimeout(timer);
+        resolve(connection);
+      })
+      .catch((error) => {
+        clearTimeout(timer);
+        reject(error);
+      });
   });
 }
 

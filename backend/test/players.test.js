@@ -76,6 +76,9 @@ test('players: addNewPlayers -> getAllPlayers -> getScoreOfPlayers -> onePlayer 
     assert.equal(res.body.body.length, 2);
 
     const [savedA, savedB] = res.body.body;
+    // Reading through ._doc pins the current client contract: the frontend
+    // reads body[]._doc, so these Mongoose-document internals must keep
+    // showing up in the response exactly as they do today.
     assert.equal(savedA._doc.nickname, 'anag');
     assert.equal(savedB._doc.nickname, 'betod');
     assert.equal(savedA.rolesScore.length, 2);
@@ -145,7 +148,12 @@ test('players: addNewPlayers -> getAllPlayers -> getScoreOfPlayers -> onePlayer 
     assert.equal(check.body.body.medail.name, 'Silver');
   });
 
-  await t.test('POST /players/updateImage/:id stores the uploaded image', async () => {
+  await t.test('POST /players/updateImage/:id stores the uploaded image', async (t) => {
+    const uploadedImagePath = path.join(__dirname, '..', 'uploads', `${playerBId}.png`);
+    t.after(async () => {
+      await fs.rm(uploadedImagePath).catch(() => {});
+    });
+
     const res = await request(app)
       .post(`/players/updateImage/${playerBId}`)
       .attach('image', Buffer.from('fake-png-bytes'), {
@@ -157,10 +165,6 @@ test('players: addNewPlayers -> getAllPlayers -> getScoreOfPlayers -> onePlayer 
     assert.equal(res.body.error, '');
     assert.equal(res.body.body.imgURL.mimetype, 'image/png');
     assert.ok(res.body.body.imgURL.data);
-
-    await fs
-      .rm(path.join(__dirname, '..', 'uploads', `${playerBId}.png`))
-      .catch(() => {});
   });
 
   await t.test('DELETE /players/deleteAllDataOfPlayers removes both players', async () => {
@@ -174,8 +178,8 @@ test('players: addNewPlayers -> getAllPlayers -> getScoreOfPlayers -> onePlayer 
     assert.equal(res.body.body[0].deletedPlayer.playerId, playerAId);
     assert.equal(res.body.body[1].deletedPlayer.playerId, playerBId);
 
-    const after = await request(app).get('/players/getAllPlayers');
-    assert.equal(after.body.body.length, 0);
+    const afterDelete = await request(app).get('/players/getAllPlayers');
+    assert.equal(afterDelete.body.body.length, 0);
   });
 });
 
