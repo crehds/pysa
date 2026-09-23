@@ -53,6 +53,13 @@ test('medails: setMedails, getMedails, getMedail, getMedailByMMR, patchMedail', 
     assert.equal(res.body.body, target._id);
   });
 
+  await t.test('GET /medails/getMedailByMMR/:MMR answers 404 when no medail matches', async () => {
+    const res = await request(app).get('/medails/getMedailByMMR/999999');
+    assert.equal(res.status, 404);
+    assert.equal(res.body.body, '');
+    assert.match(res.body.error, /999999/);
+  });
+
   await t.test('PATCH /medails/patchMedail/:id updates the medail', async () => {
     const target = seeded.find((medail) => medail.name === 'Bronze');
     const res = await request(app)

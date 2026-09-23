@@ -19,7 +19,11 @@ router.get('/getMedailByMMR/:MMR', async function (req, res) {
     const result = await controller.getMedailByMMR(MMR);
     response.success(req, res, result, 200);
   } catch (error) {
-    response.error(req, res, 'Unexpected error', 500, error);
+    if (error instanceof controller.MedailNotFoundError) {
+      response.error(req, res, error.message, 404, error);
+    } else {
+      response.error(req, res, 'Unexpected error', 500, error);
+    }
   }
 });
 
