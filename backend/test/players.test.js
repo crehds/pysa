@@ -183,4 +183,24 @@ test('players: addNewPlayers -> getAllPlayers -> getScoreOfPlayers -> onePlayer 
   });
 });
 
+test('players: a player created without a medail field defaults to "Sin Calibrar"', async () => {
+  await resetDatabase();
+
+  // Unlike playerNoMedail above (medail: null), this omits the key
+  // entirely, matching the shape of the real seed data, where players never
+  // have a medail field until they are calibrated.
+  const created = await request(app)
+    .post('/players/newPlayers')
+    .send({
+      players: [
+        { name: { firstName: 'Kai', lastName: 'Lu' }, nickname: 'kai', mmr: 700, estado: true },
+      ],
+    });
+  const playerId = created.body.body[0]._id;
+
+  const res = await request(app).get(`/players/onePlayer/${playerId}`);
+  assert.equal(res.status, 200);
+  assert.equal(res.body.body.medail, 'Sin Calibrar');
+});
+
 after(disconnect);
