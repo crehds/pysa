@@ -61,8 +61,14 @@ npm run dev        # backend + client together, via concurrently
 npm run db:down    # stop MongoDB
 ```
 
-`npm run dev` requires `backend/.env` to already exist (step 2) and fails
-fast with `EADDRINUSE` if something is already listening on port 4000.
+`npm run dev` requires `backend/.env` to already exist (step 2). If either
+process exits with an error (for example, missing `node_modules`),
+concurrently stops the other one too.
+
+A backend crash does not stop anything: `node --watch` logs the error (for
+example `EADDRINUSE` when something is already listening on port 4000) and
+waits for a file change instead of exiting, so the client keeps running.
+Fix the cause, then save a backend file or restart `npm run dev`.
 
 ### Tests
 
