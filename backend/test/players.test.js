@@ -227,6 +227,14 @@ test('players: setNotCalibrated, deleteAll, and an invalid id', async (t) => {
     assert.equal(res.body.body.medail, 'Sin Calibrar');
   });
 
+  await t.test('GET /players/onePlayer/:id answers a stored "Sin Calibrar" medail as-is', async () => {
+    // setNotCalibrated above stored the 'Sin Calibrar' string, which is how
+    // the app marks every uncalibrated player, so it is not a medail id.
+    const res = await request(app).get(`/players/onePlayer/${playerId}`);
+    assert.equal(res.status, 200);
+    assert.equal(res.body.body.medail, 'Sin Calibrar');
+  });
+
   await t.test('GET /players/onePlayer/:id with an invalid id characterizes current error handling', async () => {
     const res = await request(app).get('/players/onePlayer/not-an-object-id');
     assert.equal(res.status, 500);

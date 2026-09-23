@@ -1,3 +1,4 @@
+const mongoose = require('mongoose');
 const { model: Model, model2: Model2, model3: Model3 } = require('./model');
 
 function addPlayer(user, calibration) {
@@ -15,31 +16,38 @@ async function addNewPlayers(newPlayers) {
 }
 
 async function getPlayer(playerId) {
-  let populated;
+  let player;
   try {
     // .lean() returns a plain object instead of a Mongoose document, so the
-    // 'Sin Calibrar' string below can be assigned to the medail field even
-    // though the schema types that path as ObjectId (Mongoose would reject
-    // the cast on a live document).
-    populated = await Model2.findOne({ _id: playerId })
-      .populate('medail', 'name')
-      .lean();
+    // medail field keeps what is stored (an uncalibrated player's 'Sin
+    // Calibrar' string included) even though the schema types that path as
+    // ObjectId (Mongoose would reject the cast on a live document).
+    player = await Model2.findOne({ _id: playerId }).lean();
+    // Only a medail id can be populated: casting 'Sin Calibrar' to one
+    // throws a CastError.
+    if (player && mongoose.isObjectIdOrHexString(player.medail)) {
+      player = await Model2.populate(player, {
+        path: 'medail',
+        select: 'name',
+        options: { lean: true },
+      });
+    }
   } catch (error) {
     console.log('Hubo un error');
     throw error;
   }
 
-  if (populated === null) {
+  if (player === null) {
     return 'No se encontró al jugador';
   }
   // The client always sends 'Sin Calibrar' for an uncalibrated player, but
   // POST /players/newPlayers and /addNewPlayers store whatever medail the
   // caller sends, including none, so check for "unset" rather than only the
   // explicit null a caller might send.
-  if (!populated.medail) {
-    populated.medail = 'Sin Calibrar';
+  if (!player.medail) {
+    player.medail = 'Sin Calibrar';
   }
-  return populated;
+  return player;
 }
 
 async function getAllPlayers() {
