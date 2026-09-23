@@ -101,7 +101,9 @@ npm run test:e2e
 
 This seeds `pysa_e2e` before the run (see `e2e/global-setup.js`), starts the
 backend on `4100` and the client on `5180`, and runs the Chromium smoke suite
-against them.
+against them. A spec that mutates data (e.g. the avatar-upload spec) reseeds
+the database again immediately before it runs, so it always starts from the
+same known state; read-only specs just share the single seed above.
 
 ### Backend environment variables
 
