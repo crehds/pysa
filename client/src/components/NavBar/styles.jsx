@@ -1,7 +1,12 @@
 import styled from 'styled-components';
 import { Link as LinkRouter } from 'react-router';
 
-export const NavBarContainer = styled.div`
+// A semantic <nav> (rather than a plain <div>) gives this container an
+// implicit role="navigation" landmark, which is both correct accessibility
+// markup and the stable handle e2e/tests/players-navigation.spec.js uses to
+// scope its click to the navbar instead of matching a link anywhere on the
+// page.
+export const NavBarContainer = styled.nav`
   height: 100vh;
   /* border: 1px solid blue; */
   width: 60px;

@@ -1,8 +1,10 @@
 import { test as base, expect } from '@playwright/test';
 
-// Pre-existing console errors the current app emits on the pages under test,
-// unrelated to what these specs verify. Do not add a page error here: page
-// errors (uncaught exceptions) always fail the test, by design.
+// The app currently emits no console.error on any page under test, so this
+// starts empty. It is an opt-in allowlist: add a narrow substring here only
+// once a real, pre-existing console.error shows up that a spec has no
+// business failing on. Never add a page error here — page errors (uncaught
+// exceptions) must always fail the test, by design.
 export const KNOWN_CONSOLE_ERRORS = [];
 
 // Extends the base `test` so every test fails on any uncaught page error and

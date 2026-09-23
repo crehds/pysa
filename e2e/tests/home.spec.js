@@ -12,9 +12,16 @@ test('shows the calibrated active players ranked by mmr', async ({ page }) => {
   // players (backend/seed/data/players.json: estado 1, calibration.estado
   // 0) — the reducer only assigns a medail (instead of 'Sin Calibrar') to a
   // calibrated player, and the ranking only shows calibrated, active ones.
+  //
+  // RowPlayerRanking (client/src/components/RowPlayerRanking) renders one
+  // row per player as a <div> whose direct children are five <p> cells
+  // (name, partidas, mmr, kda, medail), so `div:has(> p)` matches exactly
+  // one row per player regardless of what wraps the name text — unlike a
+  // single `xpath=..` hop, which breaks the moment a wrapper element is
+  // added between the name and its row.
   const topPlayerRow = page
-    .getByText('Nnnnnnn', { exact: true })
-    .locator('xpath=..');
+    .locator('div:has(> p)')
+    .filter({ hasText: 'Nnnnnnn' });
   await expect(topPlayerRow).toBeVisible();
   await expect(topPlayerRow.getByText('3400', { exact: true })).toBeVisible();
 

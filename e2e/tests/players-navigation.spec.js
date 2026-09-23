@@ -13,7 +13,10 @@ test('navigating to the players page via the navbar shows the players page', asy
 }) => {
   await page.goto('/');
 
-  await page.locator('a[href="/players"]').click();
+  // Scoped to the navbar landmark (NavBarContainer renders a <nav>, see
+  // client/src/components/NavBar/styles.jsx) instead of matching
+  // a[href="/players"] anywhere on the page.
+  await page.getByRole('navigation').locator('a[href="/players"]').click();
 
   await expect(page).toHaveURL('/players');
   await expect(page.locator('#playersCarousel')).toBeVisible();

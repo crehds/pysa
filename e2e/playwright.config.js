@@ -32,7 +32,14 @@ export default defineConfig({
       // database instead of the env below.
       command: 'node ./bin/www',
       cwd: '../backend',
-      url: `${BACKEND_URL}/roles/getRoles`,
+      // Not a DB-backed route like /roles/getRoles: Playwright starts
+      // webServers BEFORE running globalSetup, so with MongoDB down a DB
+      // route would just hang until the generic webServer timeout, and
+      // global-setup's friendlier "run npm run db:up" error would never get
+      // a chance to show. /default serves backend/public/images statically
+      // (see backend/app.js), so this only proves the backend process itself
+      // came up.
+      url: `${BACKEND_URL}/default/default-user.png`,
       env: {
         PORT: String(BACKEND_PORT),
         MONGODB_URI: E2E_MONGODB_URI,
