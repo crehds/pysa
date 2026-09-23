@@ -19,6 +19,12 @@ Requirements: Node.js 24 and Docker.
    MONGODB_URI=mongodb://127.0.0.1:27017/pysa
    ```
 
+   The public (read-only) pages work with just the two vars above. To also
+   use the admin login, add `ADMIN_USERNAME`, `ADMIN_PASSWORD_HASH` and
+   `JWT_SECRET` — see [Admin login](#admin-login) below for how to generate
+   each one; without them the backend still starts, but `POST /auth/login`
+   answers 503 and every admin action answers 401.
+
 3. Install, seed and start the backend:
 
    ```bash
@@ -107,10 +113,62 @@ same known state; read-only specs just share the single seed above.
 
 ### Backend environment variables
 
-| Variable      | Required | Default | Description                    |
-| ------------- | -------- | ------- | ------------------------------ |
-| `MONGODB_URI` | Yes      | —       | MongoDB connection string.     |
-| `PORT`        | No       | `4000`  | Port the API listens on.       |
+| Variable             | Required | Default                  | Description                                                                 |
+| --------------------- | -------- | ------------------------- | ----------------------------------------------------------------------------- |
+| `MONGODB_URI`          | Yes      | —                          | MongoDB connection string.                                                    |
+| `PORT`                 | No       | `4000`                     | Port the API listens on.                                                      |
+| `ADMIN_USERNAME`       | No\*     | —                          | The admin login's username.                                                   |
+| `ADMIN_PASSWORD_HASH`  | No\*     | —                          | bcrypt hash of the admin password. Generate with `npm run hash-password`.     |
+| `JWT_SECRET`           | No\*     | —                          | Signs admin session cookies. At least 32 characters. Generate with the command below. |
+| `ALLOWED_ORIGINS`      | No       | `http://localhost:5173`   | Comma-separated exact origins allowed to call the API with credentials (CORS).|
+
+\* The three admin vars are a set: if any is missing or invalid, the backend
+still starts and the public pages keep working, but `POST /auth/login`
+answers `503` and every admin route answers `401` until all three are set
+(see `backend/auth/config.js`). The backend logs one warning at startup when
+this happens.
+
+### Admin login
+
+The app has a single admin account, configured entirely through the env vars
+above — there is no user database.
+
+1. Generate `ADMIN_PASSWORD_HASH` by hashing your chosen password (bcrypt,
+   cost 12). This prompts for the password interactively and never echoes it
+   or takes it as an argument:
+
+   ```bash
+   cd backend
+   npm run hash-password
+   ```
+
+2. Generate `JWT_SECRET` (32 random bytes, hex-encoded):
+
+   ```bash
+   node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"
+   ```
+
+3. Add all three to `backend/.env`:
+
+   ```dotenv
+   ADMIN_USERNAME=youradminname
+   ADMIN_PASSWORD_HASH='$2b$12$....................................................'
+   JWT_SECRET=64-hex-characters-from-the-command-above
+   ```
+
+   Single-quote `ADMIN_PASSWORD_HASH`: a bcrypt hash contains `$` characters,
+   and single quotes keep it intact byte-for-byte (verified against Node's
+   `--env-file`, which the backend's `npm start`/`npm run dev` scripts use).
+
+4. Restart the backend (`npm run dev`/`npm start` picks up `backend/.env`
+   automatically via `--env-file-if-exists`).
+
+**Deploying**: the session cookie is `SameSite=Lax` and `Secure`, scoped to
+the API's own domain. Serve the client and the API from the same site (or
+put the API behind a same-site reverse proxy at, say, `/api`) — a
+cross-site cookie (client and API on different registrable domains) is
+blocked by Safari and other browsers' tracking-prevention defaults even with
+`credentials: 'include'` on the client.
 
 ### Stopping MongoDB
 
