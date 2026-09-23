@@ -11,7 +11,13 @@ const BACKEND_DIR = path.resolve(__dirname, '../backend');
 // without --env-file-if-exists (that would load backend/.env and point at
 // the dev database) and with MONGODB_URI overridden below. The script wipes
 // and recreates only the collections it owns, so this is safe to re-run.
-export default async function globalSetup() {
+//
+// Exported (rather than kept local to globalSetup below) so a mutating spec
+// can call it again before it runs, to reset pysa_e2e back to the known seed
+// instead of leaking its writes into whatever spec runs next. Read-only
+// specs don't need this: they share the single seed globalSetup produces for
+// the whole run.
+export function seedDatabase() {
   const result = spawnSync(process.execPath, ['seed/index.js'], {
     cwd: BACKEND_DIR,
     env: {
@@ -27,4 +33,8 @@ export default async function globalSetup() {
         'Is MongoDB running? Start it with `npm run db:up` from the repo root, then retry `npm run test:e2e`.'
     );
   }
+}
+
+export default async function globalSetup() {
+  seedDatabase();
 }
