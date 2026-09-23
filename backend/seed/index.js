@@ -14,16 +14,22 @@ const playersData = require('./data/players.json');
 
 const LOCAL_HOSTNAMES = new Set(['127.0.0.1', 'localhost', '::1']);
 
-function assertLocalHost(uri, force) {
-  if (force) {
-    return;
-  }
-
+// WHATWG URL wraps an IPv6 literal in brackets (e.g. "[::1]"), but
+// LOCAL_HOSTNAMES and mongoose.connection.host both use the bracket-less
+// form, so strip them here to keep the two comparable.
+function hostnameFromUri(uri) {
   let hostname;
   try {
     hostname = new URL(uri).hostname;
   } catch {
     throw new Error(`Could not parse a host from MONGODB_URI "${uri}".`);
+  }
+  return hostname.replace(/^\[|\]$/g, '');
+}
+
+function assertLocalHost(hostname, force) {
+  if (force) {
+    return;
   }
 
   if (!LOCAL_HOSTNAMES.has(hostname)) {
@@ -36,53 +42,63 @@ function assertLocalHost(uri, force) {
 // Resets the collections this script owns and inserts fresh data, so running
 // it twice leaves the database in the same state instead of duplicating it.
 async function seed(uri, { force = false } = {}) {
-  assertLocalHost(uri, force);
-
   const wasConnected = mongoose.connection.readyState === 1;
-  if (!wasConnected) {
-    await mongoose.connect(uri);
+
+  // When a connection is already open, every write below goes through it and
+  // `uri` is never used to connect, so the connection's real host is what
+  // must be checked; otherwise `uri` is exactly what mongoose.connect()
+  // below will use.
+  const hostname = wasConnected
+    ? mongoose.connection.host
+    : hostnameFromUri(uri);
+  assertLocalHost(hostname, force);
+
+  try {
+    if (!wasConnected) {
+      await mongoose.connect(uri);
+    }
+
+    await Promise.all([
+      MedailModel.deleteMany({}),
+      RoleModel.deleteMany({}),
+      PlayerModel.deleteMany({}),
+      ScoreModel.deleteMany({}),
+      CalibrationModel.deleteMany({}),
+    ]);
+
+    const medails = await MedailModel.insertMany(
+      medallasData.medallas.map((medail) => ({
+        name: medail.nombre,
+        minimo: medail.minimo,
+        maximo: medail.maximo,
+      }))
+    );
+
+    const roleNames = [
+      ...new Set(
+        playersData.players.flatMap((player) =>
+          player.rolesScore.map((roleScore) => roleScore.name)
+        )
+      ),
+    ];
+    const roles = await RoleModel.insertMany(
+      roleNames.map((name) => ({ name }))
+    );
+
+    // Goes through the same controller addNewPlayers() uses, so the created
+    // players, their scores and their calibrations stay consistent with each
+    // other exactly like a real POST /players/addNewPlayers call would.
+    const players = await playerController.addNewPlayers(playersData.players);
+
+    return { medails: medails.length, roles: roles.length, players: players.length };
+  } finally {
+    if (!wasConnected) {
+      await mongoose.disconnect();
+    }
   }
-
-  await Promise.all([
-    MedailModel.deleteMany({}),
-    RoleModel.deleteMany({}),
-    PlayerModel.deleteMany({}),
-    ScoreModel.deleteMany({}),
-    CalibrationModel.deleteMany({}),
-  ]);
-
-  const medails = await MedailModel.insertMany(
-    medallasData.medallas.map((medail) => ({
-      name: medail.nombre,
-      minimo: medail.minimo,
-      maximo: medail.maximo,
-    }))
-  );
-
-  const roleNames = [
-    ...new Set(
-      playersData.players.flatMap((player) =>
-        player.rolesScore.map((roleScore) => roleScore.name)
-      )
-    ),
-  ];
-  const roles = await RoleModel.insertMany(
-    roleNames.map((name) => ({ name }))
-  );
-
-  // Goes through the same controller addNewPlayers() uses, so the created
-  // players, their scores and their calibrations stay consistent with each
-  // other exactly like a real POST /players/addNewPlayers call would.
-  const players = await playerController.addNewPlayers(playersData.players);
-
-  if (!wasConnected) {
-    await mongoose.disconnect();
-  }
-
-  return { medails: medails.length, roles: roles.length, players: players.length };
 }
 
-module.exports = { seed };
+module.exports = { seed, assertLocalHost, hostnameFromUri };
 
 if (require.main === module) {
   (async () => {
