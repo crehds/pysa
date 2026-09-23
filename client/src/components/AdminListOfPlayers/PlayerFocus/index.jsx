@@ -16,16 +16,13 @@ import { useGetWidth } from '../../../hooks/useGetWidth';
 import { AiFillCamera, AiOutlineCheck } from 'react-icons/ai';
 import { BsX } from 'react-icons/bs';
 import Swal from 'sweetalert2';
+import { API_BASE_URL } from '../../../config';
 
 export const PlayerFocus = ({ player }) => {
   console.log(player);
   const regex = /^[/][a-z]+[/].*/gi;
-  const imageSrc =
-    process.env.NODE_ENV === 'development'
-      ? 'http://localhost:4000'
-      : 'https://pysabackend.herokuapp.com';
   const imgData = regex.test(player.imgURL)
-    ? `${imageSrc}${player.imgURL}`
+    ? `${API_BASE_URL}${player.imgURL}`
     : `data:image/${player.imgURL.mimetype};base64,${player.imgURL.data}`;
   const [medail, setMedail] = useState(player.medail);
   const [src, setSrc] = useState({
@@ -59,14 +56,13 @@ export const PlayerFocus = ({ player }) => {
   }
 
   async function updateImage(form) {
-    const uri =
-      process.env.NODE_ENV === 'development'
-        ? '/'
-        : 'https://pysa-production.up.railway.app/';
-    const updated = await fetch(`${uri}players/updateImage/${player['_id']}`, {
-      method: 'POST',
-      body: form,
-    }).then((result) => result.json());
+    const updated = await fetch(
+      `${API_BASE_URL}/players/updateImage/${player['_id']}`,
+      {
+        method: 'POST',
+        body: form,
+      }
+    ).then((result) => result.json());
 
     return updated;
   }

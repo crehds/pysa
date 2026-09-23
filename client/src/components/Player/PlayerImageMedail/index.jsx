@@ -2,15 +2,12 @@ import React from 'react';
 import { GiMedal } from 'react-icons/gi';
 import { Icon, ImageWrapper, NamePlayer, PlayerImageWrapper } from './styles';
 import user from '../../../assets/default-user.png';
+import { API_BASE_URL } from '../../../config';
 
 export const PlayerImageMedail = ({ name, medail, mmr, src, size }) => {
   const regex = /^[/][a-z]+[/].*/gi;
-  const imageSrc =
-    process.env.NODE_ENV === 'development'
-      ? 'http://localhost:4000'
-      : 'https://pysabackend.herokuapp.com';
   const imgData = regex.test(src)
-    ? `${imageSrc}${src}`
+    ? `${API_BASE_URL}${src}`
     : `data:image/${src.mimetype};base64,${src.data}`;
   return (
     <PlayerImageWrapper size={size}>

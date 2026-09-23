@@ -7,6 +7,7 @@ import { ScoreWrapper, NamesScoreWrapper, Icon } from './styles';
 import { BsInfoCircle } from 'react-icons/bs';
 import Swal from 'sweetalert2';
 import { Info } from '../Info';
+import { API_BASE_URL } from '../../../config';
 
 function calc(score) {
   return score.reduce((acc, cv) => {
@@ -85,17 +86,16 @@ export const ScorePlayerFocus = ({
   }) {
     let score = setNameRoles(rolesScore);
 
-    const uri =
-      process.env.NODE_ENV === 'development'
-        ? '/'
-        : 'https://pysa-production.up.railway.app/';
-    let result = await fetch(`${uri}players/updateScore/${playerId}`, {
-      method: 'PATCH',
-      body: JSON.stringify({ score, mmr, medail, partidas }),
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    }).then((result) => result.json());
+    let result = await fetch(
+      `${API_BASE_URL}/players/updateScore/${playerId}`,
+      {
+        method: 'PATCH',
+        body: JSON.stringify({ score, mmr, medail, partidas }),
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      }
+    ).then((result) => result.json());
     return result;
   }
 

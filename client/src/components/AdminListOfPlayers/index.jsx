@@ -11,6 +11,7 @@ import { PlayerToFocus } from './PlayerToFocus';
 import { FaUserPlus, FaUserMinus } from 'react-icons/fa';
 import Swal from 'sweetalert2';
 import { useStateValue } from '../../Context';
+import { API_BASE_URL } from '../../config';
 
 function randomPlayer(playersLength) {
   let number = Math.floor(Math.random() * (playersLength - 2 - 2 + 1) + 2);
@@ -141,10 +142,6 @@ export const AdminListOfPlayers = ({ players, handleLoading }) => {
 
   async function addNewPlayer(arrPlayers) {
     console.log(arrPlayers);
-    const uri =
-      process.env.NODE_ENV === 'development'
-        ? '/'
-        : 'https://pysa-production.up.railway.app/';
     const arrNamesPlayers = arrPlayers.split(',');
     const body = arrNamesPlayers.map((e) => ({
       name: {
@@ -163,7 +160,7 @@ export const AdminListOfPlayers = ({ players, handleLoading }) => {
       mmr: 0,
       imgURL: '/default/default-user.png',
     }));
-    let result = await fetch(`${uri}players/addNewPlayers`, {
+    let result = await fetch(`${API_BASE_URL}/players/addNewPlayers`, {
       method: 'POST',
       body: JSON.stringify({ players: body }),
       headers: {
@@ -174,10 +171,6 @@ export const AdminListOfPlayers = ({ players, handleLoading }) => {
   }
 
   async function deletePlayer(arrPlayers) {
-    const uri =
-      process.env.NODE_ENV === 'development'
-        ? '/'
-        : 'https://pysa-production.up.railway.app/';
     const arrNamesPlayers = arrPlayers.split(',');
     const arrIdPlayers = contextState.allPlayers
       .filter((element) =>
@@ -187,7 +180,7 @@ export const AdminListOfPlayers = ({ players, handleLoading }) => {
         )
       )
       .map((playerFiltred) => playerFiltred['_id']);
-    let result = await fetch(`${uri}players/deleteAllDataOfPlayers`, {
+    let result = await fetch(`${API_BASE_URL}/players/deleteAllDataOfPlayers`, {
       method: 'DELETE',
       body: JSON.stringify({ playersIds: arrIdPlayers }),
       headers: {
