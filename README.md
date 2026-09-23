@@ -76,6 +76,33 @@ Fix the cause, then save a backend file or restart `npm run dev`.
 `TEST_MONGODB_URI` (defaults to `mongodb://127.0.0.1:27017/pysa_test`), so the
 Docker MongoDB from step 1 must be running first.
 
+### End-to-end tests
+
+Playwright tests in `e2e/` drive the real client against the real backend and
+database, fully isolated from the dev setup above: it uses ports
+`4100`/`5180` (instead of `4000`/`5173`) and the `pysa_e2e` database (instead
+of `pysa`), so running it never touches your `npm run dev` session or your
+dev data.
+
+Prerequisites (`backend/` and `client/` need their own `npm ci` too, see
+above):
+
+```bash
+npm run db:up                            # MongoDB must be running
+npm --prefix e2e ci
+npx --prefix e2e playwright install chromium
+```
+
+Run it from the root:
+
+```bash
+npm run test:e2e
+```
+
+This seeds `pysa_e2e` before the run (see `e2e/global-setup.js`), starts the
+backend on `4100` and the client on `5180`, and runs the Chromium smoke suite
+against them.
+
 ### Backend environment variables
 
 | Variable      | Required | Default | Description                    |
