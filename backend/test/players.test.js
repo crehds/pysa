@@ -5,7 +5,7 @@ const assert = require('node:assert/strict');
 const fs = require('node:fs/promises');
 const path = require('node:path');
 const request = require('supertest');
-const { app, resetDatabase, disconnect, waitFor } = require('../support/testEnv');
+const { app, resetDatabase, disconnect } = require('../support/testEnv');
 
 function roleScore(overrides) {
   return {
@@ -27,7 +27,7 @@ test('players: addNewPlayers -> getAllPlayers -> getScoreOfPlayers -> onePlayer 
     .post('/roles/setRoles')
     .send({ roles: [{ name: 'carry' }, { name: 'support' }] });
 
-  await request(app)
+  const setMedails = await request(app)
     .post('/medails/setMedails')
     .send({
       medails: [
@@ -36,11 +36,7 @@ test('players: addNewPlayers -> getAllPlayers -> getScoreOfPlayers -> onePlayer 
       ],
     });
 
-  const medails = await waitFor(async () => {
-    const res = await request(app).get('/medails/getMedails');
-    return res.body.body.length === 2 ? res.body.body : null;
-  });
-  const bronze = medails.find((medail) => medail.name === 'Bronze');
+  const bronze = setMedails.body.body.find((medail) => medail.name === 'Bronze');
 
   const playerNoMedail = {
     name: { firstName: 'Ana', lastName: 'Gomez' },

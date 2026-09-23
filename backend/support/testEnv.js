@@ -45,19 +45,4 @@ async function disconnect() {
   await mongoose.disconnect();
 }
 
-// Polls until conditionFn() resolves to a truthy value, or throws on timeout.
-// Used only where the current implementation does not await its own writes
-// (see the setMedails bug noted in the report).
-async function waitFor(conditionFn, { timeoutMs = 2000, intervalMs = 50 } = {}) {
-  const start = Date.now();
-  for (;;) {
-    const value = await conditionFn();
-    if (value) return value;
-    if (Date.now() - start > timeoutMs) {
-      throw new Error('Timed out waiting for condition');
-    }
-    await new Promise((resolve) => setTimeout(resolve, intervalMs));
-  }
-}
-
-module.exports = { app, mongoose, resetDatabase, disconnect, waitFor, TEST_MONGODB_URI };
+module.exports = { app, mongoose, resetDatabase, disconnect, TEST_MONGODB_URI };

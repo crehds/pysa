@@ -18,19 +18,21 @@ async function getMedails() {
   return await store.list();
 }
 
-function addMedails(medails) {
+async function addMedails(medails) {
   if (!medails || medails.length === 0) {
     return Promise.reject('Invalid data');
   }
 
-  medails.map((medail) => {
-    const newMedail = {
-      name: medail.nombre,
-      minimo: medail.minimo,
-      maximo: medail.maximo,
-    };
-    store.add(newMedail);
-  });
+  return Promise.all(
+    medails.map((medail) => {
+      const newMedail = {
+        name: medail.nombre,
+        minimo: medail.minimo,
+        maximo: medail.maximo,
+      };
+      return store.add(newMedail);
+    })
+  );
 }
 
 function patchMedail(medailId, medail) {

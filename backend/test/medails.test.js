@@ -3,12 +3,13 @@
 const { test, after } = require('node:test');
 const assert = require('node:assert/strict');
 const request = require('supertest');
-const { app, resetDatabase, disconnect, waitFor } = require('../support/testEnv');
+const { app, resetDatabase, disconnect } = require('../support/testEnv');
 
 test('medails: setMedails, getMedails, getMedail, getMedailByMMR, patchMedail', async (t) => {
   await resetDatabase();
 
-  await t.test('POST /medails/setMedails accepts the payload', async () => {
+  let seeded;
+  await t.test('POST /medails/setMedails saves and returns the medails', async () => {
     const res = await request(app)
       .post('/medails/setMedails')
       .send({
@@ -20,19 +21,17 @@ test('medails: setMedails, getMedails, getMedail, getMedailByMMR, patchMedail', 
 
     assert.equal(res.status, 200);
     assert.equal(res.body.error, '');
-    // Known bug (not fixed on this branch, see report): addMedails() never
-    // returns or awaits the saved documents, so the response body is always
-    // empty even though the writes are queued in the background.
-    assert.equal(res.body.body, undefined);
+    assert.equal(res.body.body.length, 2);
+    seeded = res.body.body;
+    const names = seeded.map((medail) => medail.name).sort();
+    assert.deepEqual(names, ['Bronze', 'Silver']);
   });
 
-  let seeded;
-  await t.test('the medails eventually persist', async () => {
-    seeded = await waitFor(async () => {
-      const res = await request(app).get('/medails/getMedails');
-      return res.body.body.length === 2 ? res.body.body : null;
-    });
-    const names = seeded.map((medail) => medail.name).sort();
+  await t.test('the medails persist', async () => {
+    const res = await request(app).get('/medails/getMedails');
+    assert.equal(res.status, 200);
+    assert.equal(res.body.body.length, 2);
+    const names = res.body.body.map((medail) => medail.name).sort();
     assert.deepEqual(names, ['Bronze', 'Silver']);
   });
 
