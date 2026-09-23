@@ -167,6 +167,43 @@ test('players: addNewPlayers -> getAllPlayers -> getScoreOfPlayers -> onePlayer 
     assert.ok(res.body.body.imgURL.data);
   });
 
+  await t.test('POST /players/updateImage/:id and GET /players/getAllPlayers agree on the imgURL shape', async (t) => {
+    const uploadedImagePath = path.join(__dirname, '..', 'uploads', `${playerBId}.png`);
+    t.after(async () => {
+      await fs.rm(uploadedImagePath).catch(() => {});
+    });
+
+    // Both routes read the same Model3 (strict: false, no schema for
+    // imgURL) document, but through different query shapes
+    // (findByIdAndUpdate's returned doc vs find()'s array), so the client
+    // (client/src/utils/playerImage.js) must not have to guess between two
+    // different wire shapes for the same field.
+    const uploadRes = await request(app)
+      .post(`/players/updateImage/${playerBId}`)
+      .attach('image', Buffer.from('fake-png-bytes'), {
+        filename: 'avatar.png',
+        contentType: 'image/png',
+      });
+    assert.equal(uploadRes.status, 200);
+    const uploadedImgURL = uploadRes.body.body.imgURL;
+
+    const listRes = await request(app).get('/players/getAllPlayers');
+    assert.equal(listRes.status, 200);
+    const listedPlayer = listRes.body.body.find(
+      (player) => player._id === playerBId
+    );
+    assert.ok(listedPlayer, 'the uploaded-to player must still be listed');
+    const listedImgURL = listedPlayer.imgURL;
+
+    assert.equal(listedImgURL.mimetype, uploadedImgURL.mimetype);
+    assert.deepEqual(
+      listedImgURL.data,
+      uploadedImgURL.data,
+      `imgURL.data shape differs between the upload response (${JSON.stringify(uploadedImgURL.data)}) ` +
+        `and getAllPlayers (${JSON.stringify(listedImgURL.data)})`
+    );
+  });
+
   await t.test('DELETE /players/deleteAllDataOfPlayers removes both players', async () => {
     const res = await request(app)
       .delete('/players/deleteAllDataOfPlayers')
