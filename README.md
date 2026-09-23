@@ -32,6 +32,33 @@ Requirements: Node.js 24 and Docker.
    collections it owns and is safe to run again (it resets them first), and it
    refuses to run against a non-local `MONGODB_URI` unless you pass `--force`.
 
+4. Install and start the client:
+
+   ```bash
+   cd client
+   npm install
+   npm run dev
+   ```
+
+   The client (Vite) listens on `http://localhost:5173` and calls the backend
+   directly at `http://localhost:4000` by default. Override that with the
+   `VITE_API_URL` env var (e.g. `VITE_API_URL=http://localhost:4001 npm run
+   dev`) if the backend runs elsewhere; there is no committed `.env` file for
+   the client, so set it inline or in your shell.
+
+   Run the client's tests with `npm test` (inside `client/`).
+
+### Running everything from the root
+
+```bash
+npm run db:up     # start MongoDB (equivalent to step 1)
+npm run dev        # backend + client together, via concurrently
+npm run db:down    # stop MongoDB
+```
+
+`npm run dev` requires `backend/.env` to already exist (step 2) and fails
+fast with `EADDRINUSE` if something is already listening on port 4000.
+
 ### Tests
 
 `npm test` (inside `backend/`) runs the integration test suite against
