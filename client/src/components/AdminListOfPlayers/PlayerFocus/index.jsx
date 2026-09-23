@@ -17,13 +17,11 @@ import { AiFillCamera, AiOutlineCheck } from 'react-icons/ai';
 import { BsX } from 'react-icons/bs';
 import Swal from 'sweetalert2';
 import { API_BASE_URL } from '../../../config';
+import { playerImageSrc } from '../../../utils/playerImage';
 
 export const PlayerFocus = ({ player }) => {
   console.log(player);
-  const regex = /^[/][a-z]+[/].*/gi;
-  const imgData = regex.test(player.imgURL)
-    ? `${API_BASE_URL}${player.imgURL}`
-    : `data:image/${player.imgURL.mimetype};base64,${player.imgURL.data}`;
+  const imgData = playerImageSrc(player.imgURL);
   const [medail, setMedail] = useState(player.medail);
   const [src, setSrc] = useState({
     path: '',

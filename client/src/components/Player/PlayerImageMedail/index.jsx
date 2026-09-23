@@ -1,14 +1,10 @@
 import React from 'react';
 import { GiMedal } from 'react-icons/gi';
 import { Icon, ImageWrapper, NamePlayer, PlayerImageWrapper } from './styles';
-import user from '../../../assets/default-user.png';
-import { API_BASE_URL } from '../../../config';
+import { playerImageSrc } from '../../../utils/playerImage';
 
 export const PlayerImageMedail = ({ name, medail, mmr, src, size }) => {
-  const regex = /^[/][a-z]+[/].*/gi;
-  const imgData = regex.test(src)
-    ? `${API_BASE_URL}${src}`
-    : `data:image/${src.mimetype};base64,${src.data}`;
+  const imgData = playerImageSrc(src);
   return (
     <PlayerImageWrapper size={size}>
       <NamePlayer className='playerName'>
