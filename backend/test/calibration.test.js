@@ -4,6 +4,7 @@ const { test, after } = require('node:test');
 const assert = require('node:assert/strict');
 const request = require('supertest');
 const { app, mongoose, resetDatabase, disconnect } = require('../support/testEnv');
+const CalibrationModel = require('../components/calibration/model');
 
 test('calibration: add, get, patch', async (t) => {
   await resetDatabase();
@@ -45,6 +46,13 @@ test('calibration: add, get, patch', async (t) => {
       `/calibrations/getCalibrationOfOnePlayer/${playerId}`
     );
     assert.equal(check.body.body.remainingGames, 3);
+  });
+
+  await t.test('DELETE /calibrations/deleteAll removes every calibration', async () => {
+    const res = await request(app).delete('/calibrations/deleteAll');
+    assert.equal(res.status, 200);
+    assert.equal(res.body.error, '');
+    assert.equal(await CalibrationModel.countDocuments(), 0);
   });
 });
 

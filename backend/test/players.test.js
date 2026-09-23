@@ -203,4 +203,45 @@ test('players: a player created without a medail field defaults to "Sin Calibrar
   assert.equal(res.body.body.medail, 'Sin Calibrar');
 });
 
+test('players: setNotCalibrated, deleteAll, and an invalid id', async (t) => {
+  await resetDatabase();
+
+  const created = await request(app)
+    .post('/players/newPlayers')
+    .send({
+      players: [
+        {
+          name: { firstName: 'Cid', lastName: 'Ray' },
+          nickname: 'cid',
+          mmr: 800,
+          estado: true,
+          medail: null,
+        },
+      ],
+    });
+  const playerId = created.body.body[0]._id;
+
+  await t.test('PATCH /players/setNotCalibrated/:playerId resets the medail', async () => {
+    const res = await request(app).patch(`/players/setNotCalibrated/${playerId}`);
+    assert.equal(res.status, 200);
+    assert.equal(res.body.error, '');
+    assert.equal(res.body.body.medail, 'Sin Calibrar');
+  });
+
+  await t.test('GET /players/onePlayer/:id with an invalid id characterizes current error handling', async () => {
+    const res = await request(app).get('/players/onePlayer/not-an-object-id');
+    assert.equal(res.status, 500);
+    assert.equal(res.body.error, 'Unexpected error');
+  });
+
+  await t.test('DELETE /players/deleteAll removes every player', async () => {
+    const res = await request(app).delete('/players/deleteAll');
+    assert.equal(res.status, 200);
+    assert.equal(res.body.error, '');
+
+    const check = await request(app).get('/players/getAllPlayers');
+    assert.equal(check.body.body.length, 0);
+  });
+});
+
 after(disconnect);
