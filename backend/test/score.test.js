@@ -2,17 +2,17 @@
 
 const { test, after } = require('node:test');
 const assert = require('node:assert/strict');
-const request = require('supertest');
-const { app, mongoose, resetDatabase, disconnect } = require('../support/testEnv');
+const { mongoose, resetDatabase, disconnect, loginAsAdmin } = require('../support/testEnv');
 const ScoreModel = require('../components/score/model');
 
 test('scores: deleteAll removes every score', async () => {
   await resetDatabase();
+  const agent = await loginAsAdmin();
 
-  await request(app).post('/roles/setRoles').send({ roles: [{ name: 'carry' }] });
+  await agent.post('/roles/setRoles').send({ roles: [{ name: 'carry' }] });
 
   const playerId = new mongoose.Types.ObjectId().toString();
-  await request(app)
+  await agent
     .post(`/scores/setScoreOfOnePlayer/${playerId}`)
     .send({
       rolesScore: [
@@ -32,7 +32,7 @@ test('scores: deleteAll removes every score', async () => {
     });
   assert.equal(await ScoreModel.countDocuments(), 1);
 
-  const res = await request(app).delete('/scores/deleteAll');
+  const res = await agent.delete('/scores/deleteAll');
   assert.equal(res.status, 200);
   assert.equal(res.body.error, '');
   assert.equal(await ScoreModel.countDocuments(), 0);

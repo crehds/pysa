@@ -3,16 +3,17 @@
 const { test, after } = require('node:test');
 const assert = require('node:assert/strict');
 const request = require('supertest');
-const { app, mongoose, resetDatabase, disconnect } = require('../support/testEnv');
+const { app, mongoose, resetDatabase, disconnect, loginAsAdmin } = require('../support/testEnv');
 const CalibrationModel = require('../components/calibration/model');
 
 test('calibration: add, get, patch', async (t) => {
   await resetDatabase();
+  const agent = await loginAsAdmin();
 
   const playerId = new mongoose.Types.ObjectId().toString();
 
   await t.test('POST /calibrations/addCalibration/:playerId creates a calibration', async () => {
-    const res = await request(app)
+    const res = await agent
       .post(`/calibrations/addCalibration/${playerId}`)
       .send({ estado: true, remainingGames: 5, initialMMR: 1500 });
 
@@ -34,7 +35,7 @@ test('calibration: add, get, patch', async (t) => {
   });
 
   await t.test('PATCH /calibrations/patchCalibration/:playerId updates it', async () => {
-    const res = await request(app)
+    const res = await agent
       .patch(`/calibrations/patchCalibration/${playerId}`)
       .send({ remainingGames: 3 });
 
@@ -49,7 +50,7 @@ test('calibration: add, get, patch', async (t) => {
   });
 
   await t.test('DELETE /calibrations/deleteAll removes every calibration', async () => {
-    const res = await request(app).delete('/calibrations/deleteAll');
+    const res = await agent.delete('/calibrations/deleteAll');
     assert.equal(res.status, 200);
     assert.equal(res.body.error, '');
     assert.equal(await CalibrationModel.countDocuments(), 0);

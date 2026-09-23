@@ -5,7 +5,7 @@ const assert = require('node:assert/strict');
 const fs = require('node:fs/promises');
 const path = require('node:path');
 const request = require('supertest');
-const { app, resetDatabase, disconnect } = require('../support/testEnv');
+const { app, resetDatabase, disconnect, loginAsAdmin } = require('../support/testEnv');
 
 function roleScore(overrides) {
   return {
@@ -22,12 +22,13 @@ function roleScore(overrides) {
 
 test('players: addNewPlayers -> getAllPlayers -> getScoreOfPlayers -> onePlayer -> updateScore -> updateImage -> deleteAllDataOfPlayers', async (t) => {
   await resetDatabase();
+  const agent = await loginAsAdmin();
 
-  await request(app)
+  await agent
     .post('/roles/setRoles')
     .send({ roles: [{ name: 'carry' }, { name: 'support' }] });
 
-  const setMedails = await request(app)
+  const setMedails = await agent
     .post('/medails/setMedails')
     .send({
       medails: [
@@ -67,7 +68,7 @@ test('players: addNewPlayers -> getAllPlayers -> getScoreOfPlayers -> onePlayer 
   let playerBId;
 
   await t.test('POST /players/addNewPlayers creates both players', async () => {
-    const res = await request(app)
+    const res = await agent
       .post('/players/addNewPlayers')
       .send({ players: [playerNoMedail, playerWithMedail] });
 
@@ -102,6 +103,9 @@ test('players: addNewPlayers -> getAllPlayers -> getScoreOfPlayers -> onePlayer 
   });
 
   await t.test('POST /scores/getScoreOfPlayers returns each player\'s scores', async () => {
+    // Deliberately the bare (unauthenticated) client: this route is public
+    // (see backend/components/score/network.js), and the public pages call
+    // it exactly like this (client/src/hooks/useGetData.js).
     const res = await request(app)
       .post('/scores/getScoreOfPlayers')
       .send({ playersIds: [playerAId, playerBId] });
@@ -130,7 +134,7 @@ test('players: addNewPlayers -> getAllPlayers -> getScoreOfPlayers -> onePlayer 
   });
 
   await t.test('PATCH /players/updateScore/:id recomputes the medail from mmr and updates scores', async () => {
-    const res = await request(app)
+    const res = await agent
       .patch(`/players/updateScore/${playerBId}`)
       .send({
         mmr: 2500,
@@ -154,7 +158,7 @@ test('players: addNewPlayers -> getAllPlayers -> getScoreOfPlayers -> onePlayer 
       await fs.rm(uploadedImagePath).catch(() => {});
     });
 
-    const res = await request(app)
+    const res = await agent
       .post(`/players/updateImage/${playerBId}`)
       .attach('image', Buffer.from('fake-png-bytes'), {
         filename: 'avatar.png',
@@ -178,7 +182,7 @@ test('players: addNewPlayers -> getAllPlayers -> getScoreOfPlayers -> onePlayer 
     // (findByIdAndUpdate's returned doc vs find()'s array), so the client
     // (client/src/utils/playerImage.js) must not have to guess between two
     // different wire shapes for the same field.
-    const uploadRes = await request(app)
+    const uploadRes = await agent
       .post(`/players/updateImage/${playerBId}`)
       .attach('image', Buffer.from('fake-png-bytes'), {
         filename: 'avatar.png',
@@ -205,7 +209,7 @@ test('players: addNewPlayers -> getAllPlayers -> getScoreOfPlayers -> onePlayer 
   });
 
   await t.test('DELETE /players/deleteAllDataOfPlayers removes both players', async () => {
-    const res = await request(app)
+    const res = await agent
       .delete('/players/deleteAllDataOfPlayers')
       .send({ playersIds: [playerAId, playerBId] });
 
@@ -222,10 +226,11 @@ test('players: addNewPlayers -> getAllPlayers -> getScoreOfPlayers -> onePlayer 
 
 test('players: a player created without a medail field defaults to "Sin Calibrar"', async () => {
   await resetDatabase();
+  const agent = await loginAsAdmin();
 
   // Unlike playerNoMedail above (medail: null), this omits the key
   // entirely, which /newPlayers stores as-is when a caller sends no medail.
-  const created = await request(app)
+  const created = await agent
     .post('/players/newPlayers')
     .send({
       players: [
@@ -241,8 +246,9 @@ test('players: a player created without a medail field defaults to "Sin Calibrar
 
 test('players: setNotCalibrated, deleteAll, and an invalid id', async (t) => {
   await resetDatabase();
+  const agent = await loginAsAdmin();
 
-  const created = await request(app)
+  const created = await agent
     .post('/players/newPlayers')
     .send({
       players: [
@@ -258,7 +264,7 @@ test('players: setNotCalibrated, deleteAll, and an invalid id', async (t) => {
   const playerId = created.body.body[0]._id;
 
   await t.test('PATCH /players/setNotCalibrated/:playerId resets the medail', async () => {
-    const res = await request(app).patch(`/players/setNotCalibrated/${playerId}`);
+    const res = await agent.patch(`/players/setNotCalibrated/${playerId}`);
     assert.equal(res.status, 200);
     assert.equal(res.body.error, '');
     assert.equal(res.body.body.medail, 'Sin Calibrar');
@@ -279,7 +285,7 @@ test('players: setNotCalibrated, deleteAll, and an invalid id', async (t) => {
   });
 
   await t.test('DELETE /players/deleteAll removes every player', async () => {
-    const res = await request(app).delete('/players/deleteAll');
+    const res = await agent.delete('/players/deleteAll');
     assert.equal(res.status, 200);
     assert.equal(res.body.error, '');
 

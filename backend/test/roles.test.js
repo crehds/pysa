@@ -3,10 +3,11 @@
 const { test, after } = require('node:test');
 const assert = require('node:assert/strict');
 const request = require('supertest');
-const { app, resetDatabase, disconnect } = require('../support/testEnv');
+const { app, resetDatabase, disconnect, loginAsAdmin } = require('../support/testEnv');
 
 test('roles: setRoles then getRoles', async (t) => {
   await resetDatabase();
+  const agent = await loginAsAdmin();
 
   await t.test('GET /roles/getRoles starts empty', async () => {
     const res = await request(app).get('/roles/getRoles');
@@ -17,7 +18,7 @@ test('roles: setRoles then getRoles', async (t) => {
 
   let created;
   await t.test('POST /roles/setRoles creates roles', async () => {
-    const res = await request(app)
+    const res = await agent
       .post('/roles/setRoles')
       .send({ roles: [{ name: 'carry' }, { name: 'support' }] });
 

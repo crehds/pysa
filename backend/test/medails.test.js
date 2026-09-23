@@ -3,14 +3,15 @@
 const { test, after } = require('node:test');
 const assert = require('node:assert/strict');
 const request = require('supertest');
-const { app, resetDatabase, disconnect } = require('../support/testEnv');
+const { app, resetDatabase, disconnect, loginAsAdmin } = require('../support/testEnv');
 
 test('medails: setMedails, getMedails, getMedail, getMedailByMMR, patchMedail', async (t) => {
   await resetDatabase();
+  const agent = await loginAsAdmin();
 
   let seeded;
   await t.test('POST /medails/setMedails saves and returns the medails', async () => {
-    const res = await request(app)
+    const res = await agent
       .post('/medails/setMedails')
       .send({
         medails: [
@@ -62,7 +63,7 @@ test('medails: setMedails, getMedails, getMedail, getMedailByMMR, patchMedail', 
 
   await t.test('PATCH /medails/patchMedail/:id updates the medail', async () => {
     const target = seeded.find((medail) => medail.name === 'Bronze');
-    const res = await request(app)
+    const res = await agent
       .patch(`/medails/patchMedail/${target._id}`)
       .send({ medail: { name: 'Wood' } });
 

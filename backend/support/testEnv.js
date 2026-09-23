@@ -20,8 +20,25 @@ if (!dbName.endsWith('_test')) {
 
 process.env.MONGODB_URI = TEST_MONGODB_URI;
 
+// Same idea as MONGODB_URI above: force known, test-only admin credentials
+// before requiring app.js, so the integration suite can log in and exercise
+// protected routes without ever touching backend/.env or depending on the
+// developer's shell env (`||` still lets a caller override any of these).
+const {
+  TEST_ADMIN_USERNAME,
+  TEST_ADMIN_PASSWORD,
+  TEST_ADMIN_PASSWORD_HASH,
+  TEST_JWT_SECRET,
+} = require('./authFixtures');
+
+process.env.ADMIN_USERNAME = process.env.ADMIN_USERNAME || TEST_ADMIN_USERNAME;
+process.env.ADMIN_PASSWORD_HASH = process.env.ADMIN_PASSWORD_HASH || TEST_ADMIN_PASSWORD_HASH;
+process.env.JWT_SECRET = process.env.JWT_SECRET || TEST_JWT_SECRET;
+
 const mongoose = require('mongoose');
+const request = require('supertest');
 const app = require('../app');
+const { SESSION_COOKIE_NAME } = require('../auth/tokens');
 
 function waitForConnection(timeoutMs = 5000) {
   return new Promise((resolve, reject) => {
@@ -55,4 +72,47 @@ async function disconnect() {
   await mongoose.disconnect();
 }
 
-module.exports = { app, mongoose, resetDatabase, disconnect, TEST_MONGODB_URI };
+// Logs in as the test admin and returns a request-like object whose
+// get/post/patch/put/delete already carry the session cookie, so callers
+// can swap `request(app)` for `await loginAsAdmin()` at protected call
+// sites with no other change.
+//
+// Not request.agent(app): supertest's agent cookie jar (the `cookiejar`
+// package) honors the Secure attribute like a browser and never resends a
+// Secure cookie over the plain-HTTP connection supertest uses internally,
+// so the session would silently vanish after login. Carrying the cookie
+// ourselves sidesteps that test-harness limitation (real browsers, e.g.
+// Chromium on http://localhost, do resend it — see the e2e suite and the
+// report for the empirical check).
+async function loginAsAdmin() {
+  const loginRes = await request(app)
+    .post('/auth/login')
+    .send({ username: TEST_ADMIN_USERNAME, password: TEST_ADMIN_PASSWORD });
+  const setCookieHeader = loginRes.headers['set-cookie'].find((entry) =>
+    entry.startsWith(`${SESSION_COOKIE_NAME}=`)
+  );
+  if (!setCookieHeader) {
+    throw new Error('loginAsAdmin: the test admin login did not set a session cookie');
+  }
+  const sessionCookie = setCookieHeader.split(';')[0];
+
+  const withCookie = (method) => (url) => request(app)[method](url).set('Cookie', sessionCookie);
+  return {
+    get: withCookie('get'),
+    post: withCookie('post'),
+    patch: withCookie('patch'),
+    put: withCookie('put'),
+    delete: withCookie('delete'),
+  };
+}
+
+module.exports = {
+  app,
+  mongoose,
+  resetDatabase,
+  disconnect,
+  TEST_MONGODB_URI,
+  TEST_ADMIN_USERNAME,
+  TEST_ADMIN_PASSWORD,
+  loginAsAdmin,
+};

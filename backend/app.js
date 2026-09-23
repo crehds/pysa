@@ -13,6 +13,7 @@ const db = require('./db');
 const { loadAdminConfig, loadAllowedOrigins } = require('./auth/config');
 const { createCorsOptions } = require('./auth/cors');
 const { createAuthRouter } = require('./auth/network');
+const { createRequireAdmin } = require('./auth/middleware');
 
 if (!process.env.MONGODB_URI) {
   throw new Error(
@@ -50,7 +51,7 @@ app.use('/default', express.static(path.join(__dirname, 'public/images/')));
 app.use('/static', express.static(path.join(__dirname, 'uploads')));
 // app.use(express.static(path.join(__dirname, 'public')));
 
-router(app);
+router(app, createRequireAdmin(adminConfig));
 
 // app.use('/', indexRouter);
 // app.use('/users', usersRouter);
