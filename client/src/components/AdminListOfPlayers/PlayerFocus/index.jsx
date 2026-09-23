@@ -137,7 +137,12 @@ export const PlayerFocus = ({ player }) => {
   }
 
   function handleShowIcons(display) {
-    let icons = document.getElementsByName('check');
+    // Not getElementsByName('check'): both icons below render as <svg
+    // name="check">, and getElementsByName only matches elements in the
+    // HTML namespace, so it silently returns an empty list for SVG nodes.
+    // icons[0] was always undefined and selecting a file threw instead of
+    // revealing the confirm/cancel controls.
+    let icons = document.getElementsByClassName('icon__control');
     icons[0].style.display = display;
     icons[1].style.display = display;
   }
