@@ -1,0 +1,16 @@
+{
+  "name": "e2e",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "description": "End-to-end tests for pysa: exercises the real client and backend against an isolated database",
+  "engines": {
+    "node": ">=24"
+  },
+  "scripts": {
+    "test": "playwright test"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.63.0"
+  }
+}
