@@ -1,10 +1,10 @@
 // import './App.css';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Loading } from './components/initLoading';
 import { GlobalStyle } from './styles/GlobalStyles';
 import { Home } from './pages/Home';
 import { NavBar } from './components/NavBar';
-import { Navigate, Route, Routes, useNavigate } from 'react-router';
+import { Navigate, Route, Routes, useLocation, useNavigate } from 'react-router';
 import { Players } from './pages/Players';
 import { AdminPlayers } from './pages/AdminPlayers';
 import './App.css';
@@ -18,12 +18,26 @@ function App() {
   const [isLogging, setLogging] = useState(isAuth);
   const [loadingData, setLoadingData] = useGetData(isLoading);
   const navigate = useNavigate();
+  const { pathname } = useLocation();
+  const routeContainerRef = useRef(null);
+  const isInitialRender = useRef(true);
 
   useEffect(() => {
     if (loadingData) {
       setLoading(true);
     }
   }, [loadingData]);
+
+  // Moves focus to the route container on every route change (but not on the
+  // initial render) so screen-reader users get a signal that the page
+  // changed, since react-router doesn't do this on its own.
+  useEffect(() => {
+    if (isInitialRender.current) {
+      isInitialRender.current = false;
+      return;
+    }
+    routeContainerRef.current?.focus();
+  }, [pathname]);
 
   function handleLogging(value) {
     setLogging(value);
@@ -50,10 +64,17 @@ function App() {
             handleRefreshApp={handleRefreshApp}
           />
           {/* react-router's <Routes> renders no wrapper element, unlike
-          @reach/router's <Router>, so this div keeps the same 100vh box
+          @reach/router's <Router>, so this element keeps the same 100vh box
           the rest of the layout (see WrapperDiv's height: inherit) relies
-          on. */}
-          <div style={{ height: '100vh' }}>
+          on. It also doubles as the route container: focused on every route
+          change (outline suppressed since that focus is programmatic, not
+          from keyboard navigation) so assistive tech announces the new
+          page. */}
+          <main
+            ref={routeContainerRef}
+            tabIndex={-1}
+            style={{ height: '100vh', outline: 'none' }}
+          >
             <Routes>
               <Route path='/' element={<Home />} />
               <Route path='/players' element={<Players />} />
@@ -62,7 +83,7 @@ function App() {
                 element={isLogging ? <AdminPlayers /> : <Navigate to='/' replace />}
               />
             </Routes>
-          </div>
+          </main>
         </>
       ) : (
         <Loading />

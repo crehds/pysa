@@ -1,5 +1,6 @@
 import React from 'react';
 import { render, screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import App from './App';
 import { Provider } from './Context';
 import { BrowserRouter } from 'react-router';
@@ -114,4 +115,28 @@ test('/adminPlayers redirects to / when logged out', async () => {
   // the ranking, which renders the same player rows as the `/` test above.
   expect(await screen.findByText('PlayerOne')).toBeInTheDocument();
   expect(screen.getByText('Nº Partidas')).toBeInTheDocument();
+});
+
+test('the initial render does not move focus to the route container', async () => {
+  renderAppAt('/');
+
+  await screen.findByText('PlayerOne');
+
+  const routeContainer = screen.getByRole('main');
+  expect(document.activeElement).not.toBe(routeContainer);
+});
+
+test('navigating to another route moves focus to the route container, so screen readers announce it', async () => {
+  const user = userEvent.setup();
+  renderAppAt('/');
+  await screen.findByText('PlayerOne');
+
+  const routeContainer = screen.getByRole('main');
+  const playersLink = document.querySelector('a[href="/players"]');
+
+  await user.click(playersLink);
+
+  const names = await screen.findAllByText('PlayerOne');
+  expect(names.length).toBeGreaterThan(0);
+  expect(document.activeElement).toBe(routeContainer);
 });
