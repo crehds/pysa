@@ -9,7 +9,12 @@ import {
 const Context = createContext();
 
 let initialState = {
-  isAuth: window.sessionStorage.getItem('token'),
+  // null = not yet known: useCheckAuth (client/src/hooks/useCheckAuth.js)
+  // resolves this from GET /auth/me on app load instead of trusting
+  // anything stored client-side. App.jsx treats null as "wait" so a
+  // logged-in admin reloading /adminPlayers is not bounced to / before the
+  // check finishes.
+  isAuth: null,
 };
 
 const reducer2 = (state, action) => {
@@ -67,7 +72,6 @@ const reducer2 = (state, action) => {
         isAuth: true,
       };
     case 'UNLOGIN':
-      window.sessionStorage.removeItem('token');
       return {
         ...state,
         isAuth: false,

@@ -2,6 +2,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { test, expect } from '../fixtures.js';
 import { seedDatabase } from '../global-setup.js';
+import { E2E_ADMIN_USERNAME, E2E_ADMIN_PASSWORD, E2E_BACKEND_URL } from '../playwright.config.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const AVATAR_PATH = path.join(__dirname, '..', 'fixtures', 'avatar.png');
@@ -25,7 +26,14 @@ async function focusPlayer(page, nickname) {
 test('uploading an avatar renders it, both immediately and after a reload', async ({
   page,
 }) => {
-  await page.addInitScript(() => window.sessionStorage.setItem('token', 'true'));
+  // Faster than driving the real login modal (see
+  // admin-players.spec.js, the one spec that does): page.request shares
+  // this test's browser context, so the pysa_session cookie POST
+  // /auth/login sets here is what GET /auth/me (App.jsx's useCheckAuth)
+  // then reads on the goto below.
+  await page.request.post(`${E2E_BACKEND_URL}/auth/login`, {
+    data: { username: E2E_ADMIN_USERNAME, password: E2E_ADMIN_PASSWORD },
+  });
   await page.goto('/adminPlayers');
 
   // Seeded players have no imgURL (backend/seed/data/players.json), so Jean

@@ -59,8 +59,8 @@ const mockScorePlayers = [
 ];
 
 // Backend responses are always shaped { error, body }.
-function jsonResponse(body) {
-  return Promise.resolve({ json: () => Promise.resolve({ error: '', body }) });
+function jsonResponse(body, status = 200) {
+  return Promise.resolve({ status, json: () => Promise.resolve({ error: '', body }) });
 }
 
 function mockFetch(url, options) {
@@ -75,6 +75,11 @@ function mockFetch(url, options) {
   }
   if (url.includes('roles/getRoles')) {
     return jsonResponse(mockRoles);
+  }
+  if (url.includes('auth/me')) {
+    // None of these tests simulate a logged-in admin; useCheckAuth
+    // (client/src/hooks/useCheckAuth.js) fires this on every mount.
+    return jsonResponse('', 401);
   }
   return Promise.reject(new Error(`Unexpected fetch call: ${url}`));
 }

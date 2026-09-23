@@ -12,6 +12,7 @@ import { FaUserPlus, FaUserMinus } from 'react-icons/fa';
 import Swal from 'sweetalert2';
 import { useStateValue } from '../../Context';
 import { API_BASE_URL } from '../../config';
+import { adminFetch } from '../../api/auth';
 
 function randomPlayer(playersLength) {
   let number = Math.floor(Math.random() * (playersLength - 2 - 2 + 1) + 2);
@@ -160,14 +161,25 @@ export const AdminListOfPlayers = ({ players, handleLoading }) => {
       mmr: 0,
       imgURL: '/default/default-user.png',
     }));
-    let result = await fetch(`${API_BASE_URL}/players/addNewPlayers`, {
-      method: 'POST',
-      body: JSON.stringify({ players: body }),
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    }).then((result) => result.json());
-    return result;
+    const response = await adminFetch(
+      contextdispatch,
+      `${API_BASE_URL}/players/addNewPlayers`,
+      {
+        method: 'POST',
+        body: JSON.stringify({ players: body }),
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      }
+    );
+    if (response.status === 401) {
+      // Session expired mid-write: adminFetch already logged the user out
+      // and told them so. Returning false tells SweetAlert2's preConfirm
+      // not to confirm, so the caller below never touches the (empty)
+      // body as if it were a successful add.
+      return false;
+    }
+    return await response.json();
   }
 
   async function deletePlayer(arrPlayers) {
@@ -180,14 +192,21 @@ export const AdminListOfPlayers = ({ players, handleLoading }) => {
         )
       )
       .map((playerFiltred) => playerFiltred['_id']);
-    let result = await fetch(`${API_BASE_URL}/players/deleteAllDataOfPlayers`, {
-      method: 'DELETE',
-      body: JSON.stringify({ playersIds: arrIdPlayers }),
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    }).then((result) => result.json());
-    return result;
+    const response = await adminFetch(
+      contextdispatch,
+      `${API_BASE_URL}/players/deleteAllDataOfPlayers`,
+      {
+        method: 'DELETE',
+        body: JSON.stringify({ playersIds: arrIdPlayers }),
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      }
+    );
+    if (response.status === 401) {
+      return false;
+    }
+    return await response.json();
   }
 
   async function handleDeletePlayer() {

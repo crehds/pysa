@@ -5,7 +5,8 @@ import { defineConfig, devices } from '@playwright/test';
 // (pysa_e2e instead of pysa), so this suite never touches either.
 const BACKEND_PORT = 4100;
 const CLIENT_PORT = 5180;
-const BACKEND_URL = `http://localhost:${BACKEND_PORT}`;
+export const E2E_BACKEND_URL = `http://localhost:${BACKEND_PORT}`;
+const BACKEND_URL = E2E_BACKEND_URL;
 const CLIENT_URL = `http://localhost:${CLIENT_PORT}`;
 export const E2E_MONGODB_URI = 'mongodb://127.0.0.1:27017/pysa_e2e';
 

@@ -8,6 +8,7 @@ import { BsInfoCircle } from 'react-icons/bs';
 import Swal from 'sweetalert2';
 import { Info } from '../Info';
 import { API_BASE_URL } from '../../../config';
+import { adminFetch } from '../../../api/auth';
 
 function calc(score) {
   return score.reduce((acc, cv) => {
@@ -86,7 +87,8 @@ export const ScorePlayerFocus = ({
   }) {
     let score = setNameRoles(rolesScore);
 
-    let result = await fetch(
+    const response = await adminFetch(
+      dispatch,
       `${API_BASE_URL}/players/updateScore/${playerId}`,
       {
         method: 'PATCH',
@@ -95,8 +97,11 @@ export const ScorePlayerFocus = ({
           'Content-Type': 'application/json',
         },
       }
-    ).then((result) => result.json());
-    return result;
+    );
+    if (response.status === 401) {
+      return false;
+    }
+    return await response.json();
   }
 
   async function test(mmr, partidas) {

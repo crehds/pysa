@@ -10,6 +10,7 @@ import { AdminPlayers } from './pages/AdminPlayers';
 import './App.css';
 import { Logging } from './components/Logging';
 import { useGetData } from './hooks/useGetData';
+import { useCheckAuth } from './hooks/useCheckAuth';
 import { useStateValue } from './Context';
 
 function App() {
@@ -17,6 +18,7 @@ function App() {
   const [isLoading, setLoading] = useState(false);
   const [isLogging, setLogging] = useState(isAuth);
   const [loadingData, setLoadingData] = useGetData(isLoading);
+  useCheckAuth();
   const navigate = useNavigate();
   const { pathname } = useLocation();
   const routeContainerRef = useRef(null);
@@ -27,6 +29,17 @@ function App() {
       setLoading(true);
     }
   }, [loadingData]);
+
+  // isAuth starts out null (not yet known) and resolves asynchronously once
+  // useCheckAuth's GET /auth/me completes; mirror it into isLogging once it
+  // does, without re-navigating (that only happens from an explicit login,
+  // via handleLogging below), so a reload of /adminPlayers with a valid
+  // session does not flash a redirect to / first.
+  useEffect(() => {
+    if (isAuth !== null) {
+      setLogging(isAuth);
+    }
+  }, [isAuth]);
 
   // Moves focus to the route container on every route change (but not on the
   // initial render) so screen-reader users get a signal that the page
@@ -80,7 +93,13 @@ function App() {
               <Route path='/players' element={<Players />} />
               <Route
                 path='/adminPlayers'
-                element={isLogging ? <AdminPlayers /> : <Navigate to='/' replace />}
+                element={
+                  isLogging === null ? null : isLogging ? (
+                    <AdminPlayers />
+                  ) : (
+                    <Navigate to='/' replace />
+                  )
+                }
               />
             </Routes>
           </main>

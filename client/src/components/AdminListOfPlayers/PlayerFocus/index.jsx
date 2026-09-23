@@ -18,6 +18,7 @@ import { BsX } from 'react-icons/bs';
 import Swal from 'sweetalert2';
 import { API_BASE_URL } from '../../../config';
 import { playerImageSrc } from '../../../utils/playerImage';
+import { adminFetch } from '../../../api/auth';
 
 export const PlayerFocus = ({ player }) => {
   console.log(player);
@@ -54,15 +55,20 @@ export const PlayerFocus = ({ player }) => {
   }
 
   async function updateImage(form) {
-    const updated = await fetch(
+    const response = await adminFetch(
+      dispatch,
       `${API_BASE_URL}/players/updateImage/${player['_id']}`,
       {
         method: 'POST',
         body: form,
       }
-    ).then((result) => result.json());
-
-    return updated;
+    );
+    if (response.status === 401) {
+      // Session expired mid-upload: adminFetch already logged the user out
+      // and told them so.
+      return false;
+    }
+    return await response.json();
   }
   function onSubmit(event) {
     event.preventDefault();

@@ -1,11 +1,18 @@
 import { test as base, expect } from '@playwright/test';
 
-// The app currently emits no console.error on any page under test, so this
-// starts empty. It is an opt-in allowlist: add a narrow substring here only
-// once a real, pre-existing console.error shows up that a spec has no
-// business failing on. Never add a page error here — page errors (uncaught
-// exceptions) must always fail the test, by design.
-export const KNOWN_CONSOLE_ERRORS = [];
+// It is an opt-in allowlist: add a narrow substring here only once a real,
+// pre-existing console.error shows up that a spec has no business failing
+// on. Never add a page error here — page errors (uncaught exceptions) must
+// always fail the test, by design.
+export const KNOWN_CONSOLE_ERRORS = [
+  // useCheckAuth (client/src/hooks/useCheckAuth.js) calls GET /auth/me on
+  // every page load to decide isAuth; for a visitor with no session that
+  // correctly answers 401 (see backend/auth/network.js), and Chromium logs
+  // "Failed to load resource" for any non-2xx fetch response on its own,
+  // independent of and before any application code runs. Narrowed to 401
+  // specifically so a real 404/500 resource failure still fails the test.
+  'the server responded with a status of 401',
+];
 
 // Extends the base `test` so every test fails on any uncaught page error and
 // on any console.error the page emits, unless it contains a narrow substring
