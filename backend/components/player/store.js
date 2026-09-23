@@ -17,10 +17,13 @@ async function addNewPlayers(newPlayers) {
 async function getPlayer(playerId) {
   let populated;
   try {
-    populated = await Model2.findOne({ _id: playerId }).populate(
-      'medail',
-      'name'
-    );
+    // .lean() returns a plain object instead of a Mongoose document, so the
+    // 'Sin Calibrar' string below can be assigned to the medail field even
+    // though the schema types that path as ObjectId (Mongoose would reject
+    // the cast on a live document).
+    populated = await Model2.findOne({ _id: playerId })
+      .populate('medail', 'name')
+      .lean();
   } catch (error) {
     console.log('Hubo un error');
     throw error;

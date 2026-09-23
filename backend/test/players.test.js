@@ -121,15 +121,7 @@ test('players: addNewPlayers -> getAllPlayers -> getScoreOfPlayers -> onePlayer 
     const res = await request(app).get(`/players/onePlayer/${playerAId}`);
     assert.equal(res.status, 200);
     assert.equal(res.body.error, '');
-    // Known bug (not fixed on this branch, see report): getPlayer() rewrites
-    // a null medail with `populated.medail = 'Sin Calibrar'`, but the schema
-    // types that path as ObjectId, so clients never see the literal string
-    // "Sin Calibrar". On the pre-upgrade driver, the 12-character string was
-    // silently accepted as raw 12-byte ObjectId input, producing the hex
-    // encoding of those bytes. The upgraded mongoose/bson reject that cast
-    // instead, so the assignment is dropped and the path keeps its prior
-    // value: null.
-    assert.equal(res.body.body.medail, null);
+    assert.equal(res.body.body.medail, 'Sin Calibrar');
   });
 
   await t.test('GET /players/onePlayer/:id populates an existing medail', async () => {
