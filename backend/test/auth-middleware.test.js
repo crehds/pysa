@@ -6,7 +6,7 @@ const express = require('express');
 const cookieParser = require('cookie-parser');
 const request = require('supertest');
 const jwt = require('jsonwebtoken');
-const { createRequireAdmin } = require('../auth/middleware');
+const { createRequireAdmin, createResolveAdmin } = require('../auth/middleware');
 const { signSessionToken, SESSION_COOKIE_NAME } = require('../auth/tokens');
 const { TEST_JWT_SECRET } = require('../support/authFixtures');
 
@@ -96,4 +96,77 @@ test('requireAdmin: every failure mode returns the exact same generic message', 
   assert.equal(tampered.status, 401);
   assert.equal(missing.body.error, tampered.body.error);
   assert.doesNotMatch(missing.body.error, /jwt|token|secret/i);
+});
+
+// createResolveAdmin backs GET /auth/me: unlike requireAdmin, it must never
+// reject the request itself (no session is a valid "no", not an error) — it
+// only ever sets req.admin and calls next(), leaving the response entirely
+// to the route.
+function buildResolveApp(adminConfig) {
+  const app = express();
+  app.use(cookieParser());
+  app.get('/status', createResolveAdmin(adminConfig), (req, res) => {
+    res.status(200).json({
+      error: '',
+      body: req.admin ? { authenticated: true, username: req.admin.username } : { authenticated: false },
+    });
+  });
+  return app;
+}
+
+test('resolveAdmin: always calls next() and answers 200, even with no session cookie', async () => {
+  const app = buildResolveApp(VALID_CONFIG);
+  const res = await request(app).get('/status');
+  assert.equal(res.status, 200);
+  assert.deepEqual(res.body.body, { authenticated: false });
+});
+
+test('resolveAdmin: 200 authenticated:false when the admin config itself is invalid', async () => {
+  const app = buildResolveApp(INVALID_CONFIG);
+  const token = signSessionToken('admin', TEST_JWT_SECRET);
+  const res = await request(app)
+    .get('/status')
+    .set('Cookie', `${SESSION_COOKIE_NAME}=${token}`);
+  assert.equal(res.status, 200);
+  assert.deepEqual(res.body.body, { authenticated: false });
+});
+
+test('resolveAdmin: 200 authenticated:false on a tampered cookie, expired token, or wrong secret', async () => {
+  const app = buildResolveApp(VALID_CONFIG);
+  const tampered = await request(app)
+    .get('/status')
+    .set('Cookie', `${SESSION_COOKIE_NAME}=not-a-real-token`);
+  const wrongSecret = await request(app)
+    .get('/status')
+    .set('Cookie', `${SESSION_COOKIE_NAME}=${signSessionToken('admin', 'a-different-secret-of-32-chars-')}`);
+  const expired = await request(app)
+    .get('/status')
+    .set(
+      'Cookie',
+      `${SESSION_COOKIE_NAME}=${jwt.sign({ sub: 'admin' }, TEST_JWT_SECRET, { algorithm: 'HS256', expiresIn: -1 })}`
+    );
+
+  for (const res of [tampered, wrongSecret, expired]) {
+    assert.equal(res.status, 200);
+    assert.deepEqual(res.body.body, { authenticated: false });
+  }
+});
+
+test('resolveAdmin: 200 authenticated:true with the username on a valid cookie', async () => {
+  const app = buildResolveApp(VALID_CONFIG);
+  const token = signSessionToken('admin', TEST_JWT_SECRET);
+  const res = await request(app)
+    .get('/status')
+    .set('Cookie', `${SESSION_COOKIE_NAME}=${token}`);
+  assert.equal(res.status, 200);
+  assert.deepEqual(res.body.body, { authenticated: true, username: 'admin' });
+});
+
+test('resolveAdmin: a missing cookie and a tampered cookie produce an identical response (never reveals why)', async () => {
+  const app = buildResolveApp(VALID_CONFIG);
+  const missing = await request(app).get('/status');
+  const tampered = await request(app)
+    .get('/status')
+    .set('Cookie', `${SESSION_COOKIE_NAME}=not-a-real-token`);
+  assert.deepEqual(missing.body, tampered.body);
 });

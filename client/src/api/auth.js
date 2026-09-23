@@ -47,17 +47,21 @@ export async function logout() {
 }
 
 // Used on app load to decide isAuth from the real session instead of
-// trusting anything stored client-side.
+// trusting anything stored client-side. GET /auth/me always answers 200
+// when it can decide (backend/auth/network.js): "not logged in" is a
+// normal outcome carried in body.authenticated, not an HTTP error to
+// branch on. Only a genuinely unexpected response (a 5xx, or a network
+// failure) falls back to { ok: false } here too, same as "not logged in".
 export async function checkAuth() {
   try {
     const response = await fetch(`${API_BASE_URL}/auth/me`, {
       credentials: 'include',
     });
-    if (response.status !== 200) {
-      return { ok: false };
-    }
     const result = await response.json();
-    return { ok: true, username: result.body.username };
+    if (result.body && result.body.authenticated) {
+      return { ok: true, username: result.body.username };
+    }
+    return { ok: false };
   } catch (error) {
     return { ok: false };
   }

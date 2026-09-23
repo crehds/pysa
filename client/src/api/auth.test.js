@@ -78,8 +78,13 @@ describe('logout', () => {
 });
 
 describe('checkAuth', () => {
-  test('GETs /auth/me with credentials: include and returns the username', async () => {
-    global.fetch = vi.fn(() => jsonResponse(200, { error: '', body: { username: 'admin' } }));
+  // GET /auth/me always answers 200 when it can decide (backend/auth/network.js):
+  // authenticated is the signal, not the HTTP status. "Not logged in" is a
+  // normal outcome, not a failure to recover from.
+  test('GETs /auth/me with credentials: include and returns the username when authenticated', async () => {
+    global.fetch = vi.fn(() =>
+      jsonResponse(200, { error: '', body: { authenticated: true, username: 'admin' } })
+    );
     const result = await checkAuth();
 
     expect(result).toEqual({ ok: true, username: 'admin' });
@@ -89,8 +94,13 @@ describe('checkAuth', () => {
     );
   });
 
-  test('a 401 resolves to { ok: false }, not a throw', async () => {
-    global.fetch = vi.fn(() => jsonResponse(401, { error: 'Not authorized', body: '' }));
+  test('authenticated: false (still a 200) resolves to { ok: false }, not a throw', async () => {
+    global.fetch = vi.fn(() => jsonResponse(200, { error: '', body: { authenticated: false } }));
+    expect(await checkAuth()).toEqual({ ok: false });
+  });
+
+  test('an unexpected non-2xx response resolves to { ok: false }, not a throw', async () => {
+    global.fetch = vi.fn(() => jsonResponse(500, { error: 'Unexpected error', body: '' }));
     expect(await checkAuth()).toEqual({ ok: false });
   });
 

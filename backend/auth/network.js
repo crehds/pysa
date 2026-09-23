@@ -6,7 +6,7 @@ const response = require('../response');
 const { signSessionToken, SESSION_COOKIE_NAME } = require('./tokens');
 const { sessionCookieOptions } = require('./cookie');
 const { createLoginRateLimiter } = require('./rateLimiter');
-const { createRequireAdmin } = require('./middleware');
+const { createResolveAdmin } = require('./middleware');
 
 const MAX_CREDENTIAL_LENGTH = 200;
 const GENERIC_LOGIN_ERROR = 'Invalid username or password';
@@ -22,7 +22,7 @@ function isSaneCredential(value) {
 function createAuthRouter(adminConfig, { rateLimiter } = {}) {
   const router = express.Router();
   const loginRateLimiter = rateLimiter || createLoginRateLimiter();
-  const requireAdmin = createRequireAdmin(adminConfig);
+  const resolveAdmin = createResolveAdmin(adminConfig);
 
   router.post('/login', loginRateLimiter, async function (req, res) {
     if (!adminConfig.valid) {
@@ -60,8 +60,16 @@ function createAuthRouter(adminConfig, { rateLimiter } = {}) {
     response.success(req, res, {}, 200);
   });
 
-  router.get('/me', requireAdmin, function (req, res) {
-    response.success(req, res, { username: req.admin.username }, 200);
+  // Always 200: "am I logged in?" has a valid answer "no", so this is not
+  // an error response the way a protected write's 401 is (that still goes
+  // through requireAdmin, unchanged, on every write route). Never reveals
+  // *why* authenticated is false (missing/tampered/expired cookie, wrong
+  // secret, or admin not configured all look identical here).
+  router.get('/me', resolveAdmin, function (req, res) {
+    if (req.admin) {
+      return response.success(req, res, { authenticated: true, username: req.admin.username }, 200);
+    }
+    return response.success(req, res, { authenticated: false }, 200);
   });
 
   return router;

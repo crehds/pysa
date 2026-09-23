@@ -148,7 +148,7 @@ test('POST /auth/logout clears the cookie and returns 200', async () => {
   assert.match(cookieHeader, new RegExp(`${SESSION_COOKIE_NAME}=;`));
 });
 
-test('GET /auth/me returns the username for a logged-in session', async () => {
+test('GET /auth/me returns authenticated:true and the username for a logged-in session', async () => {
   const app = buildApp(VALID_CONFIG);
   const loginRes = await request(app)
     .post('/auth/login')
@@ -157,13 +157,35 @@ test('GET /auth/me returns the username for a logged-in session', async () => {
 
   const res = await request(app).get('/auth/me').set('Cookie', sessionCookie);
   assert.equal(res.status, 200);
-  assert.equal(res.body.body.username, TEST_ADMIN_USERNAME);
+  assert.deepEqual(res.body.body, { authenticated: true, username: TEST_ADMIN_USERNAME });
 });
 
-test('GET /auth/me is 401 without a session', async () => {
+// "Am I logged in?" has a valid answer "no" — it is not an error, so this
+// (and every other failure mode below) is a 200, never a 401. Contrast with
+// requireAdmin (backend/auth/middleware.js), which still 401s on every
+// protected write route; only this session-status check behaves this way.
+test('GET /auth/me answers 200 with authenticated:false without a session, not a 401', async () => {
   const app = buildApp(VALID_CONFIG);
   const res = await request(app).get('/auth/me');
-  assert.equal(res.status, 401);
+  assert.equal(res.status, 200);
+  assert.deepEqual(res.body.body, { authenticated: false });
+});
+
+test('GET /auth/me answers 200 with authenticated:false for a tampered cookie, identical to a missing one (never reveals why)', async () => {
+  const app = buildApp(VALID_CONFIG);
+  const missing = await request(app).get('/auth/me');
+  const tampered = await request(app)
+    .get('/auth/me')
+    .set('Cookie', `${SESSION_COOKIE_NAME}=not-a-real-token`);
+  assert.equal(tampered.status, 200);
+  assert.deepEqual(tampered.body.body, missing.body.body);
+});
+
+test('GET /auth/me answers 200 with authenticated:false when the admin config is invalid (not 503, not 401)', async () => {
+  const app = buildApp({ valid: false, errors: ['ADMIN_USERNAME is not set'] });
+  const res = await request(app).get('/auth/me');
+  assert.equal(res.status, 200);
+  assert.deepEqual(res.body.body, { authenticated: false });
 });
 
 test('logout clears the cookie client-side, but the old token itself stays valid until it expires (stateless JWT, no server-side revocation list)', async () => {
@@ -182,4 +204,5 @@ test('logout clears the cookie client-side, but the old token itself stays valid
   // token is not blocklisted server-side, so it still verifies.
   const res = await request(app).get('/auth/me').set('Cookie', sessionCookie);
   assert.equal(res.status, 200);
+  assert.equal(res.body.body.authenticated, true);
 });

@@ -78,8 +78,10 @@ function mockFetch(url, options) {
   }
   if (url.includes('auth/me')) {
     // None of these tests simulate a logged-in admin; useCheckAuth
-    // (client/src/hooks/useCheckAuth.js) fires this on every mount.
-    return jsonResponse('', 401);
+    // (client/src/hooks/useCheckAuth.js) fires this on every mount. The
+    // session check itself always answers 200 (see backend/auth/network.js);
+    // "not logged in" is authenticated: false, not an HTTP error.
+    return jsonResponse({ authenticated: false });
   }
   return Promise.reject(new Error(`Unexpected fetch call: ${url}`));
 }

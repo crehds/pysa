@@ -7,7 +7,15 @@ import { E2E_ADMIN_USERNAME } from '../playwright.config.js';
 // global seed, no re-seed needed.
 test('a wrong password shows the error and does not reach the admin page', async ({
   page,
+  allowConsoleError,
 }) => {
+  // The wrong password below makes the real POST /auth/login answer a
+  // correct, intentional 401 (backend/auth/network.js); Chromium still logs
+  // that as "Failed to load resource" on its own, independent of the page
+  // handling it gracefully (asserted below). Scoped to this test only — see
+  // e2e/fixtures.js for why this isn't a blanket 401 allowance.
+  allowConsoleError('the server responded with a status of 401');
+
   await page.goto('/');
   await page.getByText('Loguéate').click();
 
