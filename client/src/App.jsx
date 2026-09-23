@@ -4,7 +4,7 @@ import { Loading } from './components/initLoading';
 import { GlobalStyle } from './styles/GlobalStyles';
 import { Home } from './pages/Home';
 import { NavBar } from './components/NavBar';
-import { navigate, Redirect, Router } from '@reach/router';
+import { Navigate, Route, Routes, useNavigate } from 'react-router';
 import { Players } from './pages/Players';
 import { AdminPlayers } from './pages/AdminPlayers';
 import './App.css';
@@ -17,6 +17,7 @@ function App() {
   const [isLoading, setLoading] = useState(false);
   const [isLogging, setLogging] = useState(isAuth);
   const [loadingData, setLoadingData] = useGetData(isLoading);
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (loadingData) {
@@ -48,12 +49,20 @@ function App() {
             isLogging={isLogging}
             handleRefreshApp={handleRefreshApp}
           />
-          <Router style={{ height: '100vh' }}>
-            <Home exac path='/' />
-            <Players exac path='/players' />
-            {!isLogging && <Redirect noThrow from='/adminPlayers' to='/' />}
-            <AdminPlayers exac path='/adminPlayers' />
-          </Router>
+          {/* react-router's <Routes> renders no wrapper element, unlike
+          @reach/router's <Router>, so this div keeps the same 100vh box
+          the rest of the layout (see WrapperDiv's height: inherit) relies
+          on. */}
+          <div style={{ height: '100vh' }}>
+            <Routes>
+              <Route path='/' element={<Home />} />
+              <Route path='/players' element={<Players />} />
+              <Route
+                path='/adminPlayers'
+                element={isLogging ? <AdminPlayers /> : <Navigate to='/' replace />}
+              />
+            </Routes>
+          </div>
         </>
       ) : (
         <Loading />

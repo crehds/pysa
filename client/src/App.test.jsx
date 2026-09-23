@@ -2,6 +2,7 @@ import React from 'react';
 import { render, screen } from '@testing-library/react';
 import App from './App';
 import { Provider } from './Context';
+import { BrowserRouter } from 'react-router';
 
 const mockRoles = [{ _id: 'role-1', name: 'Hard Carry' }];
 const mockMedails = [{ _id: 'medail-1', name: 'Cruzado' }];
@@ -81,7 +82,9 @@ function renderAppAt(path) {
   window.history.pushState({}, '', path);
   return render(
     <Provider>
-      <App />
+      <BrowserRouter>
+        <App />
+      </BrowserRouter>
     </Provider>
   );
 }

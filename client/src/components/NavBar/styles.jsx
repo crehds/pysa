@@ -1,5 +1,5 @@
 import styled from 'styled-components';
-import { Link as LinkRouter } from '@reach/router';
+import { Link as LinkRouter } from 'react-router';
 
 export const NavBarContainer = styled.div`
   height: 100vh;
