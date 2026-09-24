@@ -21,9 +21,13 @@ if (!dbName.endsWith('_test')) {
 process.env.MONGODB_URI = TEST_MONGODB_URI;
 
 // Same idea as MONGODB_URI above: force known, test-only admin credentials
-// before requiring app.js, so the integration suite can log in and exercise
-// protected routes without ever touching backend/.env or depending on the
-// developer's shell env (`||` still lets a caller override any of these).
+// before requiring app.js, unconditionally, so the integration suite can
+// log in and exercise protected routes without ever touching
+// backend/.env or depending on the developer's shell env — a shell that
+// happens to export ADMIN_USERNAME/ADMIN_PASSWORD_HASH would otherwise make
+// the backend load those while loginAsAdmin (below) still sends the
+// fixture credentials, so every protected-route test would fail with a
+// shell-dependent 401.
 const {
   TEST_ADMIN_USERNAME,
   TEST_ADMIN_PASSWORD,
@@ -31,9 +35,9 @@ const {
   TEST_JWT_SECRET,
 } = require('./authFixtures');
 
-process.env.ADMIN_USERNAME = process.env.ADMIN_USERNAME || TEST_ADMIN_USERNAME;
-process.env.ADMIN_PASSWORD_HASH = process.env.ADMIN_PASSWORD_HASH || TEST_ADMIN_PASSWORD_HASH;
-process.env.JWT_SECRET = process.env.JWT_SECRET || TEST_JWT_SECRET;
+process.env.ADMIN_USERNAME = TEST_ADMIN_USERNAME;
+process.env.ADMIN_PASSWORD_HASH = TEST_ADMIN_PASSWORD_HASH;
+process.env.JWT_SECRET = TEST_JWT_SECRET;
 
 const mongoose = require('mongoose');
 const request = require('supertest');
@@ -88,11 +92,17 @@ async function loginAsAdmin() {
   const loginRes = await request(app)
     .post('/auth/login')
     .send({ username: TEST_ADMIN_USERNAME, password: TEST_ADMIN_PASSWORD });
-  const setCookieHeader = loginRes.headers['set-cookie'].find((entry) =>
+  // A failed login (e.g. rate limited, or the admin config is invalid) may
+  // send no Set-Cookie header at all, not just a Set-Cookie without our
+  // cookie; default to [] so that case throws this function's own error
+  // below instead of a TypeError from calling .find on undefined.
+  const setCookieHeader = (loginRes.headers['set-cookie'] || []).find((entry) =>
     entry.startsWith(`${SESSION_COOKIE_NAME}=`)
   );
   if (!setCookieHeader) {
-    throw new Error('loginAsAdmin: the test admin login did not set a session cookie');
+    throw new Error(
+      `loginAsAdmin: the test admin login did not set a session cookie (status ${loginRes.status})`
+    );
   }
   const sessionCookie = setCookieHeader.split(';')[0];
 

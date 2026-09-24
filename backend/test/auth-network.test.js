@@ -35,8 +35,8 @@ function extractSessionCookie(res) {
   return setCookieHeader.split(';')[0];
 }
 
-// A generous limit so functional tests never trip the rate limiter; a
-// dedicated small limit is exercised separately in auth-rate-limit.test.js.
+// A no-op rate limiter, so functional tests never trip it; a dedicated
+// small limit is exercised separately in auth-rate-limit.test.js.
 function buildApp(adminConfig) {
   const app = express();
   app.use(express.json());
