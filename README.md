@@ -12,6 +12,12 @@ Requirements: Node.js 24 and Docker.
    docker compose up -d --wait
    ```
 
+   Still start it first: it's faster and gives clearer errors. But the
+   backend no longer requires it to already be up — if MongoDB isn't
+   reachable yet (e.g. `npm run dev` racing Docker), it retries the
+   connection with backoff instead of failing every request until a manual
+   restart.
+
 2. Create `backend/.env`:
 
    ```dotenv
