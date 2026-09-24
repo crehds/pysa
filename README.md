@@ -16,7 +16,9 @@ Requirements: Node.js 24 and Docker.
    backend no longer requires it to already be up — if MongoDB isn't
    reachable yet (e.g. `npm run dev` racing Docker), it retries the
    connection with backoff instead of failing every request until a manual
-   restart.
+   restart. A malformed `MONGODB_URI` is the one exception: retrying can
+   never fix that, so it logs a single clear error instead and does not
+   retry — fix the value and restart.
 
 2. Create `backend/.env`:
 
