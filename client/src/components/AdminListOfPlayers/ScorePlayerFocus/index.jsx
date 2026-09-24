@@ -8,7 +8,7 @@ import { BsInfoCircle } from 'react-icons/bs';
 import Swal from 'sweetalert2';
 import { Info } from '../Info';
 import { API_BASE_URL } from '../../../config';
-import { adminFetch } from '../../../api/auth';
+import { adminFetch, readAdminJson } from '../../../api/auth';
 
 function calc(score) {
   return score.reduce((acc, cv) => {
@@ -98,10 +98,7 @@ export const ScorePlayerFocus = ({
         },
       }
     );
-    if (response.status === 401) {
-      return false;
-    }
-    return await response.json();
+    return await readAdminJson(response);
   }
 
   async function test(mmr, partidas) {

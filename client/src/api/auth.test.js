@@ -1,5 +1,5 @@
 import Swal from 'sweetalert2';
-import { login, logout, checkAuth, adminFetch } from './auth';
+import { login, logout, checkAuth, adminFetch, readAdminJson } from './auth';
 import { API_BASE_URL } from '../config';
 
 vi.mock('sweetalert2', () => ({
@@ -182,5 +182,22 @@ describe('adminFetch', () => {
     const result = await adminFetch(vi.fn(), 'https://api.example.com/x');
 
     expect(result).toBe(response);
+  });
+});
+
+describe('readAdminJson', () => {
+  // adminFetch already logged the user out and told them so on a 401
+  // (tested above); callers just need to know not to treat that response's
+  // (empty) body as a successful write.
+  test('on a 401, resolves to false instead of parsing the body', async () => {
+    const response = { status: 401, json: vi.fn() };
+    expect(await readAdminJson(response)).toBe(false);
+    expect(response.json).not.toHaveBeenCalled();
+  });
+
+  test('on any other status, resolves with the parsed JSON body', async () => {
+    const body = { error: '', body: { id: 1 } };
+    const response = { status: 200, json: () => Promise.resolve(body) };
+    expect(await readAdminJson(response)).toEqual(body);
   });
 });

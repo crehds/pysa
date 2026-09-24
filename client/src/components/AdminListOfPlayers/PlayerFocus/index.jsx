@@ -18,7 +18,7 @@ import { BsX } from 'react-icons/bs';
 import Swal from 'sweetalert2';
 import { API_BASE_URL } from '../../../config';
 import { playerImageSrc } from '../../../utils/playerImage';
-import { adminFetch } from '../../../api/auth';
+import { adminFetch, readAdminJson } from '../../../api/auth';
 
 export const PlayerFocus = ({ player }) => {
   console.log(player);
@@ -63,12 +63,7 @@ export const PlayerFocus = ({ player }) => {
         body: form,
       }
     );
-    if (response.status === 401) {
-      // Session expired mid-upload: adminFetch already logged the user out
-      // and told them so.
-      return false;
-    }
-    return await response.json();
+    return await readAdminJson(response);
   }
   function onSubmit(event) {
     event.preventDefault();

@@ -101,3 +101,15 @@ export async function adminFetch(dispatch, url, options = {}) {
   }
   return response;
 }
+
+// Reads an adminFetch response's JSON body, shared by every admin write
+// call site. On a 401, adminFetch above already logged the user out and
+// told them so, so this resolves to false instead of parsing the (empty)
+// body as if the write had succeeded; SweetAlert2 preConfirm callers treat
+// a falsy return as "do not confirm".
+export async function readAdminJson(response) {
+  if (response.status === 401) {
+    return false;
+  }
+  return await response.json();
+}
