@@ -31,9 +31,12 @@ test('uploading an avatar renders it, both immediately and after a reload', asyn
   // this test's browser context, so the pysa_session cookie POST
   // /auth/login sets here is what GET /auth/me (App.jsx's useCheckAuth)
   // then reads on the goto below.
-  await page.request.post(`${E2E_BACKEND_URL}/auth/login`, {
+  const loginRes = await page.request.post(`${E2E_BACKEND_URL}/auth/login`, {
     data: { username: E2E_ADMIN_USERNAME, password: E2E_ADMIN_PASSWORD },
   });
+  // Fail here, not later on a missing admin element, if the shortcut login
+  // itself did not succeed.
+  expect(loginRes.ok()).toBe(true);
   await page.goto('/adminPlayers');
 
   // Seeded players have no imgURL (backend/seed/data/players.json), so Jean
