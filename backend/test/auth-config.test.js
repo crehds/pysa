@@ -2,7 +2,7 @@
 
 const { test } = require('node:test');
 const assert = require('node:assert/strict');
-const { loadAdminConfig, loadAllowedOrigins } = require('../auth/config');
+const { loadAdminConfig, loadAllowedOrigins, loadTrustProxy } = require('../auth/config');
 const { TEST_ADMIN_PASSWORD_HASH, TEST_JWT_SECRET } = require('../support/authFixtures');
 
 test('loadAdminConfig: valid env returns a valid config with the exact values', () => {
@@ -96,4 +96,35 @@ test('loadAllowedOrigins: parses a comma-separated list and trims whitespace', (
 
 test('loadAllowedOrigins: a blank value falls back to the default', () => {
   assert.deepEqual(loadAllowedOrigins({ ALLOWED_ORIGINS: '   ' }), ['http://localhost:5173']);
+});
+
+test('loadTrustProxy: unset keeps trust proxy off (today\'s behavior)', () => {
+  assert.deepEqual(loadTrustProxy({}), { valid: true, value: false });
+});
+
+test('loadTrustProxy: a blank value keeps trust proxy off', () => {
+  assert.deepEqual(loadTrustProxy({ TRUST_PROXY: '   ' }), { valid: true, value: false });
+});
+
+test('loadTrustProxy: a non-negative integer string is a hop count', () => {
+  assert.deepEqual(loadTrustProxy({ TRUST_PROXY: '1' }), { valid: true, value: 1 });
+  assert.deepEqual(loadTrustProxy({ TRUST_PROXY: '0' }), { valid: true, value: 0 });
+  assert.deepEqual(loadTrustProxy({ TRUST_PROXY: '3' }), { valid: true, value: 3 });
+});
+
+test('loadTrustProxy: "true" in any case is refused, never trusted', () => {
+  assert.deepEqual(loadTrustProxy({ TRUST_PROXY: 'true' }), { valid: false });
+  assert.deepEqual(loadTrustProxy({ TRUST_PROXY: 'TRUE' }), { valid: false });
+  assert.deepEqual(loadTrustProxy({ TRUST_PROXY: ' True ' }), { valid: false });
+});
+
+test('loadTrustProxy: a comma-separated IP/CIDR list is passed through trimmed', () => {
+  assert.deepEqual(loadTrustProxy({ TRUST_PROXY: ' 127.0.0.1,10.0.0.0/8 ' }), {
+    valid: true,
+    value: '127.0.0.1,10.0.0.0/8',
+  });
+});
+
+test('loadTrustProxy: an Express preset name is passed through trimmed', () => {
+  assert.deepEqual(loadTrustProxy({ TRUST_PROXY: 'loopback' }), { valid: true, value: 'loopback' });
 });

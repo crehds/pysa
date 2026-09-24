@@ -121,6 +121,9 @@ same known state; read-only specs just share the single seed above.
 | `ADMIN_PASSWORD_HASH`  | No\*     | —                          | bcrypt hash of the admin password. Generate with `npm run hash-password`.     |
 | `JWT_SECRET`           | No\*     | —                          | Signs admin session cookies. At least 32 characters. Generate with the command below. |
 | `ALLOWED_ORIGINS`      | No       | `http://localhost:5173`   | Comma-separated exact origins allowed to call the API with credentials (CORS).|
+| `TRUST_PROXY`          | No       | off (`false`)              | Express `trust proxy` setting: a hop count (e.g. `1`) or a comma-separated list of IPs/CIDRs/presets (`loopback`, `linklocal`, `uniquelocal`). Only set this behind a reverse proxy — see "Deploying" below. `true` is refused (logs a startup warning and stays off): it would let any client spoof its IP and dodge the login rate limit. |
+| `LOGIN_RATE_LIMIT_WINDOW_MS` | No | `900000` (15 min)          | Login rate-limit window, in milliseconds. A non-numeric or zero value falls back to the default. |
+| `LOGIN_RATE_LIMIT_MAX` | No       | `10`                       | Max login attempts per window, per client. A non-numeric or zero value falls back to the default. |
 
 \* The three admin vars are a set: if any is missing or invalid, the backend
 still starts and the public pages keep working, but `POST /auth/login`
@@ -168,7 +171,11 @@ the API's own domain. Serve the client and the API from the same site (or
 put the API behind a same-site reverse proxy at, say, `/api`) — a
 cross-site cookie (client and API on different registrable domains) is
 blocked by Safari and other browsers' tracking-prevention defaults even with
-`credentials: 'include'` on the client.
+`credentials: 'include'` on the client. When you do put a reverse proxy in
+front of the API, also set `TRUST_PROXY` to the number of proxy hops in
+front of it (usually `1`), so the login rate limiter keys on each visitor's
+real IP instead of the proxy's — without it, every visitor shares one
+bucket and 10 bad logins from anyone lock the real admin out.
 
 ### Stopping MongoDB
 

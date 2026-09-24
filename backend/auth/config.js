@@ -55,9 +55,43 @@ function loadAllowedOrigins(env = process.env) {
     .filter(Boolean);
 }
 
+// Configures Express's `trust proxy` setting (see
+// https://expressjs.com/en/guide/behind-proxies.html) so a deploy behind a
+// same-site reverse proxy (the README's "Deploying" note) keys the login
+// rate limiter (backend/auth/rateLimiter.js) on the real client instead of
+// the shared proxy IP. Returns { valid: true, value } where value is what
+// app.set('trust proxy', value) expects: unset/blank keeps today's
+// behavior (false, proxy headers ignored); a non-negative integer string
+// is a hop count; anything else is passed through trimmed as a
+// comma-separated list of IPs/CIDRs or an Express preset name (loopback,
+// linklocal, uniquelocal).
+//
+// `true` (any case) is always refused as { valid: false }: it tells
+// Express to trust every hop, so any client can set X-Forwarded-For
+// themselves and pick their own rate-limit bucket, defeating the limiter
+// entirely (this is exactly express-rate-limit's own
+// ERR_ERL_PERMISSIVE_TRUST_PROXY warning). The caller logs a startup
+// warning and leaves trust proxy off in that case.
+function loadTrustProxy(env = process.env) {
+  const raw = env.TRUST_PROXY;
+  if (!isNonBlankString(raw)) {
+    return { valid: true, value: false };
+  }
+
+  const trimmed = raw.trim();
+  if (trimmed.toLowerCase() === 'true') {
+    return { valid: false };
+  }
+  if (/^\d+$/.test(trimmed)) {
+    return { valid: true, value: Number(trimmed) };
+  }
+  return { valid: true, value: trimmed };
+}
+
 module.exports = {
   loadAdminConfig,
   loadAllowedOrigins,
+  loadTrustProxy,
   MIN_JWT_SECRET_LENGTH,
   DEFAULT_ALLOWED_ORIGIN,
 };

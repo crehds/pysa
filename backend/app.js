@@ -10,7 +10,7 @@ const fs = require('fs')
 var app = express();
 
 const db = require('./db');
-const { loadAdminConfig, loadAllowedOrigins } = require('./auth/config');
+const { loadAdminConfig, loadAllowedOrigins, loadTrustProxy } = require('./auth/config');
 const { createCorsOptions } = require('./auth/cors');
 const { createAuthRouter } = require('./auth/network');
 const { createRequireAdmin } = require('./auth/middleware');
@@ -33,6 +33,20 @@ if (!adminConfig.valid) {
     `[auth] admin login is not configured (${adminConfig.errors.join('; ')}). ` +
       'POST /auth/login will answer 503 and every protected route will answer 401 ' +
       'until ADMIN_USERNAME, ADMIN_PASSWORD_HASH and JWT_SECRET are set.'
+  );
+}
+
+// Off by default (matches Express's own default): only meaningful once the
+// API sits behind a reverse proxy (see the README's "Deploying" note), so a
+// plain `npm run dev`/`npm start` never trusts a header nobody sent.
+const trustProxy = loadTrustProxy(process.env);
+if (trustProxy.valid) {
+  app.set('trust proxy', trustProxy.value);
+} else {
+  console.warn(
+    '[app] TRUST_PROXY=true is refused (it would trust every hop and let any client ' +
+      'spoof X-Forwarded-For to dodge the login rate limit); trust proxy stays disabled. ' +
+      'Set it to a hop count (e.g. 1) or an explicit IP/CIDR list instead.'
   );
 }
 
