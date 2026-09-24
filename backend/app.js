@@ -44,9 +44,8 @@ if (trustProxy.valid) {
   app.set('trust proxy', trustProxy.value);
 } else {
   console.warn(
-    '[app] TRUST_PROXY=true is refused (it would trust every hop and let any client ' +
-      'spoof X-Forwarded-For to dodge the login rate limit); trust proxy stays disabled. ' +
-      'Set it to a hop count (e.g. 1) or an explicit IP/CIDR list instead.'
+    `[app] TRUST_PROXY is invalid (${trustProxy.reason}); trust proxy stays disabled. ` +
+      'Set it to a hop count (e.g. 1), "false", or an explicit IP/CIDR/preset list instead.'
   );
 }
 

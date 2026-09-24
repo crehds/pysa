@@ -6,6 +6,11 @@
 // tests can exercise every combination with plain objects instead of
 // mutating process.env.
 
+// Used only to validate a candidate TRUST_PROXY string the exact same way
+// Express itself will (see loadTrustProxy below) -- no app built here is
+// ever served.
+const express = require('express');
+
 const BCRYPT_HASH_RE = /^\$2[aby]\$\d{2}\$/;
 const MIN_JWT_SECRET_LENGTH = 32;
 const DEFAULT_ALLOWED_ORIGIN = 'http://localhost:5173';
@@ -55,23 +60,47 @@ function loadAllowedOrigins(env = process.env) {
     .filter(Boolean);
 }
 
+// Express 5's own "trust proxy" compiler (lib/utils.js#compileTrust): a
+// string is split on commas, trimmed, and handed to the `proxy-addr`
+// package, which parses each entry as an IP/CIDR or a preset name
+// (loopback, linklocal, uniquelocal) and throws on anything else (e.g.
+// "invalid IP address: lopback"). Building a throwaway app and calling the
+// exact same app.set('trust proxy', ...) app.js will later call exercises
+// that real compiler with no dependency on Express's internals, so this
+// stays correct across Express versions.
+function trustProxyCompileError(value) {
+  try {
+    express().set('trust proxy', value);
+    return null;
+  } catch (error) {
+    return error.message;
+  }
+}
+
 // Configures Express's `trust proxy` setting (see
 // https://expressjs.com/en/guide/behind-proxies.html) so a deploy behind a
 // same-site reverse proxy (the README's "Deploying" note) keys the login
 // rate limiter (backend/auth/rateLimiter.js) on the real client instead of
 // the shared proxy IP. Returns { valid: true, value } where value is what
-// app.set('trust proxy', value) expects: unset/blank keeps today's
-// behavior (false, proxy headers ignored); a non-negative integer string
-// is a hop count; anything else is passed through trimmed as a
-// comma-separated list of IPs/CIDRs or an Express preset name (loopback,
-// linklocal, uniquelocal).
+// app.set('trust proxy', value) expects, or { valid: false, reason } when
+// TRUST_PROXY cannot be used as-is:
 //
-// `true` (any case) is always refused as { valid: false }: it tells
-// Express to trust every hop, so any client can set X-Forwarded-For
-// themselves and pick their own rate-limit bucket, defeating the limiter
-// entirely (this is exactly express-rate-limit's own
-// ERR_ERL_PERMISSIVE_TRUST_PROXY warning). The caller logs a startup
-// warning and leaves trust proxy off in that case.
+// - unset/blank, "false" (any case), or "0" all keep today's behavior
+//   (false, proxy headers ignored);
+// - a positive integer string is a hop count;
+// - "true" (any case) is always refused: it tells Express to trust every
+//   hop, so any client can set X-Forwarded-For themselves and pick their
+//   own rate-limit bucket, defeating the limiter entirely (this is exactly
+//   express-rate-limit's own ERR_ERL_PERMISSIVE_TRUST_PROXY warning);
+// - anything else must be a comma-separated list of IPs/CIDRs or an
+//   Express preset name Express can actually compile (see
+//   trustProxyCompileError above) -- an unparseable value (a typo, "1.5",
+//   or a list containing either) is refused with Express's own error as
+//   the reason, instead of reaching app.set('trust proxy', ...) unvalidated
+//   and crashing the process at startup.
+//
+// The caller (backend/app.js) logs one startup warning with `reason` and
+// leaves trust proxy off whenever `valid` is false.
 function loadTrustProxy(env = process.env) {
   const raw = env.TRUST_PROXY;
   if (!isNonBlankString(raw)) {
@@ -79,11 +108,26 @@ function loadTrustProxy(env = process.env) {
   }
 
   const trimmed = raw.trim();
-  if (trimmed.toLowerCase() === 'true') {
-    return { valid: false };
+  const lower = trimmed.toLowerCase();
+
+  if (lower === 'true') {
+    return {
+      valid: false,
+      reason:
+        'TRUST_PROXY=true would trust every hop, letting any client spoof X-Forwarded-For and dodge the login rate limit',
+    };
+  }
+  if (lower === 'false') {
+    return { valid: true, value: false };
   }
   if (/^\d+$/.test(trimmed)) {
-    return { valid: true, value: Number(trimmed) };
+    const hops = Number(trimmed);
+    return { valid: true, value: hops === 0 ? false : hops };
+  }
+
+  const compileError = trustProxyCompileError(trimmed);
+  if (compileError) {
+    return { valid: false, reason: compileError };
   }
   return { valid: true, value: trimmed };
 }

@@ -2,6 +2,8 @@
 
 const { test } = require('node:test');
 const assert = require('node:assert/strict');
+const { spawnSync } = require('node:child_process');
+const path = require('node:path');
 const express = require('express');
 const cookieParser = require('cookie-parser');
 const request = require('supertest');
@@ -21,11 +23,17 @@ const VALID_CONFIG = {
 };
 
 // Small limit so this stays fast: two attempts from one client are enough
-// to trip it while a distinct client is still evaluated normally.
+// to trip it while a distinct client is still evaluated normally. Mirrors
+// app.js: only calls app.set when the loader reports the value valid,
+// instead of forwarding trustProxy.value unconditionally -- an invalid
+// value (e.g. a typo) has no usable `value` and must never reach app.set
+// here either, the same as it must not in app.js.
 function buildApp(env) {
   const app = express();
   const trustProxy = loadTrustProxy(env);
-  app.set('trust proxy', trustProxy.value);
+  if (trustProxy.valid) {
+    app.set('trust proxy', trustProxy.value);
+  }
   app.use(express.json());
   app.use(cookieParser());
   const rateLimiter = createLoginRateLimiter({ windowMs: 60_000, max: 2 });
@@ -80,4 +88,41 @@ test('without TRUST_PROXY, X-Forwarded-For is ignored and every client shares on
     .set('X-Forwarded-For', '10.0.0.2')
     .send({ username: TEST_ADMIN_USERNAME, password: 'wrong' });
   assert.equal(stillLimited.status, 429);
+});
+
+test('an invalid TRUST_PROXY value never reaches app.set: the app still builds and serves, trust proxy off', async () => {
+  const app = buildApp({ TRUST_PROXY: 'lopback' });
+
+  assert.equal(app.get('trust proxy'), false);
+  const res = await request(app)
+    .post('/auth/login')
+    .send({ username: TEST_ADMIN_USERNAME, password: 'wrong' });
+  assert.equal(res.status, 401);
+});
+
+test('app.js itself refuses an invalid TRUST_PROXY value at startup: warns with the reason, keeps trust proxy off, and stays up', () => {
+  const backendDir = path.join(__dirname, '..');
+  const env = {
+    ...process.env,
+    MONGODB_URI: 'mongodb://127.0.0.1:27017/pysa_test',
+    TRUST_PROXY: 'lopback',
+  };
+
+  const result = spawnSync(
+    process.execPath,
+    [
+      '-e',
+      "const app = require('./app'); process.stdout.write(String(app.get('trust proxy'))); process.exit(0);",
+    ],
+    { cwd: backendDir, env, encoding: 'utf8' }
+  );
+
+  assert.equal(result.status, 0);
+  // app.js has its own unrelated startup logging (e.g. "servidor
+  // encendido"), so only the last stdout line -- this script's own -- is
+  // asserted on.
+  const lines = result.stdout.trim().split('\n');
+  assert.equal(lines[lines.length - 1], 'false');
+  assert.match(result.stderr, /TRUST_PROXY is invalid/);
+  assert.match(result.stderr, /lopback/);
 });

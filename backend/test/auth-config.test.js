@@ -106,16 +106,33 @@ test('loadTrustProxy: a blank value keeps trust proxy off', () => {
   assert.deepEqual(loadTrustProxy({ TRUST_PROXY: '   ' }), { valid: true, value: false });
 });
 
-test('loadTrustProxy: a non-negative integer string is a hop count', () => {
+test('loadTrustProxy: a positive integer string is a hop count', () => {
   assert.deepEqual(loadTrustProxy({ TRUST_PROXY: '1' }), { valid: true, value: 1 });
-  assert.deepEqual(loadTrustProxy({ TRUST_PROXY: '0' }), { valid: true, value: 0 });
   assert.deepEqual(loadTrustProxy({ TRUST_PROXY: '3' }), { valid: true, value: 3 });
 });
 
-test('loadTrustProxy: "true" in any case is refused, never trusted', () => {
-  assert.deepEqual(loadTrustProxy({ TRUST_PROXY: 'true' }), { valid: false });
-  assert.deepEqual(loadTrustProxy({ TRUST_PROXY: 'TRUE' }), { valid: false });
-  assert.deepEqual(loadTrustProxy({ TRUST_PROXY: ' True ' }), { valid: false });
+// "0" is a valid hop count in Express terms (trust nothing), but it is
+// clearer to normalize it to the same `false` every other "off" spelling
+// produces, since app.js only branches on truthy/falsy trust proxy values.
+test('loadTrustProxy: "0" keeps trust proxy off, like unset', () => {
+  assert.deepEqual(loadTrustProxy({ TRUST_PROXY: '0' }), { valid: true, value: false });
+});
+
+// The README lists "false" as the documented default/off spelling, and
+// Express itself cannot compile the literal string "false" (it tries to
+// parse it as an IP and throws) -- this used to crash app.js at startup.
+test('loadTrustProxy: "false" in any case keeps trust proxy off, and never crashes', () => {
+  assert.deepEqual(loadTrustProxy({ TRUST_PROXY: 'false' }), { valid: true, value: false });
+  assert.deepEqual(loadTrustProxy({ TRUST_PROXY: 'FALSE' }), { valid: true, value: false });
+  assert.deepEqual(loadTrustProxy({ TRUST_PROXY: ' False ' }), { valid: true, value: false });
+});
+
+test('loadTrustProxy: "true" in any case is refused, with a reason, never trusted', () => {
+  for (const raw of ['true', 'TRUE', ' True ']) {
+    const result = loadTrustProxy({ TRUST_PROXY: raw });
+    assert.equal(result.valid, false);
+    assert.match(result.reason, /every hop/i);
+  }
 });
 
 test('loadTrustProxy: a comma-separated IP/CIDR list is passed through trimmed', () => {
@@ -127,4 +144,27 @@ test('loadTrustProxy: a comma-separated IP/CIDR list is passed through trimmed',
 
 test('loadTrustProxy: an Express preset name is passed through trimmed', () => {
   assert.deepEqual(loadTrustProxy({ TRUST_PROXY: 'loopback' }), { valid: true, value: 'loopback' });
+  assert.deepEqual(loadTrustProxy({ TRUST_PROXY: 'linklocal' }), { valid: true, value: 'linklocal' });
+  assert.deepEqual(loadTrustProxy({ TRUST_PROXY: 'uniquelocal' }), { valid: true, value: 'uniquelocal' });
+});
+
+// Reviewer-confirmed crash: any value Express's own "trust proxy" setting
+// cannot compile (it delegates to the proxy-addr package, which treats an
+// unrecognized string as an IP to parse) used to reach app.set('trust
+// proxy', ...) unvalidated and throw at startup instead of just being
+// reported invalid, e.g. "invalid IP address: lopback".
+test('loadTrustProxy: a value Express cannot compile is refused, with a reason, instead of crashing later', () => {
+  const typo = loadTrustProxy({ TRUST_PROXY: 'lopback' });
+  assert.equal(typo.valid, false);
+  assert.match(typo.reason, /lopback/);
+
+  const notAnInteger = loadTrustProxy({ TRUST_PROXY: '1.5' });
+  assert.equal(notAnInteger.valid, false);
+  assert.match(notAnInteger.reason, /1\.5/);
+});
+
+test('loadTrustProxy: a list mixing a valid entry with an invalid one is refused as a whole', () => {
+  const result = loadTrustProxy({ TRUST_PROXY: '127.0.0.1,lopback' });
+  assert.equal(result.valid, false);
+  assert.match(result.reason, /lopback/);
 });
