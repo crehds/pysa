@@ -1,3 +1,4 @@
+const mongoose = require('mongoose');
 const { model: Model, model2: Model2, model3: Model3 } = require('./model');
 
 function addPlayer(user, calibration) {
@@ -11,36 +12,42 @@ function addPlayer(user, calibration) {
 }
 
 async function addNewPlayers(newPlayers) {
-  return new Promise((resolve, reject) => {
-    Model.insertMany(newPlayers, function (error, docs) {
-      if (error) {
-        return reject(error);
-      }
-
-      resolve(docs);
-    });
-  });
+  return Model.insertMany(newPlayers);
 }
 
 async function getPlayer(playerId) {
-  return new Promise((resolve, reject) => {
-    Model2.findOne({ _id: playerId })
-      .populate('medail', 'name')
-      .exec((error, populated) => {
-        if (error) {
-          console.log('Hubo un error');
-          reject(error);
-          return false;
-        }
-        if (populated === null) {
-          return resolve('No se encontró al jugador');
-        }
-        if (populated.medail === null) {
-          populated.medail = 'Sin Calibrar';
-        }
-        return resolve(populated);
+  let player;
+  try {
+    // .lean() returns a plain object instead of a Mongoose document, so the
+    // medail field keeps what is stored (an uncalibrated player's 'Sin
+    // Calibrar' string included) even though the schema types that path as
+    // ObjectId (Mongoose would reject the cast on a live document).
+    player = await Model2.findOne({ _id: playerId }).lean();
+    // Only a medail id can be populated: casting 'Sin Calibrar' to one
+    // throws a CastError.
+    if (player && mongoose.isObjectIdOrHexString(player.medail)) {
+      player = await Model2.populate(player, {
+        path: 'medail',
+        select: 'name',
+        options: { lean: true },
       });
-  });
+    }
+  } catch (error) {
+    console.log('Hubo un error');
+    throw error;
+  }
+
+  if (player === null) {
+    return 'No se encontró al jugador';
+  }
+  // The client always sends 'Sin Calibrar' for an uncalibrated player, but
+  // POST /players/newPlayers and /addNewPlayers store whatever medail the
+  // caller sends, including none, so check for "unset" rather than only the
+  // explicit null a caller might send.
+  if (!player.medail) {
+    player.medail = 'Sin Calibrar';
+  }
+  return player;
 }
 
 async function getAllPlayers() {
@@ -57,7 +64,7 @@ async function getAllPlayers() {
 
 async function updateImage(playerId, playerWithImg) {
   const doc = await Model3.findByIdAndUpdate(playerId, playerWithImg, {
-    new: true,
+    returnDocument: 'after',
     strict: false,
     upsert: true,
   });
@@ -84,11 +91,15 @@ async function deletePlayers() {
 }
 
 async function patchPlayer(playerId, newPlayer) {
-  return await Model2.findByIdAndUpdate(playerId, newPlayer, { new: true });
+  return await Model2.findByIdAndUpdate(playerId, newPlayer, {
+    returnDocument: 'after',
+  });
 }
 
 async function patchPlayer2(playerId, notCalibrated) {
-  return await Model.findByIdAndUpdate(playerId, notCalibrated, { new: true });
+  return await Model.findByIdAndUpdate(playerId, notCalibrated, {
+    returnDocument: 'after',
+  });
 }
 
 module.exports = {

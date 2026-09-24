@@ -1,18 +1,21 @@
 import React from 'react';
 import { LoggingWrapper } from './style';
 import Swal from 'sweetalert2';
-import { login } from '../../api/login.json';
+import { login, logout } from '../../api/auth';
 import { BiLogIn, BiLogOut } from 'react-icons/bi';
 import { BiRefresh } from 'react-icons/bi';
 import { useStateValue } from '../../Context';
 
+const MESSAGE_BY_REASON = {
+  invalid: 'Lo más probable es que aún no eres digno',
+  'rate-limited': 'Demasiados intentos, prueba de nuevo más tarde',
+  'not-configured': 'El login de admin no está configurado',
+  network: 'Error de red, inténtalo de nuevo',
+  unknown: 'Lo más probable es que aún no eres digno',
+};
+
 export const Logging = (props) => {
   const [{}, dispatch] = useStateValue();
-  function handleLogging(user, password) {
-    return login.some(
-      (element) => element.id === user && element.password === password
-    );
-  }
 
   async function loginMod() {
     const { value } = await Swal.fire({
@@ -21,20 +24,17 @@ export const Logging = (props) => {
         '<input id="user" class="swal2-input">' +
         '<input id="password" type="password" class="swal2-input">',
       focusConfirm: false,
-      preConfirm: () => {
+      preConfirm: async () => {
         let user = document.getElementById('user').value;
         let password = document.getElementById('password').value;
-        console.log('aqui');
-        let result = { status: handleLogging(user, password) };
-        return result;
+        return await login(user, password);
       },
     });
     if (value === undefined) {
       return null;
     }
-    if (value.status) {
-      props.handleLogging(value.status);
-      window.sessionStorage.setItem('token', true);
+    if (value.ok) {
+      props.handleLogging(true);
       dispatch({ type: 'LOGIN' });
       Swal.fire({
         icon: 'success',
@@ -43,7 +43,7 @@ export const Logging = (props) => {
     } else {
       Swal.fire({
         icon: 'error',
-        text: 'Lo más probable es que aún no eres digno',
+        text: MESSAGE_BY_REASON[value.reason] || MESSAGE_BY_REASON.unknown,
       });
     }
   }
@@ -54,8 +54,9 @@ export const Logging = (props) => {
       showCancelButton: true,
       confirmButtonText: `Ñafo`,
       cancelButtonText: `Me quedo un rato más`,
-    }).then((result) => {
+    }).then(async (result) => {
       if (result.isConfirmed) {
+        await logout();
         dispatch({ type: 'UNLOGIN' });
         props.handleLogging(false);
         Swal.fire('Hasta pronto papu', '', 'success');

@@ -15,7 +15,7 @@ async function updateOneScore(playerId, rolId, score) {
   const result = await Model.findOneAndUpdate(
     { player: playerId, rol: rolId },
     { ...score },
-    { new: true }
+    { returnDocument: 'after' }
   );
   return result;
 }
