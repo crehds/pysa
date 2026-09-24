@@ -10,10 +10,9 @@ const { app, disconnect } = require('../support/testEnv');
 const PLACEHOLDER_ID = '000000000000000000000000';
 
 // Authoritative enumeration of every state-changing route in
-// backend/components/*/network.js (see the report for the full
-// protected-vs-public table). Keep this in sync with routes/index.js and
-// each component's network.js when a route is added, removed, or
-// reclassified.
+// backend/components/*/network.js: this list itself is the protected-vs-
+// public table. Keep it in sync with routes/index.js and each component's
+// network.js when a route is added, removed, or reclassified.
 const PROTECTED_WRITE_ROUTES = [
   ['post', '/players/newplayer'],
   ['post', '/players/newPlayers'],

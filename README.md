@@ -172,6 +172,13 @@ above — there is no user database.
 4. Restart the backend (`npm run dev`/`npm start` picks up `backend/.env`
    automatically via `--env-file-if-exists`).
 
+**Logout is stateless**: sessions are signed JWTs with no server-side store,
+so logout only clears the cookie client-side — the token itself stays valid
+for its full 8-hour lifetime even after logging out (see
+`backend/test/auth-network.test.js`). To end every existing session at once
+(for example after a leaked cookie), rotate `JWT_SECRET` to a new value and
+restart the backend; every previously issued token then fails verification.
+
 **Deploying**: the session cookie is `SameSite=Lax` and `Secure`, scoped to
 the API's own domain. Serve the client and the API from the same site (or
 put the API behind a same-site reverse proxy at, say, `/api`) — a

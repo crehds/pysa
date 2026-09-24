@@ -8,9 +8,10 @@ const { SESSION_TTL_SECONDS } = require('../auth/tokens');
 test('sessionCookieOptions: httpOnly, Secure, SameSite=Lax, path / and an 8h maxAge', () => {
   const options = sessionCookieOptions();
   assert.equal(options.httpOnly, true);
-  // Verified empirically (see the report): Chromium accepts and returns a
-  // Secure cookie set by a plain http://localhost response, so Secure is
-  // always on rather than gated behind an env var.
+  // Chromium (and other modern browsers) treat http://localhost as a
+  // potentially trustworthy origin and accept/return a Secure cookie set
+  // over it (see backend/auth/cookie.js), so Secure is always on rather
+  // than gated behind an env var.
   assert.equal(options.secure, true);
   assert.equal(options.sameSite, 'lax');
   assert.equal(options.path, '/');

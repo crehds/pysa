@@ -85,9 +85,12 @@ async function disconnect() {
 // package) honors the Secure attribute like a browser and never resends a
 // Secure cookie over the plain-HTTP connection supertest uses internally,
 // so the session would silently vanish after login. Carrying the cookie
-// ourselves sidesteps that test-harness limitation (real browsers, e.g.
-// Chromium on http://localhost, do resend it — see the e2e suite and the
-// report for the empirical check).
+// ourselves sidesteps that test-harness limitation. Real browsers do
+// resend it: Chromium treats http://localhost as a potentially trustworthy
+// origin (see backend/auth/cookie.js), and the e2e admin specs (e.g.
+// e2e/tests/admin-players.spec.js, e2e/tests/avatar-upload.spec.js) stay
+// logged in across real requests over http://localhost, which is the
+// empirical check for that claim.
 async function loginAsAdmin() {
   const loginRes = await request(app)
     .post('/auth/login')

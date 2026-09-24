@@ -25,9 +25,10 @@ const VALID_CONFIG = {
 // the Secure attribute the same way a browser does: it only resends a
 // Secure cookie over a connection it considers secure, which a plain-HTTP
 // local test server never is. Real Chromium *does* send Secure cookies back
-// over http://localhost (verified empirically, see the report), so this is
-// a test-harness gap, not an application bug; work around it by carrying
-// the cookie ourselves instead of relying on the agent's jar.
+// over http://localhost (modern browsers treat it as a potentially
+// trustworthy origin, same as https: — see backend/auth/cookie.js), so
+// this is a test-harness gap, not an application bug; work around it by
+// carrying the cookie ourselves instead of relying on the agent's jar.
 function extractSessionCookie(res) {
   const setCookieHeader = res.headers['set-cookie'].find((entry) =>
     entry.startsWith(`${SESSION_COOKIE_NAME}=`)
