@@ -63,3 +63,8 @@ async function connect(
 }
 
 module.exports = connect;
+// Exposed so backend/test/db-connect.test.js can assert the real default
+// scheduler's timer is actually unref'd, instead of only awaiting a real
+// 1s delay (which passes the same way whether or not unref() ran, and
+// leaves node --test racing its own idle-handle check under load).
+module.exports.scheduleRetry = scheduleRetry;

@@ -123,20 +123,17 @@ test('passes a short serverSelectionTimeoutMS to connectFn so each attempt fails
   assert.ok(seenOptions.serverSelectionTimeoutMS <= 10000);
 });
 
-test('unrefs the real retry timer so a failed connection can never keep a process alive', async () => {
-  let attempts = 0;
-  const connectFn = async () => {
-    attempts += 1;
-    if (attempts === 1) {
-      throw new Error('down');
-    }
-  };
-
-  // No scheduleFn override here: this exercises the real setTimeout-based
-  // default. If it were not unref()'d, this single retry (1s) would still
-  // complete, but a never-succeeding connection would hang the process
-  // instead of letting node --test exit on its own.
-  await connect('mongodb://127.0.0.1:27017/pysa', { connectFn, logger: noopLogger() });
-
-  assert.equal(attempts, 2);
+test('unrefs the real retry timer so a failed connection can never keep a process alive', () => {
+  // Exercises the real setTimeout-based default scheduler directly and
+  // asserts the unref'd property itself (Timeout#hasRef()), rather than
+  // awaiting a real delay: awaiting the timer's own callback would pass the
+  // same way whether or not unref() ran (the event loop keeps spinning for
+  // the await regardless), so that only proved the retry eventually fires,
+  // never that it was actually unref'd.
+  const timer = connect.scheduleRetry(() => {}, 1000);
+  try {
+    assert.equal(timer.hasRef(), false);
+  } finally {
+    clearTimeout(timer);
+  }
 });
