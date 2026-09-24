@@ -16,17 +16,13 @@ import { useGetWidth } from '../../../hooks/useGetWidth';
 import { AiFillCamera, AiOutlineCheck } from 'react-icons/ai';
 import { BsX } from 'react-icons/bs';
 import Swal from 'sweetalert2';
+import { API_BASE_URL } from '../../../config';
+import { playerImageSrc } from '../../../utils/playerImage';
+import { adminFetch } from '../../../api/auth';
 
 export const PlayerFocus = ({ player }) => {
   console.log(player);
-  const regex = /^[/][a-z]+[/].*/gi;
-  const imageSrc =
-    process.env.NODE_ENV === 'development'
-      ? 'http://localhost:4000'
-      : 'https://pysabackend.herokuapp.com';
-  const imgData = regex.test(player.imgURL)
-    ? `${imageSrc}${player.imgURL}`
-    : `data:image/${player.imgURL.mimetype};base64,${player.imgURL.data}`;
+  const imgData = playerImageSrc(player.imgURL);
   const [medail, setMedail] = useState(player.medail);
   const [src, setSrc] = useState({
     path: '',
@@ -59,16 +55,20 @@ export const PlayerFocus = ({ player }) => {
   }
 
   async function updateImage(form) {
-    const uri =
-      process.env.NODE_ENV === 'development'
-        ? '/'
-        : 'https://pysabackend.herokuapp.com/';
-    const updated = await fetch(`${uri}players/updateImage/${player['_id']}`, {
-      method: 'POST',
-      body: form,
-    }).then((result) => result.json());
-
-    return updated;
+    const response = await adminFetch(
+      dispatch,
+      `${API_BASE_URL}/players/updateImage/${player['_id']}`,
+      {
+        method: 'POST',
+        body: form,
+      }
+    );
+    if (response.status === 401) {
+      // Session expired mid-upload: adminFetch already logged the user out
+      // and told them so.
+      return false;
+    }
+    return await response.json();
   }
   function onSubmit(event) {
     event.preventDefault();
@@ -143,7 +143,12 @@ export const PlayerFocus = ({ player }) => {
   }
 
   function handleShowIcons(display) {
-    let icons = document.getElementsByName('check');
+    // Not getElementsByName('check'): both icons below render as <svg
+    // name="check">, and getElementsByName only matches elements in the
+    // HTML namespace, so it silently returns an empty list for SVG nodes.
+    // icons[0] was always undefined and selecting a file threw instead of
+    // revealing the confirm/cancel controls.
+    let icons = document.getElementsByClassName('icon__control');
     icons[0].style.display = display;
     icons[1].style.display = display;
   }

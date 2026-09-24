@@ -7,6 +7,8 @@ import { ScoreWrapper, NamesScoreWrapper, Icon } from './styles';
 import { BsInfoCircle } from 'react-icons/bs';
 import Swal from 'sweetalert2';
 import { Info } from '../Info';
+import { API_BASE_URL } from '../../../config';
+import { adminFetch } from '../../../api/auth';
 
 function calc(score) {
   return score.reduce((acc, cv) => {
@@ -85,18 +87,21 @@ export const ScorePlayerFocus = ({
   }) {
     let score = setNameRoles(rolesScore);
 
-    const uri =
-      process.env.NODE_ENV === 'development'
-        ? '/'
-        : 'https://pysabackend.herokuapp.com/';
-    let result = await fetch(`${uri}players/updateScore/${playerId}`, {
-      method: 'PATCH',
-      body: JSON.stringify({ score, mmr, medail, partidas }),
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    }).then((result) => result.json());
-    return result;
+    const response = await adminFetch(
+      dispatch,
+      `${API_BASE_URL}/players/updateScore/${playerId}`,
+      {
+        method: 'PATCH',
+        body: JSON.stringify({ score, mmr, medail, partidas }),
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      }
+    );
+    if (response.status === 401) {
+      return false;
+    }
+    return await response.json();
   }
 
   async function test(mmr, partidas) {

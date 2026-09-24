@@ -5,12 +5,16 @@ const score = require('../components/score/network');
 const roles = require('../components/roles/network');
 const calibration = require('../components/calibration/network');
 
-const router = function (server) {
-  server.use('/players', player);
-  server.use('/scores', score);
-  server.use('/medails', medails);
-  server.use('/roles', roles);
-  server.use('/calibrations', calibration);
+// requireAdmin is the single instance app.js built from the startup admin
+// config; every component factory takes it and decides per-route whether to
+// apply it, so it is threaded through here rather than each component
+// reading a shared singleton.
+const router = function (server, requireAdmin) {
+  server.use('/players', player(requireAdmin));
+  server.use('/scores', score(requireAdmin));
+  server.use('/medails', medails(requireAdmin));
+  server.use('/roles', roles(requireAdmin));
+  server.use('/calibrations', calibration(requireAdmin));
 };
 
 /* GET home page. */
