@@ -6,7 +6,6 @@ import { defineConfig, devices } from '@playwright/test';
 const BACKEND_PORT = 4100;
 const CLIENT_PORT = 5180;
 export const E2E_BACKEND_URL = `http://localhost:${BACKEND_PORT}`;
-const BACKEND_URL = E2E_BACKEND_URL;
 const CLIENT_URL = `http://localhost:${CLIENT_PORT}`;
 export const E2E_MONGODB_URI = 'mongodb://127.0.0.1:27017/pysa_e2e';
 
@@ -53,7 +52,7 @@ export default defineConfig({
       // a chance to show. /default serves backend/public/images statically
       // (see backend/app.js), so this only proves the backend process itself
       // came up.
-      url: `${BACKEND_URL}/default/default-user.png`,
+      url: `${E2E_BACKEND_URL}/default/default-user.png`,
       env: {
         PORT: String(BACKEND_PORT),
         MONGODB_URI: E2E_MONGODB_URI,
@@ -69,7 +68,7 @@ export default defineConfig({
       cwd: '../client',
       url: CLIENT_URL,
       env: {
-        VITE_API_URL: BACKEND_URL,
+        VITE_API_URL: E2E_BACKEND_URL,
       },
       reuseExistingServer: false,
     },

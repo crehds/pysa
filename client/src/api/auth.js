@@ -46,25 +46,43 @@ export async function logout() {
   }
 }
 
+const CHECK_AUTH_TIMEOUT_MS = 8000;
+
 // Used on app load to decide isAuth from the real session instead of
 // trusting anything stored client-side. GET /auth/me always answers 200
 // when it can decide (backend/auth/network.js): "not logged in" is a
-// normal outcome carried in body.authenticated, not an HTTP error to
-// branch on. Only a genuinely unexpected response (a 5xx, or a network
-// failure) falls back to { ok: false } here too, same as "not logged in".
+// normal outcome carried in body.authenticated, so that case gets its own
+// reason ('unauthenticated') distinct from a genuinely unexpected failure
+// (a timeout, a network error, a non-200 response, or an unparseable body
+// — all 'unavailable'). useCheckAuth (client/src/hooks/useCheckAuth.js)
+// retries 'unavailable' instead of immediately logging a reloading admin
+// out on what might just be a transient backend blip.
 export async function checkAuth() {
+  let response;
   try {
-    const response = await fetch(`${API_BASE_URL}/auth/me`, {
+    response = await fetch(`${API_BASE_URL}/auth/me`, {
       credentials: 'include',
+      signal: AbortSignal.timeout(CHECK_AUTH_TIMEOUT_MS),
     });
-    const result = await response.json();
-    if (result.body && result.body.authenticated) {
-      return { ok: true, username: result.body.username };
-    }
-    return { ok: false };
   } catch (error) {
-    return { ok: false };
+    return { ok: false, reason: 'unavailable' };
   }
+
+  if (response.status !== 200) {
+    return { ok: false, reason: 'unavailable' };
+  }
+
+  let result;
+  try {
+    result = await response.json();
+  } catch (error) {
+    return { ok: false, reason: 'unavailable' };
+  }
+
+  if (result.body && result.body.authenticated) {
+    return { ok: true, username: result.body.username };
+  }
+  return { ok: false, reason: 'unauthenticated' };
 }
 
 // Every admin write goes through this helper so the session cookie is
@@ -82,4 +100,16 @@ export async function adminFetch(dispatch, url, options = {}) {
     });
   }
   return response;
+}
+
+// Reads an adminFetch response's JSON body, shared by every admin write
+// call site. On a 401, adminFetch above already logged the user out and
+// told them so, so this resolves to false instead of parsing the (empty)
+// body as if the write had succeeded; SweetAlert2 preConfirm callers treat
+// a falsy return as "do not confirm".
+export async function readAdminJson(response) {
+  if (response.status === 401) {
+    return false;
+  }
+  return await response.json();
 }

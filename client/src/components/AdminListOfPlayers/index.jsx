@@ -12,7 +12,7 @@ import { FaUserPlus, FaUserMinus } from 'react-icons/fa';
 import Swal from 'sweetalert2';
 import { useStateValue } from '../../Context';
 import { API_BASE_URL } from '../../config';
-import { adminFetch } from '../../api/auth';
+import { adminFetch, readAdminJson } from '../../api/auth';
 
 function randomPlayer(playersLength) {
   let number = Math.floor(Math.random() * (playersLength - 2 - 2 + 1) + 2);
@@ -172,14 +172,7 @@ export const AdminListOfPlayers = ({ players, handleLoading }) => {
         },
       }
     );
-    if (response.status === 401) {
-      // Session expired mid-write: adminFetch already logged the user out
-      // and told them so. Returning false tells SweetAlert2's preConfirm
-      // not to confirm, so the caller below never touches the (empty)
-      // body as if it were a successful add.
-      return false;
-    }
-    return await response.json();
+    return await readAdminJson(response);
   }
 
   async function deletePlayer(arrPlayers) {
@@ -203,10 +196,7 @@ export const AdminListOfPlayers = ({ players, handleLoading }) => {
         },
       }
     );
-    if (response.status === 401) {
-      return false;
-    }
-    return await response.json();
+    return await readAdminJson(response);
   }
 
   async function handleDeletePlayer() {
