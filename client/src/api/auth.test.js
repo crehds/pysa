@@ -102,7 +102,7 @@ describe('checkAuth', () => {
     expect(await checkAuth()).toEqual({ ok: false, reason: 'unauthenticated' });
   });
 
-  test('an unexpected non-2xx response resolves to reason "unavailable", not a throw', async () => {
+  test('an unexpected non-200 response resolves to reason "unavailable", not a throw', async () => {
     global.fetch = vi.fn(() => jsonResponse(500, { error: 'Unexpected error', body: '' }));
     expect(await checkAuth()).toEqual({ ok: false, reason: 'unavailable' });
   });
