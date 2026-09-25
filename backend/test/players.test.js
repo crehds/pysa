@@ -198,6 +198,22 @@ test('players: addNewPlayers -> getAllPlayers -> getScoreOfPlayers -> onePlayer 
     await assert.rejects(() => fs.access(uploadedImagePath));
   });
 
+  await t.test('POST /players/updateImage/:id rejects a file sent under the wrong field with 400', async () => {
+    const res = await agent
+      .post(`/players/updateImage/${playerAId}`)
+      .attach('photo', Buffer.from('fake-png-bytes'), {
+        filename: 'avatar.png',
+        contentType: 'image/png',
+      });
+
+    // A malformed upload is the client's mistake, not a server fault.
+    assert.equal(res.status, 400);
+    assert.equal(res.body.error, 'Invalid image upload: Unexpected file field');
+
+    const check = await request(app).get(`/players/onePlayer/${playerAId}`);
+    assert.equal(check.body.body.imgURL, undefined);
+  });
+
   await t.test('POST /players/updateImage/:id and GET /players/getAllPlayers agree on the imgURL shape', async () => {
     // Both routes read the same Model3 (strict: false, no schema for
     // imgURL) document, but through different query shapes

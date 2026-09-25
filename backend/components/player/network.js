@@ -4,6 +4,7 @@ const response = require('../../response/index');
 const controller = require('./controller');
 
 const MAX_AVATAR_UPLOAD_BYTES = 5 * 1024 * 1024; // 5MB
+const AVATAR_TOO_LARGE_MESSAGE = `Image is too large (max ${MAX_AVATAR_UPLOAD_BYTES / (1024 * 1024)}MB)`;
 
 module.exports = function createPlayerRouter(requireAdmin) {
   const router = express.Router();
@@ -104,8 +105,13 @@ module.exports = function createPlayerRouter(requireAdmin) {
     // README, "Error handling").
     function (req, res, next) {
       upload.single('image')(req, res, function (err) {
-        if (err instanceof multer.MulterError && err.code === 'LIMIT_FILE_SIZE') {
-          return response.error(req, res, 'Image is too large (max 5MB)', 413, err);
+        if (err instanceof multer.MulterError) {
+          if (err.code === 'LIMIT_FILE_SIZE') {
+            return response.error(req, res, AVATAR_TOO_LARGE_MESSAGE, 413, err);
+          }
+          // Any other MulterError (e.g. a file under a field other than
+          // "image") is a malformed request, not a server fault.
+          return response.error(req, res, `Invalid image upload: ${err.message}`, 400, err);
         }
         if (err) {
           return response.error(req, res, 'Unexpected error', 500, err);

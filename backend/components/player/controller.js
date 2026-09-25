@@ -215,9 +215,8 @@ async function updatePlayer(playerId, player) {
 }
 
 async function updateImagePlayer(playerId, image) {
-  // image.buffer is already the raw file bytes (multer.memoryStorage, see
-  // backend/components/player/network.js) -- the same bytes fileToBuffer
-  // used to produce by reading them off disk.
+  // image.buffer holds the raw file bytes (multer.memoryStorage, see
+  // backend/components/player/network.js).
   const player = {
     imgURL: {
       data: image.buffer,
