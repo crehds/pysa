@@ -3,7 +3,6 @@ const medailController = require('../medails/controller');
 const rolesController = require('../roles/controller');
 const scoreController = require('../score/controller');
 const calibrationController = require('../calibration/controller');
-const { fileToBuffer } = require('../../utils');
 
 async function getOnePlayer(playerId) {
   const result = await store.listOne(playerId);
@@ -216,10 +215,12 @@ async function updatePlayer(playerId, player) {
 }
 
 async function updateImagePlayer(playerId, image) {
-  const buffer = await fileToBuffer(image);
+  // image.buffer is already the raw file bytes (multer.memoryStorage, see
+  // backend/components/player/network.js) -- the same bytes fileToBuffer
+  // used to produce by reading them off disk.
   const player = {
     imgURL: {
-      data: buffer,
+      data: image.buffer,
       mimetype: image.mimetype,
     },
   };

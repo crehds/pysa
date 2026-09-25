@@ -4,7 +4,6 @@ var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 const cors = require('cors');
 const router = require('./routes');
-const fs = require('fs')
 // var indexRouter = require('./routes/index');
 // var usersRouter = require('./routes/users');
 var app = express();
@@ -49,8 +48,6 @@ if (trustProxy.valid) {
   );
 }
 
-const uploadsPath = `./uploads`;
-fs.mkdirSync(uploadsPath, { recursive: true });
 app.use(cors(createCorsOptions(loadAllowedOrigins(process.env))));
 console.log('servidor encendido');
 app.use(logger('dev'));

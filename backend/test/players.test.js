@@ -152,15 +152,12 @@ test('players: addNewPlayers -> getAllPlayers -> getScoreOfPlayers -> onePlayer 
     assert.equal(check.body.body.medail.name, 'Silver');
   });
 
-  await t.test('POST /players/updateImage/:id stores the uploaded image', async (t) => {
-    const uploadedImagePath = path.join(__dirname, '..', 'uploads', `${playerBId}.png`);
-    t.after(async () => {
-      await fs.rm(uploadedImagePath).catch(() => {});
-    });
+  await t.test('POST /players/updateImage/:id stores the uploaded image', async () => {
+    const uploadedBytes = Buffer.from('fake-png-bytes');
 
     const res = await agent
       .post(`/players/updateImage/${playerBId}`)
-      .attach('image', Buffer.from('fake-png-bytes'), {
+      .attach('image', uploadedBytes, {
         filename: 'avatar.png',
         contentType: 'image/png',
       });
@@ -168,15 +165,40 @@ test('players: addNewPlayers -> getAllPlayers -> getScoreOfPlayers -> onePlayer 
     assert.equal(res.status, 200);
     assert.equal(res.body.error, '');
     assert.equal(res.body.body.imgURL.mimetype, 'image/png');
-    assert.ok(res.body.body.imgURL.data);
+    // imgURL.data comes back as a base64 string (see
+    // client/src/utils/playerImage.js); comparing against the base64 of the
+    // exact bytes sent proves nothing was altered in transit.
+    assert.equal(res.body.body.imgURL.data, uploadedBytes.toString('base64'));
+
+    // Uploads are handled in memory now (multer.memoryStorage): nothing is
+    // ever written to disk, so a fresh server with no uploads/ directory
+    // still works, and no stale files accumulate on an ephemeral filesystem.
+    const uploadedImagePath = path.join(__dirname, '..', 'uploads', `${playerBId}.png`);
+    await assert.rejects(() => fs.access(uploadedImagePath));
   });
 
-  await t.test('POST /players/updateImage/:id and GET /players/getAllPlayers agree on the imgURL shape', async (t) => {
-    const uploadedImagePath = path.join(__dirname, '..', 'uploads', `${playerBId}.png`);
-    t.after(async () => {
-      await fs.rm(uploadedImagePath).catch(() => {});
-    });
+  await t.test('POST /players/updateImage/:id rejects an over-limit file with 413 and stores nothing', async () => {
+    const oversizedBytes = Buffer.alloc(6 * 1024 * 1024, 'a'); // over the 5MB limit
 
+    const res = await agent
+      .post(`/players/updateImage/${playerAId}`)
+      .attach('image', oversizedBytes, {
+        filename: 'too-big.png',
+        contentType: 'image/png',
+      });
+
+    assert.equal(res.status, 413);
+    assert.equal(res.body.error, 'Image is too large (max 5MB)');
+
+    // playerA never had an image set; a rejected upload must not change that.
+    const check = await request(app).get(`/players/onePlayer/${playerAId}`);
+    assert.equal(check.body.body.imgURL, undefined);
+
+    const uploadedImagePath = path.join(__dirname, '..', 'uploads', `${playerAId}.png`);
+    await assert.rejects(() => fs.access(uploadedImagePath));
+  });
+
+  await t.test('POST /players/updateImage/:id and GET /players/getAllPlayers agree on the imgURL shape', async () => {
     // Both routes read the same Model3 (strict: false, no schema for
     // imgURL) document, but through different query shapes
     // (findByIdAndUpdate's returned doc vs find()'s array), so the client

@@ -3,6 +3,8 @@ const multer = require('multer');
 const response = require('../../response/index');
 const controller = require('./controller');
 
+const MAX_AVATAR_UPLOAD_BYTES = 5 * 1024 * 1024; // 5MB
+
 module.exports = function createPlayerRouter(requireAdmin) {
   const router = express.Router();
   console.log(__dirname);
@@ -66,18 +68,13 @@ module.exports = function createPlayerRouter(requireAdmin) {
     }
   });
 
-  var storage = multer.diskStorage({
-    destination: function (req, file, cb) {
-      cb(null, './uploads');
-    },
-    filename: function (req, file, cb) {
-      const { playerId } = req.params;
-      const ext = file.mimetype.match(/[a-z]+/gi);
-      const ImageURL = `${playerId}.${ext[1]}`;
-      cb(null, ImageURL);
-    },
+  // Memory storage: the uploaded bytes only ever go into MongoDB (see
+  // controller.updateImagePlayer), so there is no reason to write them to
+  // disk first. The size limit bounds how much memory one upload can take.
+  var upload = multer({
+    storage: multer.memoryStorage(),
+    limits: { fileSize: MAX_AVATAR_UPLOAD_BYTES },
   });
-  var upload = multer({ storage: storage });
 
   //método implementado antes de enterarme que heroku borraba las imágenes en al versión gratuita
   // router.post(
@@ -100,7 +97,22 @@ module.exports = function createPlayerRouter(requireAdmin) {
   router.post(
     '/updateImage/:playerId',
     requireAdmin,
-    upload.single('image'),
+    // Multer is invoked directly (rather than as declarative middleware) so
+    // a MulterError -- e.g. LIMIT_FILE_SIZE from the limits above -- can be
+    // answered as a clean 4xx through the app's own response helper instead
+    // of falling through to Express's default error page (see multer's
+    // README, "Error handling").
+    function (req, res, next) {
+      upload.single('image')(req, res, function (err) {
+        if (err instanceof multer.MulterError && err.code === 'LIMIT_FILE_SIZE') {
+          return response.error(req, res, 'Image is too large (max 5MB)', 413, err);
+        }
+        if (err) {
+          return response.error(req, res, 'Unexpected error', 500, err);
+        }
+        next();
+      });
+    },
     async function (req, res) {
       const { playerId } = req.params;
       const { file: image } = req;
