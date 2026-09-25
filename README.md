@@ -136,7 +136,7 @@ same known state; read-only specs just share the single seed above.
 | `ADMIN_PASSWORD_HASH`  | No\*     | —                          | bcrypt hash of the admin password. Generate with `npm run hash-password`.     |
 | `JWT_SECRET`           | No\*     | —                          | Signs admin session cookies. At least 32 characters. Generate with the command below. |
 | `ALLOWED_ORIGINS`      | No       | `http://localhost:5173`   | Comma-separated exact origins allowed to call the API with credentials (CORS).|
-| `TRUST_PROXY`          | No       | off (`false`)              | Express `trust proxy` setting: `false` (or unset) for off, a hop count (e.g. `1`), or a comma-separated list of IPs/CIDRs/presets (`loopback`, `linklocal`, `uniquelocal`). Only set this behind a reverse proxy — see "Deploying" below. `true` is refused (it would let any client spoof its IP and dodge the login rate limit), and so is any value Express itself cannot parse (e.g. a typo); either logs a startup warning with the reason and stays off instead of crashing. |
+| `TRUST_PROXY`          | No       | off (`false`)              | Express `trust proxy` setting: `false` (or unset) for off, a hop count (e.g. `1`), or a comma-separated list of IPs/CIDRs/presets (`loopback`, `linklocal`, `uniquelocal`). Only set this behind a reverse proxy you know rewrites `X-Forwarded-For`; the Vercel + Railway setup in "Deploying" below leaves it unset. `true` is refused (it would let any client spoof its IP and dodge the login rate limit), and so is any value Express itself cannot parse (e.g. a typo); either logs a startup warning with the reason and stays off instead of crashing. |
 | `LOGIN_RATE_LIMIT_WINDOW_MS` | No | `900000` (15 min)          | Login rate-limit window, in milliseconds. A non-numeric or zero value falls back to the default. |
 | `LOGIN_RATE_LIMIT_MAX` | No       | `10`                       | Max login attempts per window, per client. A non-numeric or zero value falls back to the default. |
 
@@ -256,7 +256,7 @@ Railway table below).
 | `ADMIN_USERNAME` | Your chosen admin username. |
 | `ADMIN_PASSWORD_HASH` | `npm --prefix backend run hash-password` — a fresh hash, **not** the one from local dev. |
 | `JWT_SECRET` | `node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"` — a fresh value, **not** the one from local dev. |
-| `TRUST_PROXY` | `2` (Vercel → Railway's own edge → the app is probably two hops) — **verify after the first deploy**. |
+| `TRUST_PROXY` | Leave unset — see "Why `TRUST_PROXY` stays unset" below. |
 | `ALLOWED_ORIGINS` | Leave unset — only consulted for cross-site requests, and the proxied client never makes one. |
 | `MONGODB_SERVER_SELECTION_TIMEOUT_MS` | Leave unset — the driver default is the safe choice for Atlas (see the table above). |
 | `PORT` | Leave unset — Railway injects it. |
@@ -264,6 +264,23 @@ Railway table below).
 
 The [Backend environment variables](#backend-environment-variables) table
 above has the full description and validation/fallback behavior of each one.
+
+**Why `TRUST_PROXY` stays unset**: the Railway domain is public, so a request
+can skip Vercel and call the API directly with a made-up `X-Forwarded-For`
+header. Railway documents the headers its edge sets (`X-Real-IP` among them)
+but not `X-Forwarded-For`, so a value the caller sent could reach the app
+unchanged, and any `TRUST_PROXY` hop count would make Express believe it:
+a fresh login rate-limit bucket for every request. With trust proxy off,
+Express ignores those headers and uses the connection's own address.
+
+The trade-off: every request then appears to come from Railway's edge, so
+the login limit (`LOGIN_RATE_LIMIT_MAX` per `LOGIN_RATE_LIMIT_WINDOW_MS`, 10
+per 15 minutes by default) is shared by everyone, and a burst of bad logins
+from anyone can block the admin's login until the window resets. A long
+random admin password keeps guessing impractical either way. If requests
+arrive with an `X-Forwarded-For` header, express-rate-limit logs one
+`ERR_ERL_UNEXPECTED_X_FORWARDED_FOR` warning after each start; with trust
+proxy deliberately off, that warning is expected and harmless.
 
 ### 3. Vercel (client)
 
@@ -294,4 +311,6 @@ above has the full description and validation/fallback behavior of each one.
 
 Generate new values for `ADMIN_PASSWORD_HASH` and `JWT_SECRET` for
 production — never reuse the ones from local dev (see the commands in the
-table above and [Admin login](#admin-login)).
+table above and [Admin login](#admin-login)). Hash a long random password
+(for example from a password manager): with the shared login limit above,
+password strength is what keeps guessing impractical.
