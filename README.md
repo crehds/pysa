@@ -188,16 +188,8 @@ for its full 8-hour lifetime even after logging out (see
 (for example after a leaked cookie), rotate `JWT_SECRET` to a new value and
 restart the backend; every previously issued token then fails verification.
 
-**Deploying**: the session cookie is `SameSite=Lax` and `Secure`, scoped to
-the API's own domain. Serve the client and the API from the same site (or
-put the API behind a same-site reverse proxy at, say, `/api`) — a
-cross-site cookie (client and API on different registrable domains) is
-blocked by Safari and other browsers' tracking-prevention defaults even with
-`credentials: 'include'` on the client. When you do put a reverse proxy in
-front of the API, also set `TRUST_PROXY` to the number of proxy hops in
-front of it (usually `1`), so the login rate limiter keys on each visitor's
-real IP instead of the proxy's — without it, every visitor shares one
-bucket and 10 bad logins from anyone lock the real admin out.
+See [Deploying](#deploying) below for how the session cookie's
+`SameSite=Lax`/`Secure`/host-only settings shape the production setup.
 
 ### Stopping MongoDB
 
@@ -205,3 +197,101 @@ bucket and 10 bad logins from anyone lock the real admin out.
 docker compose down      # keeps the data
 docker compose down -v   # also deletes the data volume
 ```
+
+## Deploying
+
+**Architecture**: browser → Vercel (static client + `/api/*` proxy) → Railway
+(API) → MongoDB Atlas.
+
+**Why the proxy**: the client calls its own origin at a relative `/api/...`
+path (`VITE_API_URL=/api`, see `client/src/config.js`), and
+`client/vercel.json` rewrites that to the Railway API. This matters because
+the session cookie is `SameSite=Lax`, `Secure`, and host-only
+(`backend/auth/cookie.js`): `*.vercel.app` and `*.up.railway.app` are
+different registrable domains, and a cross-site cookie is blocked by Safari
+and other browsers' tracking-prevention defaults even with
+`credentials: 'include'`. With the proxy, the browser only ever talks to the
+Vercel origin, so the cookie is set and sent like any same-site cookie — and
+because the client's own calls are same-origin from the browser's point of
+view, `ALLOWED_ORIGINS` (CORS) is never consulted for them either (see the
+Railway table below).
+
+### 1. MongoDB Atlas
+
+1. Create a cluster and a database user (Database Access) — the username and
+   password become part of `MONGODB_URI`.
+2. Network Access: Railway's outbound IP is **not** fixed unless the project
+   is on Railway's Pro plan with Static Outbound IPs enabled (verified
+   against Railway's docs) — otherwise each request can come from a
+   different address. Either allow `0.0.0.0/0` in Atlas (relying on the
+   database user's credentials for security) or upgrade to Pro, enable
+   Static Outbound IPs, and allowlist just those.
+3. Copy the `mongodb+srv://...` connection string for `MONGODB_URI` below.
+
+### 2. Railway (API)
+
+1. New service from this repo, **Root Directory** `backend`.
+2. Railway builds with Railpack (its default builder, which replaced
+   Nixpacks). It detects Node.js and runs the `start` script
+   (`node --env-file-if-exists=.env ./bin/www`); no `.env` file exists in
+   production, so that flag is a no-op there, and env vars come from the
+   Railway variables below instead.
+3. **Node version**: Railpack reads `RAILPACK_NODE_VERSION` first, then
+   `engines.node` in `package.json` (`>=24` here). Set
+   `RAILPACK_NODE_VERSION=24` (see the table) so the build uses the Node 24
+   LTS line explicitly rather than depending on how the `>=24` range is
+   resolved, and confirm the version in the first build log.
+4. Generate a domain: Settings → Networking → Public Networking.
+   `client/vercel.json` assumes `pysa-api.up.railway.app` — if Railway
+   assigns a different one, update the `destination` in `client/vercel.json`
+   to match.
+5. No networking code changes needed: `backend/bin/www` already calls
+   `server.listen(port)` with no host, which binds every interface
+   (Node's own default), and already reads `PORT` from the environment,
+   which Railway injects automatically.
+
+| Variable | Set to |
+| --- | --- |
+| `MONGODB_URI` | The Atlas connection string from step 1. |
+| `ADMIN_USERNAME` | Your chosen admin username. |
+| `ADMIN_PASSWORD_HASH` | `npm --prefix backend run hash-password` — a fresh hash, **not** the one from local dev. |
+| `JWT_SECRET` | `node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"` — a fresh value, **not** the one from local dev. |
+| `TRUST_PROXY` | `2` (Vercel → Railway's own edge → the app is probably two hops) — **verify after the first deploy**. |
+| `ALLOWED_ORIGINS` | Leave unset — only consulted for cross-site requests, and the proxied client never makes one. |
+| `MONGODB_SERVER_SELECTION_TIMEOUT_MS` | Leave unset — the driver default is the safe choice for Atlas (see the table above). |
+| `PORT` | Leave unset — Railway injects it. |
+| `RAILPACK_NODE_VERSION` | `24` — pins the Node major Railpack installs (see step 3). |
+
+The [Backend environment variables](#backend-environment-variables) table
+above has the full description and validation/fallback behavior of each one.
+
+### 3. Vercel (client)
+
+1. New project from this repo, **Root Directory** `client`, framework preset
+   **Vite**.
+2. Env var: `VITE_API_URL=/api` (relative, proxied by `client/vercel.json`
+   — never called directly).
+3. `client/package.json` already declares `"engines": { "node": ">=24" }`.
+   Vercel reads `engines.node` from `package.json` as its highest-priority
+   Node version source (verified against Vercel's build-utils source), and
+   24 is a currently supported runtime there, so no change is needed.
+4. Deploy. `client/vercel.json` ships in the repo already: its `/api/:path*`
+   rewrite is listed before the SPA fallback, which matters because
+   rewrites are matched in order and the fallback matches every path; the
+   build's own static files still take precedence over both (Vercel checks
+   the filesystem before applying any rewrite — verified against Vercel's
+   routing source).
+
+### Post-deploy checks
+
+1. The home page loads real data (public `GET /players/getAllPlayers`
+   through the proxy).
+2. Admin login succeeds and survives a reload (the session cookie persists).
+3. An avatar upload succeeds (exercises the Railway API, the Atlas write,
+   and the 5MB limit).
+
+### Fresh secrets
+
+Generate new values for `ADMIN_PASSWORD_HASH` and `JWT_SECRET` for
+production — never reuse the ones from local dev (see the commands in the
+table above and [Admin login](#admin-login)).
