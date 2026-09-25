@@ -114,7 +114,18 @@ test('app.js itself refuses an invalid TRUST_PROXY value at startup: warns with 
       '-e',
       "const app = require('./app'); process.stdout.write(String(app.get('trust proxy'))); process.exit(0);",
     ],
-    { cwd: backendDir, env, encoding: 'utf8' }
+    // Generous but bounded: without a timeout, a hang here (e.g. app.js
+    // ever blocking on a real network call instead of failing fast) would
+    // stall the whole test run instead of failing just this one test.
+    { cwd: backendDir, env, encoding: 'utf8', timeout: 20000 }
+  );
+
+  // Checked before the assertions below so a timeout or kill fails here,
+  // with the child's own stderr attached, instead of falling through to a
+  // confusing failure on a null status or empty stdout.
+  assert.ok(
+    !result.error && result.signal === null,
+    `child process did not exit normally (error: ${result.error}, signal: ${result.signal}); stderr: ${result.stderr}`
   );
 
   assert.equal(result.status, 0);

@@ -111,9 +111,11 @@ test('loadTrustProxy: a positive integer string is a hop count', () => {
   assert.deepEqual(loadTrustProxy({ TRUST_PROXY: '3' }), { valid: true, value: 3 });
 });
 
-// "0" is a valid hop count in Express terms (trust nothing), but it is
-// clearer to normalize it to the same `false` every other "off" spelling
-// produces, since app.js only branches on truthy/falsy trust proxy values.
+// "0" is a valid hop count in Express terms, and Express's compileTrust
+// already trusts no proxy for a numeric 0, just as for `false`, so this
+// normalization is not needed for correctness. It keeps the result
+// consistent instead: every "off" spelling (unset, "false", "0") yields
+// `false`, never a number.
 test('loadTrustProxy: "0" keeps trust proxy off, like unset', () => {
   assert.deepEqual(loadTrustProxy({ TRUST_PROXY: '0' }), { valid: true, value: false });
 });
