@@ -3,16 +3,42 @@ const mongoose = require('mongoose');
 const INITIAL_RETRY_DELAY_MS = 1000;
 const MAX_RETRY_DELAY_MS = 30 * 1000;
 
-// The Docker container this app talks to (see docker-compose.yml) is a
-// single standalone MongoDB server, not a replica set, so a short
-// serverSelectionTimeoutMS is exactly the case Mongoose's own docs
-// recommend: "we don't recommend reducing serverSelectionTimeoutMS unless
-// you are running a standalone MongoDB server rather than a replica set"
-// (https://mongoosejs.com/docs/connections.html#serverselectiontimeoutms).
-// It lets each connect() attempt below fail in seconds instead of the 30s
-// default, so our own retry loop (not Mongoose, which never retries
-// connect() on its own) can take over quickly.
-const SERVER_SELECTION_TIMEOUT_MS = 5000;
+// serverSelectionTimeoutMS is client-wide: the driver applies it to every
+// operation's server selection (node_modules/mongodb/lib/sdam/topology.js,
+// selectServer()), not just the initial connect(). A short value is only
+// safe against the single standalone MongoDB server this app talks to
+// locally in Docker (see docker-compose.yml) -- on a replica set (e.g.
+// MongoDB Atlas in production), a primary election taking longer than the
+// timeout would turn every query issued during it into an error. So this
+// stays unset in production and falls back to the driver's own default
+// (30000ms, confirmed in node_modules/mongodb/lib/connection_string.js);
+// only local dev opts into a short one via MONGODB_SERVER_SELECTION_TIMEOUT_MS
+// (see README) so a connect() attempt below fails in seconds instead of 30s,
+// letting our own retry loop (not Mongoose, which never retries connect() on
+// its own) take over quickly.
+//
+// Returns { valid: true, value } where value is undefined when the env var
+// is unset/blank (the caller omits the option entirely) or the parsed
+// positive integer otherwise, or { valid: false, reason } when it is set to
+// something else -- the caller logs `reason` and falls back to the driver
+// default rather than crash, the same fail-closed style as TRUST_PROXY
+// (backend/auth/config.js).
+function loadServerSelectionTimeoutMs(env = process.env) {
+  const raw = env.MONGODB_SERVER_SELECTION_TIMEOUT_MS;
+  if (typeof raw !== 'string' || raw.trim() === '') {
+    return { valid: true, value: undefined };
+  }
+
+  const trimmed = raw.trim();
+  if (/^\d+$/.test(trimmed) && Number(trimmed) > 0) {
+    return { valid: true, value: Number(trimmed) };
+  }
+
+  return {
+    valid: false,
+    reason: `MONGODB_SERVER_SELECTION_TIMEOUT_MS must be a positive integer, got "${raw}"`,
+  };
+}
 
 // Confirmed via the MongoDB Node driver empirically (a malformed
 // MONGODB_URI, e.g. missing the mongodb:// scheme, rejects with this exact
@@ -119,15 +145,25 @@ async function connect(
     connectFn = (u, options) => mongoose.connect(u, options),
     scheduleFn = scheduleRetry,
     logger = console,
+    env = process.env,
   } = {}
 ) {
+  const timeout = loadServerSelectionTimeoutMs(env);
+  if (!timeout.valid) {
+    logger.error(`[db] ${timeout.reason}; using the MongoDB driver's own default instead.`);
+  }
+  const connectOptions = {};
+  if (timeout.valid && timeout.value !== undefined) {
+    connectOptions.serverSelectionTimeoutMS = timeout.value;
+  }
+
   let attempt = 0;
   let delay = INITIAL_RETRY_DELAY_MS;
 
   for (;;) {
     attempt += 1;
     try {
-      await connectFn(url, { serverSelectionTimeoutMS: SERVER_SELECTION_TIMEOUT_MS });
+      await connectFn(url, connectOptions);
       logger.log('[db] connected');
       return;
     } catch (error) {
