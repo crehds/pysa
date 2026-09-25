@@ -1,5 +1,5 @@
 import Swal from 'sweetalert2';
-import { login, logout, checkAuth, adminFetch } from './auth';
+import { login, logout, checkAuth, adminFetch, readAdminJson } from './auth';
 import { API_BASE_URL } from '../config';
 
 vi.mock('sweetalert2', () => ({
@@ -80,8 +80,11 @@ describe('logout', () => {
 describe('checkAuth', () => {
   // GET /auth/me always answers 200 when it can decide (backend/auth/network.js):
   // authenticated is the signal, not the HTTP status. "Not logged in" is a
-  // normal outcome, not a failure to recover from.
-  test('GETs /auth/me with credentials: include and returns the username when authenticated', async () => {
+  // normal outcome (reason: 'unauthenticated'), distinct from a genuinely
+  // unexpected failure (reason: 'unavailable'), so useCheckAuth
+  // (client/src/hooks/useCheckAuth.js) can retry the latter instead of
+  // logging a reloading admin out on a transient blip.
+  test('GETs /auth/me with credentials: include and a timeout, and returns the username when authenticated', async () => {
     global.fetch = vi.fn(() =>
       jsonResponse(200, { error: '', body: { authenticated: true, username: 'admin' } })
     );
@@ -90,23 +93,40 @@ describe('checkAuth', () => {
     expect(result).toEqual({ ok: true, username: 'admin' });
     expect(global.fetch).toHaveBeenCalledWith(
       `${API_BASE_URL}/auth/me`,
-      expect.objectContaining({ credentials: 'include' })
+      expect.objectContaining({ credentials: 'include', signal: expect.any(AbortSignal) })
     );
   });
 
-  test('authenticated: false (still a 200) resolves to { ok: false }, not a throw', async () => {
+  test('authenticated: false (still a 200) resolves to reason "unauthenticated", not a throw', async () => {
     global.fetch = vi.fn(() => jsonResponse(200, { error: '', body: { authenticated: false } }));
-    expect(await checkAuth()).toEqual({ ok: false });
+    expect(await checkAuth()).toEqual({ ok: false, reason: 'unauthenticated' });
   });
 
-  test('an unexpected non-2xx response resolves to { ok: false }, not a throw', async () => {
+  test('an unexpected non-200 response resolves to reason "unavailable", not a throw', async () => {
     global.fetch = vi.fn(() => jsonResponse(500, { error: 'Unexpected error', body: '' }));
-    expect(await checkAuth()).toEqual({ ok: false });
+    expect(await checkAuth()).toEqual({ ok: false, reason: 'unavailable' });
   });
 
-  test('a network failure resolves to { ok: false }', async () => {
+  test('a network failure resolves to reason "unavailable"', async () => {
     global.fetch = vi.fn(() => Promise.reject(new Error('network down')));
-    expect(await checkAuth()).toEqual({ ok: false });
+    expect(await checkAuth()).toEqual({ ok: false, reason: 'unavailable' });
+  });
+
+  test('an unparseable body resolves to reason "unavailable"', async () => {
+    global.fetch = vi.fn(() =>
+      Promise.resolve({ status: 200, json: () => Promise.reject(new Error('bad json')) })
+    );
+    expect(await checkAuth()).toEqual({ ok: false, reason: 'unavailable' });
+  });
+
+  // AbortSignal.timeout's own internal timer isn't observable/fakeable from
+  // here, so this exercises the shape it produces (fetch rejecting with a
+  // TimeoutError DOMException) rather than waiting out a real 8s timeout.
+  test('a timed-out request (AbortSignal.timeout rejecting with TimeoutError) resolves to reason "unavailable"', async () => {
+    global.fetch = vi.fn(() =>
+      Promise.reject(new DOMException('The operation timed out.', 'TimeoutError'))
+    );
+    expect(await checkAuth()).toEqual({ ok: false, reason: 'unavailable' });
   });
 });
 
@@ -162,5 +182,22 @@ describe('adminFetch', () => {
     const result = await adminFetch(vi.fn(), 'https://api.example.com/x');
 
     expect(result).toBe(response);
+  });
+});
+
+describe('readAdminJson', () => {
+  // adminFetch already logged the user out and told them so on a 401
+  // (tested above); callers just need to know not to treat that response's
+  // (empty) body as a successful write.
+  test('on a 401, resolves to false instead of parsing the body', async () => {
+    const response = { status: 401, json: vi.fn() };
+    expect(await readAdminJson(response)).toBe(false);
+    expect(response.json).not.toHaveBeenCalled();
+  });
+
+  test('on any other status, resolves with the parsed JSON body', async () => {
+    const body = { error: '', body: { id: 1 } };
+    const response = { status: 200, json: () => Promise.resolve(body) };
+    expect(await readAdminJson(response)).toEqual(body);
   });
 });
