@@ -105,6 +105,116 @@ test('redacts a password even when the driver echoes it back inside error.messag
     assert.doesNotMatch(line, /s3cr3t/);
     assert.doesNotMatch(line, /admin:[^@]*@/);
   }
+
+  const failureLines = logs.filter((line) => /attempt/i.test(line));
+  assert.equal(failureLines.length, 1);
+  // The rest of the message survives untouched around the marker -- only
+  // the URI itself is cut out, nothing else.
+  assert.match(failureLines[0], /bad auth while connecting to <redacted MONGODB_URI>/);
+});
+
+test('withholds the whole message when the password appears without the surrounding URI, instead of leaving it readable', async () => {
+  const url = 'mongodb://admin:s3cr3t@127.0.0.1:27017/pysa?authSource=admin';
+  let attempts = 0;
+  const connectFn = async () => {
+    attempts += 1;
+    if (attempts === 1) {
+      // Worst case: the driver's own message never contains the whole URI
+      // at all (e.g. it already resolved a different host internally),
+      // just the bare password -- proving redact() finds the password
+      // without needing to match the full URI first.
+      throw new Error('bad auth: invalid credentials for password s3cr3t');
+    }
+  };
+  const logs = [];
+  const logger = {
+    log: (...args) => logs.push(args.join(' ')),
+    error: (...args) => logs.push(args.join(' ')),
+  };
+
+  await connect(url, { connectFn, scheduleFn: makeFakeScheduler(), logger });
+
+  const failureLines = logs.filter((line) => /attempt/i.test(line));
+  assert.equal(failureLines.length, 1);
+  assert.doesNotMatch(failureLines[0], /s3cr3t/);
+  assert.match(failureLines[0], /message withheld/i);
+});
+
+test('withholds the message when it contains the percent-decoded form of a percent-encoded password', async () => {
+  const url = 'mongodb://user:p%40ss-word@127.0.0.1:27017/pysa';
+  let attempts = 0;
+  const connectFn = async () => {
+    attempts += 1;
+    if (attempts === 1) {
+      // Simulates a driver that decodes the URI before echoing the
+      // password back: the message holds "p@ss-word", not the raw
+      // "p%40ss-word" written in the URI.
+      throw new Error('bad auth: invalid credentials for password p@ss-word');
+    }
+  };
+  const logs = [];
+  const logger = {
+    log: (...args) => logs.push(args.join(' ')),
+    error: (...args) => logs.push(args.join(' ')),
+  };
+
+  await connect(url, { connectFn, scheduleFn: makeFakeScheduler(), logger });
+
+  const failureLines = logs.filter((line) => /attempt/i.test(line));
+  assert.equal(failureLines.length, 1);
+  assert.doesNotMatch(failureLines[0], /p@ss-word/);
+  assert.match(failureLines[0], /message withheld/i);
+});
+
+test('withholds rather than garbles the message when the password is a single common character', async () => {
+  const url = 'mongodb://admin:E@127.0.0.1:27017/pysa';
+  let attempts = 0;
+  const connectFn = async () => {
+    attempts += 1;
+    if (attempts === 1) {
+      const error = new Error('connect ECONNREFUSED 127.0.0.1:27017');
+      error.name = 'MongoServerSelectionError';
+      throw error;
+    }
+  };
+  const logs = [];
+  const logger = {
+    log: (...args) => logs.push(args.join(' ')),
+    error: (...args) => logs.push(args.join(' ')),
+  };
+
+  await connect(url, { connectFn, scheduleFn: makeFakeScheduler(), logger });
+
+  const failureLines = logs.filter((line) => /attempt/i.test(line));
+  assert.equal(failureLines.length, 1);
+  // Exact match: a one-letter password must never garble unrelated
+  // occurrences of that same letter elsewhere in the message (e.g. every
+  // "E" in "ECONNREFUSED"), which a plain substring replacement would do.
+  assert.equal(
+    failureLines[0],
+    '[db] connection attempt 1 failed (MongoServerSelectionError): <message withheld: it may contain the MONGODB_URI password>, retrying in 1000ms'
+  );
+});
+
+test('logs the driver message unchanged, not split into individual characters, when url is empty', async () => {
+  let attempts = 0;
+  const connectFn = async () => {
+    attempts += 1;
+    if (attempts === 1) {
+      throw new Error('connect ECONNREFUSED 127.0.0.1:27017');
+    }
+  };
+  const logs = [];
+  const logger = {
+    log: (...args) => logs.push(args.join(' ')),
+    error: (...args) => logs.push(args.join(' ')),
+  };
+
+  await connect('', { connectFn, scheduleFn: makeFakeScheduler(), logger });
+
+  const failureLines = logs.filter((line) => /attempt/i.test(line));
+  assert.equal(failureLines.length, 1);
+  assert.match(failureLines[0], /connect ECONNREFUSED 127\.0\.0\.1:27017/);
 });
 
 test('stops retrying on a non-retryable error (e.g. a malformed MONGODB_URI) instead of retrying forever', async () => {

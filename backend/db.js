@@ -43,22 +43,57 @@ function scheduleRetry(fn, delay) {
   return timer;
 }
 
-// Removes the uri itself, and specifically its password if it has one,
-// from a string before it is ever logged. Defense in depth: neither
-// should normally end up in an error's message, but a driver error is
-// free-text and not something we control, so this never assumes it is
-// already safe to print (see backend/test/db-connect.test.js for a case
-// that forces the password into the message directly).
+// Logged in place of a driver message that may contain the MongoDB password.
+// It is a constant, never built from the message, so it cannot leak any of it.
+const WITHHELD_MESSAGE = '<message withheld: it may contain the MONGODB_URI password>';
+
+// Makes a driver error's message safe to log. The message is free text we
+// do not control, so it is never assumed to be safe already:
+// - every copy of the full URI is replaced with "<redacted MONGODB_URI>";
+// - if the rest of the message still contains the password, raw or
+//   percent-decoded (the URI spells "p@ss" as "p%40ss", and a driver may
+//   echo either), the whole message is withheld instead. Cutting just the
+//   password out would garble the line whenever it is short or common: a
+//   password "E" would turn "connect ECONNREFUSED" into
+//   "connect <redacted>CONNR<redacted>FUS<redacted>D". connect() still logs
+//   the error's name and code, which is usually enough to diagnose an outage.
+// The password check runs on the message text alone, before the URI marker
+// is joined back in, so the marker itself can never cause a false match.
+// backend/test/db-connect.test.js covers each of these cases.
 function redact(message, url) {
   if (!message) {
     return message;
   }
-  let sanitized = message.split(url).join('<redacted MONGODB_URI>');
+
+  // An empty url is skipped: split('') would break the message into single
+  // characters.
+  const pieces = typeof url === 'string' && url ? message.split(url) : [message];
+
   const credentials = /:\/\/[^/@]*:([^/@]*)@/.exec(url);
+  const passwordForms = [];
   if (credentials && credentials[1]) {
-    sanitized = sanitized.split(credentials[1]).join('<redacted>');
+    const rawPassword = credentials[1];
+    passwordForms.push(rawPassword);
+    try {
+      const decodedPassword = decodeURIComponent(rawPassword);
+      if (decodedPassword && decodedPassword !== rawPassword) {
+        passwordForms.push(decodedPassword);
+      }
+    } catch {
+      // Malformed percent-encoding (e.g. a lone "%"): decodeURIComponent
+      // throws URIError. The raw form above is still checked, so this only
+      // gives up on the decoded form, never on redaction itself.
+    }
   }
-  return sanitized;
+
+  const mayContainPassword = pieces.some((piece) =>
+    passwordForms.some((password) => piece.includes(password))
+  );
+  if (mayContainPassword) {
+    return WITHHELD_MESSAGE;
+  }
+
+  return pieces.join('<redacted MONGODB_URI>');
 }
 
 // Connects to MongoDB, retrying with exponential backoff (1s, doubling,
