@@ -274,7 +274,7 @@ test('resolves immediately with no retry when the first attempt succeeds', async
   assert.deepEqual(scheduleFn.delays, []);
 });
 
-test('passes a short serverSelectionTimeoutMS to connectFn so each attempt fails fast (standalone Mongo, our own loop owns backoff)', async () => {
+test('omits serverSelectionTimeoutMS when MONGODB_SERVER_SELECTION_TIMEOUT_MS is unset, so the MongoDB driver default (30000ms, safe for a replica set) applies', async () => {
   let seenOptions;
   const connectFn = async (url, options) => {
     seenOptions = options;
@@ -284,11 +284,65 @@ test('passes a short serverSelectionTimeoutMS to connectFn so each attempt fails
     connectFn,
     scheduleFn: makeFakeScheduler(),
     logger: noopLogger(),
+    env: {},
   });
 
-  assert.equal(typeof seenOptions.serverSelectionTimeoutMS, 'number');
-  assert.ok(seenOptions.serverSelectionTimeoutMS > 0);
-  assert.ok(seenOptions.serverSelectionTimeoutMS <= 10000);
+  assert.equal('serverSelectionTimeoutMS' in seenOptions, false);
+});
+
+test('omits serverSelectionTimeoutMS when MONGODB_SERVER_SELECTION_TIMEOUT_MS is blank', async () => {
+  let seenOptions;
+  const connectFn = async (url, options) => {
+    seenOptions = options;
+  };
+
+  await connect('mongodb://127.0.0.1:27017/pysa', {
+    connectFn,
+    scheduleFn: makeFakeScheduler(),
+    logger: noopLogger(),
+    env: { MONGODB_SERVER_SELECTION_TIMEOUT_MS: '   ' },
+  });
+
+  assert.equal('serverSelectionTimeoutMS' in seenOptions, false);
+});
+
+test('passes MONGODB_SERVER_SELECTION_TIMEOUT_MS through as serverSelectionTimeoutMS so local dev can still fail fast (standalone Mongo, our own loop owns backoff)', async () => {
+  let seenOptions;
+  const connectFn = async (url, options) => {
+    seenOptions = options;
+  };
+
+  await connect('mongodb://127.0.0.1:27017/pysa', {
+    connectFn,
+    scheduleFn: makeFakeScheduler(),
+    logger: noopLogger(),
+    env: { MONGODB_SERVER_SELECTION_TIMEOUT_MS: '5000' },
+  });
+
+  assert.equal(seenOptions.serverSelectionTimeoutMS, 5000);
+});
+
+test('warns once and omits serverSelectionTimeoutMS when MONGODB_SERVER_SELECTION_TIMEOUT_MS is invalid, instead of crashing', async () => {
+  let seenOptions;
+  const connectFn = async (url, options) => {
+    seenOptions = options;
+  };
+  const warnings = [];
+  const logger = {
+    log() {},
+    error: (...args) => warnings.push(args.join(' ')),
+  };
+
+  await connect('mongodb://127.0.0.1:27017/pysa', {
+    connectFn,
+    scheduleFn: makeFakeScheduler(),
+    logger,
+    env: { MONGODB_SERVER_SELECTION_TIMEOUT_MS: 'not-a-number' },
+  });
+
+  assert.equal('serverSelectionTimeoutMS' in seenOptions, false);
+  assert.equal(warnings.length, 1);
+  assert.match(warnings[0], /MONGODB_SERVER_SELECTION_TIMEOUT_MS/);
 });
 
 test('unrefs the real retry timer so a failed connection can never keep a process alive', () => {

@@ -20,6 +20,12 @@ Requirements: Node.js 24 and Docker.
    never fix that, so it logs a single clear error instead and does not
    retry — fix the value and restart.
 
+   Each retry attempt waits up to the MongoDB driver's default of 30s before
+   giving up on that attempt, which is safe in production but slow if you
+   just want the backend to notice Docker came up. Set
+   `MONGODB_SERVER_SELECTION_TIMEOUT_MS=5000` in `backend/.env` (step 2) to
+   make each attempt fail fast locally instead — see the table below.
+
 2. Create `backend/.env`:
 
    ```dotenv
@@ -124,6 +130,7 @@ same known state; read-only specs just share the single seed above.
 | Variable             | Required | Default                  | Description                                                                 |
 | --------------------- | -------- | ------------------------- | ----------------------------------------------------------------------------- |
 | `MONGODB_URI`          | Yes      | —                          | MongoDB connection string.                                                    |
+| `MONGODB_SERVER_SELECTION_TIMEOUT_MS` | No | driver default (`30000`) | How long (ms) the MongoDB driver waits to select a server — applied to every operation, not just the initial connect. Leave unset in production: a replica set like Atlas can take longer than a few seconds to elect a primary, and the driver default handles that safely. Locally, set it low (e.g. `5000`) so a `connect()` attempt fails fast while the backend's own retry loop takes over. An invalid (non-positive-integer) value logs a startup warning and falls back to the driver default instead of crashing. |
 | `PORT`                 | No       | `4000`                     | Port the API listens on.                                                      |
 | `ADMIN_USERNAME`       | No\*     | —                          | The admin login's username.                                                   |
 | `ADMIN_PASSWORD_HASH`  | No\*     | —                          | bcrypt hash of the admin password. Generate with `npm run hash-password`.     |
