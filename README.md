@@ -241,10 +241,12 @@ Railway table below).
    `RAILPACK_NODE_VERSION=24` (see the table) so the build uses the Node 24
    LTS line explicitly rather than depending on how the `>=24` range is
    resolved, and confirm the version in the first build log.
-4. Generate a domain: Settings → Networking → Public Networking.
-   `client/vercel.json` assumes `pysa-api.up.railway.app` — if Railway
-   assigns a different one, update the `destination` in `client/vercel.json`
-   to match.
+4. Generate a domain: Settings → Networking → Public Networking (not the
+   `*.railway.internal` name under Private Networking, which only other
+   services in the same Railway project can reach). `client/vercel.json`
+   points at this deployment's domain,
+   `pysa-production-9541.up.railway.app` — if yours differs, update the
+   `destination` in `client/vercel.json` to match.
 5. No networking code changes needed: `backend/bin/www` already calls
    `server.listen(port)` with no host, which binds every interface
    (Node's own default), and already reads `PORT` from the environment,
