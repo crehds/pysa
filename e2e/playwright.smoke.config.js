@@ -22,7 +22,18 @@ if (!SMOKE_BASE_URL) {
 export default defineConfig({
   testDir: './smoke',
   workers: 1,
+  // A couple of retries absorb a genuine network blip against a live site
+  // (unlike the regular suite's own local servers). A pass that only
+  // happens on retry is still worth knowing about, though — see
+  // failOnFlakyTests below.
   retries: 2,
+  // In CI, a test that fails once and only passes on retry ("flaky") still
+  // fails the whole run instead of quietly going green, so an intermittent
+  // production error surfaces instead of hiding behind a retry. Locally
+  // (no CI env var), stay lenient. This is Playwright's own documented
+  // pattern for the option (its own doc comment shows this exact line —
+  // see e2e/node_modules/playwright/types/test.d.ts).
+  failOnFlakyTests: !!process.env.CI,
   reporter: [['list'], ['html', { open: 'never' }]],
   use: {
     baseURL: SMOKE_BASE_URL,
