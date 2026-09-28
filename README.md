@@ -357,12 +357,13 @@ automatically; both workflows live in `.github/workflows/`.
 **`ci.yml`** runs the `backend`, `client`, and `e2e` jobs in parallel on
 every push to `main` or `develop`, on every pull request, and on demand
 (`workflow_dispatch`). Each job installs only what it needs and runs that
-package's own `npm test`; `e2e` also starts MongoDB (`docker compose up -d
---wait`) and installs Playwright's Chromium build first. A failed `e2e` run
+package's own `npm test`; `backend` and `e2e` also start MongoDB (`docker
+compose up -d --wait`), and `e2e` installs Playwright's Chromium build
+first. A failed `e2e` run
 uploads `playwright-report/` and `test-results/` as a downloadable artifact.
 
-**`smoke.yml`** runs the [smoke suite](#smoke-suite) — the same checks as
-the manual [Post-deploy checks](#post-deploy-checks) above, automated —
+**`smoke.yml`** runs the [smoke suite](#smoke-suite) — the read-only part
+of the manual [Post-deploy checks](#post-deploy-checks) above, automated —
 after each successful production deployment Vercel reports to GitHub, once
 a day, and on demand (`workflow_dispatch`). It targets
 `https://pysa.vercel.app` by default. A fork (or anyone checking a
@@ -373,9 +374,10 @@ deploys are silently skipped until it's set.
 
 Both workflows show their runs, and any failures, under the repository's
 **Actions** tab. GitHub also disables scheduled workflows after 60 days
-without any repository activity on public repos (pushing anything
-re-enables it), and emails a scheduled run's failure to whoever last edited
-the cron line in `smoke.yml`.
+without any repository activity on public repos; a disabled schedule stays
+off until someone re-enables it from the Actions tab. GitHub emails a
+scheduled run's failure to whoever last edited the cron line in
+`smoke.yml`.
 
 Branch protection and required status checks (which would block merging on
 a red `ci.yml` run) are a GitHub repository setting, not something this
