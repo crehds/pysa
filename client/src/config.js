@@ -7,4 +7,11 @@ export function resolveApiBaseUrl(env) {
   return url.replace(/\/+$/, '');
 }
 
-export const API_BASE_URL = resolveApiBaseUrl(import.meta.env);
+// Pass only the keys this module reads, as static import.meta.env.X
+// references: Vite inlines each one individually. A bare `import.meta.env`
+// would be replaced with an object literal holding every exposed VITE_*
+// variable, including Vercel's VITE_VERCEL_* commit metadata.
+export const API_BASE_URL = resolveApiBaseUrl({
+  VITE_API_URL: import.meta.env.VITE_API_URL,
+  PROD: import.meta.env.PROD,
+});
