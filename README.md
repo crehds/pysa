@@ -243,14 +243,24 @@ Railway table below).
    resolved, and confirm the version in the first build log.
 4. Generate a domain: Settings → Networking → Public Networking (not the
    `*.railway.internal` name under Private Networking, which only other
-   services in the same Railway project can reach). `client/vercel.json`
-   points at this deployment's domain,
-   `pysa-production-9541.up.railway.app` — if yours differs, update the
-   `destination` in `client/vercel.json` to match.
+   services in the same Railway project can reach). When the dialog asks
+   which port the app listens on, enter `8080`, the `PORT` value from the
+   table below.
+
+   **Then point the proxy at your domain.** `client/vercel.json` sends
+   `/api/*` to this deployment's domain,
+   `pysa-production-9541.up.railway.app`. Every Railway service gets its own
+   domain, so any other deployment (a fork, or this one if the service is
+   ever recreated) must change that `destination` to its own domain.
+   Otherwise its client silently reads and writes through this deployment's
+   API, and any admin password typed into it is sent there.
 5. No networking code changes needed: `backend/bin/www` already calls
    `server.listen(port)` with no host, which binds every interface
-   (Node's own default), and already reads `PORT` from the environment,
-   which Railway injects automatically.
+   (Node's own default), and reads `PORT` from the environment (falling
+   back to `4000`). Railway injects a `PORT` of its own, but its docs don't
+   state the value, so set `PORT=8080` explicitly (see the table) and give
+   the domain the same target port in step 4. If the two numbers differ,
+   Railway's edge can't reach the app and requests to the domain fail.
 
 | Variable | Set to |
 | --- | --- |
@@ -261,7 +271,7 @@ Railway table below).
 | `TRUST_PROXY` | Leave unset — see "Why `TRUST_PROXY` stays unset" below. |
 | `ALLOWED_ORIGINS` | Leave unset — only consulted for cross-site requests, and the proxied client never makes one. |
 | `MONGODB_SERVER_SELECTION_TIMEOUT_MS` | Leave unset — the driver default is the safe choice for Atlas (see the table above). |
-| `PORT` | Leave unset — Railway injects it. |
+| `PORT` | `8080` — the same number as the domain's target port (step 4). |
 | `RAILPACK_NODE_VERSION` | `24` — pins the Node major Railpack installs (see step 3). |
 
 The [Backend environment variables](#backend-environment-variables) table
