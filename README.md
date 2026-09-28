@@ -319,6 +319,27 @@ proxy deliberately off, that warning is expected and harmless.
 3. An avatar upload succeeds (exercises the Railway API, the Atlas write,
    and the 5MB limit).
 
+### Smoke suite
+
+A read-only Playwright suite (`e2e/smoke/`) automates part of the checks
+above against an already-deployed site: the players API through the proxy,
+that the home page loads and its own API request succeeds (catching a bundle
+that calls the wrong origin, not just a dead route), and that `/admin` is
+served by the SPA fallback rewrite. It never logs in, submits a form, or
+sends a POST/PUT/DELETE.
+
+It needs the same `e2e` install as [End-to-end tests](#end-to-end-tests)
+above (`npm --prefix e2e ci` and `npx --prefix e2e playwright install
+chromium`), but no MongoDB, seeding, or local backend/client — it only talks
+to the base URL you give it:
+
+```bash
+SMOKE_BASE_URL=https://pysa.vercel.app npm run test:smoke
+```
+
+`SMOKE_BASE_URL` is required; the suite throws instead of silently checking
+the wrong site.
+
 ### Fresh secrets
 
 Generate new values for `ADMIN_PASSWORD_HASH` and `JWT_SECRET` for
@@ -326,3 +347,38 @@ production — never reuse the ones from local dev (see the commands in the
 table above and [Admin login](#admin-login)). Hash a long random password
 (for example from a password manager): with the shared login limit above,
 password strength is what keeps guessing impractical.
+
+## CI
+
+GitHub Actions runs the three test suites (see [Tests](#tests) and
+[End-to-end tests](#end-to-end-tests)) and the [smoke suite](#smoke-suite)
+automatically; both workflows live in `.github/workflows/`.
+
+**`ci.yml`** runs the `backend`, `client`, and `e2e` jobs in parallel on
+every push to `main` or `develop`, on every pull request, and on demand
+(`workflow_dispatch`). Each job installs only what it needs and runs that
+package's own `npm test`; `backend` and `e2e` also start MongoDB (`docker
+compose up -d --wait`), and `e2e` installs Playwright's Chromium build
+first. A failed `e2e` run
+uploads `playwright-report/` and `test-results/` as a downloadable artifact.
+
+**`smoke.yml`** runs the [smoke suite](#smoke-suite) — the read-only part
+of the manual [Post-deploy checks](#post-deploy-checks) above, automated —
+after each successful production deployment Vercel reports to GitHub, once
+a day, and on demand (`workflow_dispatch`). It targets
+`https://pysa.vercel.app` by default. A fork (or anyone checking a
+different deployment) sets its own base URL with the `SMOKE_BASE_URL`
+Actions variable (Settings → Secrets and variables → Actions → Variables);
+without it, the smoke job only runs in `crehds/pysa`, so a fork's own
+deploys are silently skipped until it's set.
+
+Both workflows show their runs, and any failures, under the repository's
+**Actions** tab. GitHub also disables scheduled workflows after 60 days
+without any repository activity on public repos; a disabled schedule stays
+off until someone re-enables it from the Actions tab. GitHub emails a
+scheduled run's failure to whoever last edited the cron line in
+`smoke.yml`.
+
+Branch protection and required status checks (which would block merging on
+a red `ci.yml` run) are a GitHub repository setting, not something this
+repo's files configure — turn them on under Settings → Branches if wanted.

@@ -1,0 +1,62 @@
+name: Smoke
+
+on:
+  deployment_status:
+  schedule:
+    # An off-the-hour minute, to land away from the top-of-hour crowd of
+    # scheduled workflows across GitHub.
+    - cron: '17 9 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+# Deliberately no concurrency group: Vercel sends deployment_status for every
+# deployment, previews included, and each event starts a run of this workflow
+# (the job below just skips for non-production ones). A shared group with
+# cancel-in-progress would let a preview's event cancel an in-progress
+# production smoke run, e.g. when develop and main are pushed together.
+# Overlapping runs are harmless: the suite is read-only.
+
+jobs:
+  smoke:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    # Fork guard (this repo, or a fork that opted in by setting its own
+    # SMOKE_BASE_URL Actions variable) AND, only for a deployment_status
+    # event, a successful PRODUCTION deployment. contains() is
+    # case-insensitive, and Vercel's environment name may be "Production"
+    # or "Production – <project>". schedule/workflow_dispatch runs skip
+    # that second check entirely (github.event_name != 'deployment_status').
+    if: (github.repository == 'crehds/pysa' || vars.SMOKE_BASE_URL != '') && (github.event_name != 'deployment_status' || (github.event.deployment_status.state == 'success' && contains(github.event.deployment_status.environment, 'production')))
+    env:
+      # The stable production alias, never the triggering event's own
+      # environment_url: Vercel's Standard Deployment Protection puts
+      # per-deployment URLs (production ones included) behind a login, so
+      # an anonymous workflow run can't reach them. A fork sets its own
+      # SMOKE_BASE_URL (see README.md's CI section) to check its own site
+      # instead.
+      SMOKE_BASE_URL: ${{ vars.SMOKE_BASE_URL || 'https://pysa.vercel.app' }}
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+          cache-dependency-path: e2e/package-lock.json
+
+      - run: npm ci
+        working-directory: e2e
+      - run: npx playwright install --with-deps chromium
+        working-directory: e2e
+      - run: npm run test:smoke
+        working-directory: e2e
+
+      - name: Upload Playwright report
+        if: failure()
+        uses: actions/upload-artifact@v7
+        with:
+          name: smoke-report-${{ github.run_attempt }}
+          path: |
+            e2e/playwright-report
+            e2e/test-results
