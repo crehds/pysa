@@ -11,9 +11,12 @@ on:
 permissions:
   contents: read
 
-concurrency:
-  group: ${{ github.workflow }}
-  cancel-in-progress: true
+# Deliberately no concurrency group: Vercel sends deployment_status for every
+# deployment, previews included, and each event starts a run of this workflow
+# (the job below just skips for non-production ones). A shared group with
+# cancel-in-progress would let a preview's event cancel an in-progress
+# production smoke run, e.g. when develop and main are pushed together.
+# Overlapping runs are harmless: the suite is read-only.
 
 jobs:
   smoke:
