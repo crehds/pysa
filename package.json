@@ -8,7 +8,8 @@
     "dev": "concurrently --kill-others-on-fail -n backend,client -c blue,green \"npm --prefix backend run dev\" \"npm --prefix client run dev\"",
     "db:up": "docker compose up -d --wait",
     "db:down": "docker compose down",
-    "test:e2e": "npm --prefix e2e test"
+    "test:e2e": "npm --prefix e2e test",
+    "test:smoke": "npm --prefix e2e run test:smoke"
   },
   "keywords": [
     "pysa",

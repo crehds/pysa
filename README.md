@@ -319,6 +319,27 @@ proxy deliberately off, that warning is expected and harmless.
 3. An avatar upload succeeds (exercises the Railway API, the Atlas write,
    and the 5MB limit).
 
+### Smoke suite
+
+A read-only Playwright suite (`e2e/smoke/`) automates part of the checks
+above against an already-deployed site: the players API through the proxy,
+that the home page loads and its own API request succeeds (catching a bundle
+that calls the wrong origin, not just a dead route), and that `/admin` is
+served by the SPA fallback rewrite. It never logs in, submits a form, or
+sends a POST/PUT/DELETE.
+
+It needs the same `e2e` install as [End-to-end tests](#end-to-end-tests)
+above (`npm --prefix e2e ci` and `npx --prefix e2e playwright install
+chromium`), but no MongoDB, seeding, or local backend/client — it only talks
+to the base URL you give it:
+
+```bash
+SMOKE_BASE_URL=https://pysa.vercel.app npm run test:smoke
+```
+
+`SMOKE_BASE_URL` is required; the suite throws instead of silently checking
+the wrong site.
+
 ### Fresh secrets
 
 Generate new values for `ADMIN_PASSWORD_HASH` and `JWT_SECRET` for
