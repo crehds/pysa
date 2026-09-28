@@ -8,5 +8,5 @@ export const PlayerData = styled.div`
 
 export const Player = styled.p`
   color: #99adb3;
-  font-family: 'Ubuntu';
+  font-family: var(--font-body);
 `

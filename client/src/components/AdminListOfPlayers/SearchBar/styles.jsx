@@ -20,7 +20,7 @@ export const Input = styled.input`
   width: 100%;
   font-size: 18px;
   text-align: center;
-  font-family: 'Source Sans Pro';
+  font-family: var(--font-body);
   color: rgba(58, 54, 54, 0.836);
   &::placeholder {
     text-align: center;

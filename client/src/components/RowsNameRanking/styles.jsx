@@ -19,7 +19,7 @@ export const RowName = styled.div`
 export const Name = styled.h3`
   color: rgba(94, 65, 70, 0.973);
   font-size: 26px;
-  font-family: 'Reggae One', system-ui;
-  font-weight: 600;
+  font-family: var(--font-display);
+  font-weight: 400;
   padding: 0 5px;
 `

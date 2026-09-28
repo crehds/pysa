@@ -17,5 +17,5 @@ export const GridDiv = styled.div`
   grid-template-columns: 1fr 1fr 1fr;
   grid-column-gap: 12px;
   color: lightgray;
-  font-family: 'Oswald';
+  font-family: var(--font-body);
 `

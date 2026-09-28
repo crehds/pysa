@@ -19,7 +19,7 @@ export const NamePlayer = styled.div`
   grid-column: 1 / 3;
   & p {
     /* padding: 5px 0; */
-    font-family: 'Source Sans Pro';
+    font-family: var(--font-body);
     font-size: 18px;
     font-weight:bold;
     background-image: radial-gradient(
@@ -52,7 +52,7 @@ export const Icon = styled.div`
   }
   & p {
     padding: 5px 0;
-    font-family: 'Source Sans Pro';
+    font-family: var(--font-body);
     font-size: 18px;
     color: #a16262;
   }

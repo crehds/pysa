@@ -20,7 +20,7 @@ export const LoggingWrapper = styled.div`
     }
     & p {
       color: rgb(201, 187, 187);
-      font-family: 'Oswald';
+      font-family: var(--font-body);
     }
     & svg {
       color: gray;

@@ -7,7 +7,7 @@ export const PositionsContainer = styled.div`
 
 export const Position = styled.div`
   color: #b39999;
-  font-family: 'Ubuntu';
+  font-family: var(--font-body);
   margin: 8px 0;
   &:nth-of-type(1) {
     color: gold;
