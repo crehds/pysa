@@ -1,0 +1,99 @@
+name: CI
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  backend:
+    # Pinned rather than ubuntu-latest: ubuntu-latest moves to Ubuntu 26.04
+    # between 2026-10-19 and 2026-11-19, and jq/Compose/Playwright support
+    # on 26.04 wasn't verified yet.
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v7
+
+      # Must run before any `npm ci` below: backend/.npmrc sets
+      # engine-strict=true, so npm needs the right Node already active.
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+          cache-dependency-path: backend/package-lock.json
+
+      # backend/support/testEnv.js forces its own MongoDB URI and admin
+      # fixtures before any test runs, so the only thing CI provides is a
+      # running MongoDB (compose.yaml has a healthcheck; --wait blocks
+      # until it reports healthy).
+      - run: docker compose up -d --wait
+
+      - run: npm ci
+        working-directory: backend
+      - run: npm test
+        working-directory: backend
+
+  client:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+          cache-dependency-path: client/package-lock.json
+      - run: npm ci
+        working-directory: client
+      - run: npm test
+        working-directory: client
+
+  e2e:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+          # e2e's own suite drives the real backend and client (see the
+          # webServer entries in e2e/playwright.config.js), so all three
+          # lockfiles affect what this job installs.
+          cache-dependency-path: |
+            backend/package-lock.json
+            client/package-lock.json
+            e2e/package-lock.json
+
+      - run: docker compose up -d --wait
+
+      - run: npm ci
+        working-directory: backend
+      - run: npm ci
+        working-directory: client
+      - run: npm ci
+        working-directory: e2e
+
+      - run: npx playwright install --with-deps chromium
+        working-directory: e2e
+
+      - run: npm test
+        working-directory: e2e
+
+      - name: Upload Playwright report
+        if: failure()
+        uses: actions/upload-artifact@v7
+        with:
+          name: e2e-report-${{ github.run_attempt }}
+          path: |
+            e2e/playwright-report
+            e2e/test-results

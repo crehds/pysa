@@ -347,3 +347,36 @@ production — never reuse the ones from local dev (see the commands in the
 table above and [Admin login](#admin-login)). Hash a long random password
 (for example from a password manager): with the shared login limit above,
 password strength is what keeps guessing impractical.
+
+## CI
+
+GitHub Actions runs the three test suites (see [Tests](#tests) and
+[End-to-end tests](#end-to-end-tests)) and the [smoke suite](#smoke-suite)
+automatically; both workflows live in `.github/workflows/`.
+
+**`ci.yml`** runs the `backend`, `client`, and `e2e` jobs in parallel on
+every push to `main` or `develop`, on every pull request, and on demand
+(`workflow_dispatch`). Each job installs only what it needs and runs that
+package's own `npm test`; `e2e` also starts MongoDB (`docker compose up -d
+--wait`) and installs Playwright's Chromium build first. A failed `e2e` run
+uploads `playwright-report/` and `test-results/` as a downloadable artifact.
+
+**`smoke.yml`** runs the [smoke suite](#smoke-suite) — the same checks as
+the manual [Post-deploy checks](#post-deploy-checks) above, automated —
+after each successful production deployment Vercel reports to GitHub, once
+a day, and on demand (`workflow_dispatch`). It targets
+`https://pysa.vercel.app` by default. A fork (or anyone checking a
+different deployment) sets its own base URL with the `SMOKE_BASE_URL`
+Actions variable (Settings → Secrets and variables → Actions → Variables);
+without it, the smoke job only runs in `crehds/pysa`, so a fork's own
+deploys are silently skipped until it's set.
+
+Both workflows show their runs, and any failures, under the repository's
+**Actions** tab. GitHub also disables scheduled workflows after 60 days
+without any repository activity on public repos (pushing anything
+re-enables it), and emails a scheduled run's failure to whoever last edited
+the cron line in `smoke.yml`.
+
+Branch protection and required status checks (which would block merging on
+a red `ci.yml` run) are a GitHub repository setting, not something this
+repo's files configure — turn them on under Settings → Branches if wanted.
