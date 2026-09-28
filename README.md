@@ -323,8 +323,10 @@ proxy deliberately off, that warning is expected and harmless.
 
 A read-only Playwright suite (`e2e/smoke/`) automates part of the checks
 above against an already-deployed site: the players API through the proxy,
-that the home page loads and its own API request succeeds (catching a bundle
-that calls the wrong origin, not just a dead route), and that `/admin` is
+that the home page loads and its own API request succeeds against this same
+site's origin (catching a bundle whose `VITE_API_URL` bypasses the proxy —
+an absolute URL to another deployment, or to the backend host directly, with
+or without an `/api` prefix — not just a dead route), and that `/admin` is
 served by the SPA fallback rewrite. It never logs in, submits a form, or
 sends a POST/PUT/DELETE.
 
@@ -338,7 +340,10 @@ SMOKE_BASE_URL=https://pysa.vercel.app npm run test:smoke
 ```
 
 `SMOKE_BASE_URL` is required; the suite throws instead of silently checking
-the wrong site.
+the wrong site. It retries a failed test twice, to absorb a genuine network
+blip against a live site — but in CI (`CI` set), a test that only passes on
+retry still fails the run instead of going green, so an intermittent
+production error surfaces instead of hiding behind a retry.
 
 ### Fresh secrets
 
