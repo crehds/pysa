@@ -1,14 +1,27 @@
 import React from 'react';
-import { PlayerData, Player as P } from './styles';
+import { Cell, NameCell, Rank, Row, VisuallyHidden } from './styles';
 
-export const RowPlayerRanking = ({ name, partidas, mmr, kda, medail }) => {
+// Text for the top three, so the gold/silver/bronze mark is never the only cue.
+const PODIUM_LABELS = ['oro', 'plata', 'bronce'];
+
+export const RowPlayerRanking = ({ rank, name, partidas, mmr, kda, medail }) => {
+  const podiumLabel = PODIUM_LABELS[rank - 1];
+
   return (
-    <PlayerData>
-      <P>{name}</P>
-      <P>{partidas}</P>
-      <P>{mmr}</P>
-      <P>{kda}</P>
-      <P>{medail}</P>
-    </PlayerData>
+    <Row>
+      <Cell>
+        <Rank $rank={rank}>
+          {rank}
+          {podiumLabel && <VisuallyHidden>, {podiumLabel}</VisuallyHidden>}
+        </Rank>
+      </Cell>
+      <NameCell>{name}</NameCell>
+      <Cell $numeric $optional>
+        {partidas}
+      </Cell>
+      <Cell $numeric>{mmr}</Cell>
+      <Cell $numeric>{kda}</Cell>
+      <Cell $optional>{medail}</Cell>
+    </Row>
   );
 };

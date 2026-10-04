@@ -1,28 +1,28 @@
 import React from 'react';
-import { ImTrophy } from 'react-icons/im';
-import { Name, RowName, RowsNames } from './styles';
+import { Heading, HeadingRow } from './styles';
 
-export const RowsNameRanking = () => {
+// Header row of the ranking table. `medalInfo` is the icon that shows the medal
+// ranges; it lives in the Medalla header.
+export const RowsNameRanking = ({ medalInfo }) => {
   return (
-    <RowsNames>
-      <RowName>
-        <ImTrophy color='gold' size='33px' />
-      </RowName>
-      <RowName>
-        <Name>Player</Name>
-      </RowName>
-      <RowName>
-        <Name>Nº Partidas</Name>
-      </RowName>
-      <RowName>
-        <Name>MMR</Name>
-      </RowName>
-      <RowName>
-        <Name>KDA</Name>
-      </RowName>
-      <RowName>
-        <Name>Medalla</Name>
-      </RowName>
-    </RowsNames>
+    <thead>
+      <HeadingRow>
+        <Heading scope='col'>#</Heading>
+        <Heading scope='col'>Player</Heading>
+        <Heading scope='col' $numeric $optional>
+          Nº Partidas
+        </Heading>
+        <Heading scope='col' $numeric>
+          MMR
+        </Heading>
+        <Heading scope='col' $numeric>
+          KDA
+        </Heading>
+        <Heading scope='col' $optional>
+          Medalla
+          {medalInfo}
+        </Heading>
+      </HeadingRow>
+    </thead>
   );
 };

@@ -13,17 +13,15 @@ test('shows the calibrated active players ranked by mmr', async ({ page }) => {
   // 0) — the reducer only assigns a medail (instead of 'Sin Calibrar') to a
   // calibrated player, and the ranking only shows calibrated, active ones.
   //
-  // RowPlayerRanking (client/src/components/RowPlayerRanking) renders one
-  // row per player as a <div> whose direct children are five <p> cells
-  // (name, partidas, mmr, kda, medail), so `div:has(> p)` matches exactly
-  // one row per player regardless of what wraps the name text — unlike a
-  // single `xpath=..` hop, which breaks the moment a wrapper element is
-  // added between the name and its row.
+  // The ranking is a real table: one <tr> per player, found by role so it
+  // does not depend on how the cells are wrapped.
   const topPlayerRow = page
-    .locator('div:has(> p)')
-    .filter({ hasText: 'Nnnnnnn' });
+    .getByRole('row')
+    .filter({ has: page.getByRole('cell', { name: 'Nnnnnnn', exact: true }) });
   await expect(topPlayerRow).toBeVisible();
-  await expect(topPlayerRow.getByText('3400', { exact: true })).toBeVisible();
+  await expect(
+    topPlayerRow.getByRole('cell', { name: '3400', exact: true })
+  ).toBeVisible();
 
   // Oaps is active but still uncalibrated (calibration.estado: 1), so it
   // must not appear in the ranking.

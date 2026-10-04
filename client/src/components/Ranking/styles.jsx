@@ -1,37 +1,41 @@
-import styled, { css } from 'styled-components';
+import styled from 'styled-components';
+import { media } from '../../styles/breakpoints';
 
-export const RankingTable = styled.div`
-  /* border: 1px solid red; */
-  display: grid;
-  grid-template-rows: auto 1fr;
-  grid-template-columns: 1fr 5fr;
-  /* margin: 1em; */
-  padding: 35px 40px;
-  text-align: center;
-  ${({ size }) => css`
-    width: ${size - 100}px;
-    height: ${size / 1.95 - 100}px;
-  `}
-  margin: 10px;
-  box-shadow: 0 0 10px 5px rgba(0, 0, 0, 0.09);
-  /* position: absolute;
-  top: 10%;
-  right: 6%; */
+// Relative box for the medal ranges popup. It is as wide as <main>; the extra
+// top room keeps the table clear of the refresh and show-menu buttons that sit
+// at the top of <main> until the page header (T4) takes them in.
+export const RankingContainer = styled.div`
   position: relative;
-  /* width: 100%;
-  height: 100%; */
+  align-self: flex-start;
+  width: 100%;
+  min-width: 0;
+  padding: var(--space-16) var(--space-4) var(--space-6);
+
+  ${media.md} {
+    padding-inline: var(--space-6);
+  }
 `;
 
-export const Info = styled.div`
-  position: absolute;
-  right: 10px;
-  top: 50%;
-  & svg {
-    color: gray;
-    &:hover {
-      /* border: 1px solid red; */
-      color: white;
-      fill: white;
-    }
+export const RankingTable = styled.table`
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--font-size-sm);
+  font-variant-numeric: tabular-nums;
+
+  ${media.sm} {
+    font-size: var(--font-size-base);
+  }
+`;
+
+export const Info = styled.span`
+  display: inline-flex;
+  vertical-align: middle;
+  margin-left: var(--space-2);
+  color: var(--color-text-muted);
+  font-size: var(--font-size-lg);
+  cursor: help;
+
+  &:hover {
+    color: var(--color-text);
   }
 `;

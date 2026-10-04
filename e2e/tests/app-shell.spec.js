@@ -39,6 +39,33 @@ test.describe('on a phone (390x844)', () => {
     );
     expect(noHorizontalOverflow).toBe(true);
   });
+
+  test('the ranking shows only #, Player, MMR and KDA, and fits the screen', async ({
+    page,
+  }) => {
+    await page.goto('/');
+    const table = page.getByRole('table', { name: 'Ranking' });
+    await expect(table).toBeVisible();
+
+    for (const name of ['#', 'Player', 'MMR', 'KDA']) {
+      await expect(table.getByRole('columnheader', { name, exact: true })).toBeVisible();
+    }
+    // Hidden columns are out of the accessibility tree, so the role query finds none.
+    for (const name of ['Nº Partidas', 'Medalla']) {
+      await expect(
+        table.getByRole('columnheader', { name, exact: true })
+      ).toHaveCount(0);
+    }
+
+    const fits = await page.evaluate(() => {
+      const box = document.querySelector('table').getBoundingClientRect();
+      return (
+        box.right <= window.innerWidth &&
+        document.documentElement.scrollWidth <= window.innerWidth
+      );
+    });
+    expect(fits).toBe(true);
+  });
 });
 
 test.describe('on a desktop (1440x900)', () => {
@@ -61,6 +88,14 @@ test.describe('on a desktop (1440x900)', () => {
     }
     await expect(nav.getByRole('button', { name: 'Loguéate' })).toBeVisible();
   });
+
+  test('the ranking shows all six columns', async ({ page }) => {
+    await page.goto('/');
+    const table = page.getByRole('table', { name: 'Ranking' });
+    for (const name of ['#', 'Player', 'Nº Partidas', 'MMR', 'KDA', 'Medalla']) {
+      await expect(table.getByRole('columnheader', { name, exact: true })).toBeVisible();
+    }
+  });
 });
 
 test.describe('hiding the menu on a desktop (1440x900)', () => {
@@ -70,28 +105,42 @@ test.describe('hiding the menu on a desktop (1440x900)', () => {
     page,
   }) => {
     await page.goto('/');
-    const nav = page.getByRole('navigation');
+    // #main-nav, not getByRole('navigation'): the role query skips hidden
+    // elements, so a "hidden" check on it would also pass if the nav vanished.
+    const nav = page.locator('#main-nav');
     await expect(nav).toBeVisible();
 
-    // The old ranking table sizes itself as <main>'s measured width minus
-    // 100px, so it must follow the freed space even though the window did not
-    // resize. True when an ancestor of the header has exactly that width.
+    // The ranking table is laid out with CSS, so it must follow the freed space
+    // even though the window did not resize: it fills its container's content
+    // box, and that container is as wide as <main>.
     const rankingFillsMain = () =>
-      page.getByText('Nº Partidas').evaluate((header) => {
-        const main = header.closest('main');
-        for (let el = header; el && el !== main; el = el.parentElement) {
-          if (Math.abs(el.getBoundingClientRect().width - (main.clientWidth - 100)) <= 1) {
-            return true;
-          }
-        }
-        return false;
+      page.getByRole('table', { name: 'Ranking' }).evaluate((table) => {
+        const container = table.parentElement;
+        const style = getComputedStyle(container);
+        const content =
+          container.getBoundingClientRect().width -
+          parseFloat(style.paddingLeft) -
+          parseFloat(style.paddingRight);
+        const main = table.closest('main');
+        return (
+          Math.abs(table.getBoundingClientRect().width - content) <= 1 &&
+          Math.abs(container.getBoundingClientRect().width - main.clientWidth) <= 1
+        );
       });
-    await expect(page.getByText('Nº Partidas')).toBeVisible();
+    await expect(page.getByRole('table', { name: 'Ranking' })).toBeVisible();
     expect(await rankingFillsMain()).toBe(true);
+    const widthWithMenu = (
+      await page.getByRole('table', { name: 'Ranking' }).boundingBox()
+    ).width;
 
     await page.getByRole('button', { name: 'Ocultar menú' }).click();
+    await expect(nav).toBeAttached();
     await expect(nav).toBeHidden();
     await expect.poll(rankingFillsMain).toBe(true);
+    // ...and it really grew into the space the menu left.
+    expect(
+      (await page.getByRole('table', { name: 'Ranking' }).boundingBox()).width
+    ).toBeGreaterThan(widthWithMenu);
     const show = page.getByRole('button', { name: 'Mostrar menú' });
     await expect(show).toBeVisible();
     await expect(show).toBeFocused();
@@ -104,12 +153,13 @@ test.describe('hiding the menu on a desktop (1440x900)', () => {
 
     await page.reload();
     await expect(page.getByRole('button', { name: 'Mostrar menú' })).toBeVisible();
-    await expect(page.getByRole('navigation')).toBeHidden();
+    await expect(nav).toBeAttached();
+    await expect(nav).toBeHidden();
 
     await page.getByRole('button', { name: 'Mostrar menú' }).click();
-    await expect(page.getByRole('navigation')).toBeVisible();
+    await expect(nav).toBeVisible();
     await expect(page.getByRole('button', { name: 'Ocultar menú' })).toBeFocused();
-    expect((await page.getByRole('navigation').boundingBox()).x).toBe(0);
+    expect((await nav.boundingBox()).x).toBe(0);
   });
 });
 

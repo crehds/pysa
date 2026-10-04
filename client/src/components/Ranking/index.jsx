@@ -1,17 +1,14 @@
 import React from 'react';
-import { Info, RankingTable } from './styles';
+import { Info, RankingContainer, RankingTable } from './styles';
 import { useStateValue } from '../../Context';
-import { Positions } from '../Positions';
 import { PlayersInRanking } from '../PlayersInRanking';
 import { RowsNameRanking } from '../RowsNameRanking';
 import { ImInfo } from 'react-icons/im';
 import { Medails } from '../Medails';
 import { WrapperDiv } from '../WrapperDiv';
-import { useGetWidth } from '../../hooks/useGetWidth';
 
 export const Ranking = () => {
-  const [state, dispatch] = useStateValue();
-  const width = useGetWidth();
+  const [state] = useStateValue();
 
   function onMouseEnter() {
     let medails = document.getElementById('medails');
@@ -24,15 +21,23 @@ export const Ranking = () => {
 
   return (
     <WrapperDiv>
-      <RankingTable size={width}>
+      <RankingContainer>
         <Medails />
-        <Info onMouseEnter={onMouseEnter} onMouseLeave={onMouseLeave}>
-          <ImInfo size='30px' />
-        </Info>
-        <RowsNameRanking />
-        <Positions positions={state.ranking.length} />
-        <PlayersInRanking players={state.ranking} />
-      </RankingTable>
+        <RankingTable aria-label='Ranking'>
+          <RowsNameRanking
+            medalInfo={
+              <Info
+                data-testid='medal-info'
+                onMouseEnter={onMouseEnter}
+                onMouseLeave={onMouseLeave}
+              >
+                <ImInfo aria-hidden='true' size='1em' />
+              </Info>
+            }
+          />
+          <PlayersInRanking players={state.ranking} />
+        </RankingTable>
+      </RankingContainer>
     </WrapperDiv>
   );
 };

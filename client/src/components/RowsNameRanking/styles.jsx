@@ -1,25 +1,35 @@
-import styled from 'styled-components';
+import styled, { css } from 'styled-components';
+import { media } from '../../styles/breakpoints';
 
-export const RowsNames = styled.div`
-  /* border: 1px solid gray; */
-  border: groove #A1A1A1 5px;
-  border-bottom: none;
-  display: grid;
-  grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr;
-  align-items: center;
-  grid-column: 1 / 3;
-`
+// Columns that only show from the sm breakpoint; phones keep #, Player, MMR, KDA.
+export const optionalColumn = css`
+  display: none;
 
-export const RowName = styled.div`
-  border: 3px outset rgb(161, 149, 42);
-  background: rgba(177, 163, 35, 0.603);
-  padding: 3px 5px;
-`
+  ${media.sm} {
+    display: table-cell;
+  }
+`;
 
-export const Name = styled.h3`
-  color: rgba(94, 65, 70, 0.973);
-  font-size: 26px;
-  font-family: var(--font-display);
-  font-weight: 400;
-  padding: 0 5px;
-`
+export const HeadingRow = styled.tr`
+  background-color: var(--color-surface-raised);
+  border-bottom: 1px solid var(--color-border);
+`;
+
+export const Heading = styled.th`
+  padding: var(--space-3) var(--space-2);
+  color: var(--color-text);
+  font-family: var(--font-body);
+  font-size: var(--font-size-sm);
+  font-weight: 700;
+  text-align: ${({ $numeric }) => ($numeric ? 'right' : 'left')};
+  white-space: nowrap;
+  ${({ $optional }) => $optional && optionalColumn}
+
+  &:first-child {
+    padding-left: var(--space-3);
+  }
+
+  &:last-child {
+    padding-right: var(--space-3);
+  }
+`;

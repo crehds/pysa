@@ -9,9 +9,6 @@ export const Main = styled.main`
   min-width: 0;
   min-height: 100vh;
   padding-bottom: calc(var(--bottom-bar-height) + env(safe-area-inset-bottom));
-  /* Until the pages are rebuilt (T3-T5), the old fixed-size tables can be wider
-     than a phone: they scroll inside <main> instead of widening the page. */
-  overflow-x: auto;
   outline: none;
 
   ${media.md} {
