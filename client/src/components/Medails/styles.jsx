@@ -1,19 +1,26 @@
 import styled from 'styled-components';
+import { media } from '../../styles/breakpoints';
 
-// Medal ranges popup. Ranking toggles its inline `display` on hover of the info
-// icon, so it starts as `none` here.
+// Medal ranges disclosure. It sits in the page header's flow, under the buttons,
+// so it never covers the button that opens it. Closed it has the `hidden`
+// attribute.
 export const MedailsDiv = styled.div`
-  position: absolute;
-  right: var(--space-6);
-  top: var(--space-16);
-  z-index: 1;
-  display: none;
+  grid-column: 1 / -1;
+  justify-self: stretch;
   background-color: var(--color-surface-raised);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-md);
-  box-shadow: var(--shadow-md);
   padding: var(--space-2);
   grid-template-rows: repeat(9, auto);
+
+  &:not([hidden]) {
+    display: grid;
+  }
+
+  ${media.md} {
+    justify-self: end;
+    min-width: calc(var(--space-16) * 4);
+  }
 `;
 
 export const GridDiv = styled.div`

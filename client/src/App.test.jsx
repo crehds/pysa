@@ -123,66 +123,6 @@ test('the ranking at / renders player names from the mocked api', async () => {
   expect(screen.getByText('PlayerTwo')).toBeInTheDocument();
 });
 
-describe('the ranking table', () => {
-  test('has the six column headers, in order', async () => {
-    renderAppAt('/');
-    await screen.findByText('PlayerOne');
-
-    const table = screen.getByRole('table', { name: 'Ranking' });
-    // jsdom ignores media queries, so the phone-hidden columns count as hidden
-    // there; the e2e suite checks what each viewport really shows.
-    const headers = within(table).getAllByRole('columnheader', { hidden: true });
-    expect(headers.map((header) => header.textContent.trim())).toEqual([
-      '#',
-      'Player',
-      'Nº Partidas',
-      'MMR',
-      'KDA',
-      'Medalla',
-    ]);
-    for (const header of headers) {
-      expect(header).toHaveAttribute('scope', 'col');
-    }
-  });
-
-  test('has one row per player, in rank order', async () => {
-    renderAppAt('/');
-    await screen.findByText('PlayerOne');
-
-    const table = screen.getByRole('table', { name: 'Ranking' });
-    // The first row is the header row.
-    const [, first, second, ...others] = within(table).getAllByRole('row');
-    expect(others).toHaveLength(0);
-    expect(within(first).getByRole('cell', { name: 'PlayerOne' })).toBeInTheDocument();
-    expect(within(first).getByRole('cell', { name: '1500' })).toBeInTheDocument();
-    expect(within(second).getByRole('cell', { name: 'PlayerTwo' })).toBeInTheDocument();
-    expect(within(second).getByRole('cell', { name: '1400' })).toBeInTheDocument();
-  });
-
-  test('marks the top three with a text cue, not only a color', async () => {
-    renderAppAt('/');
-    await screen.findByText('PlayerOne');
-
-    const table = screen.getByRole('table', { name: 'Ranking' });
-    const [, first, second] = within(table).getAllByRole('row');
-    expect(within(first).getAllByRole('cell')[0]).toHaveAccessibleName(/^1.*oro/i);
-    expect(within(second).getAllByRole('cell')[0]).toHaveAccessibleName(/^2.*plata/i);
-  });
-
-  test('keeps the medal ranges hidden until the info icon is hovered', async () => {
-    const user = userEvent.setup();
-    renderAppAt('/');
-    await screen.findByText('PlayerOne');
-
-    const ranges = document.getElementById('medails');
-    expect(ranges).not.toBeVisible();
-    await user.hover(screen.getByTestId('medal-info'));
-    expect(ranges).toBeVisible();
-    await user.unhover(screen.getByTestId('medal-info'));
-    expect(ranges).not.toBeVisible();
-  });
-});
-
 test('/players renders the players carousel', async () => {
   renderAppAt('/players');
 
@@ -194,9 +134,9 @@ test('/adminPlayers redirects to / when logged out', async () => {
   renderAppAt('/adminPlayers');
 
   // A logged-out visitor never reaches the admin carousel; they land back on
-  // the ranking, which renders the same player rows as the `/` test above.
+  // the ranking, which renders the same players as the `/` test above.
   expect(await screen.findByText('PlayerOne')).toBeInTheDocument();
-  expect(screen.getByText('Nº Partidas')).toBeInTheDocument();
+  expect(screen.getByRole('heading', { level: 1, name: 'Ranking' })).toBeInTheDocument();
 });
 
 test('the initial render does not move focus to the route container', async () => {

@@ -118,9 +118,13 @@ function App() {
                 buttonRef={showButtonRef}
               />
             )}
-            <RefreshButton onClick={handleRefreshApp} />
+            {/* Home holds the refresh button in its page header; the other
+            pages have no header yet, so it floats there. */}
+            {pathname !== '/' && (
+              <RefreshButton floating onClick={handleRefreshApp} />
+            )}
             <Routes>
-              <Route path='/' element={<Home />} />
+              <Route path='/' element={<Home onRefresh={handleRefreshApp} />} />
               <Route path='/players' element={<Players />} />
               <Route
                 path='/adminPlayers'

@@ -1,9 +1,9 @@
 import React from 'react';
 import { MedailsDiv, GridDiv } from './styles';
 
-export const Medails = () => {
+export const Medails = ({ open = false }) => {
   return (
-    <MedailsDiv id='medails'>
+    <MedailsDiv id='medails' hidden={!open}>
       <GridDiv>
         <p>Mínimo</p>
         <p>Máximo</p>

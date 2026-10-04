@@ -1,5 +1,6 @@
 import React from 'react';
-import { Cell, NameCell, Rank, Row, VisuallyHidden } from './styles';
+import { Cell, NameCell, Rank, Row } from './styles';
+import { VisuallyHidden } from '../../styles/VisuallyHidden';
 
 // Text for the top three, so the gold/silver/bronze mark is never the only cue.
 const PODIUM_LABELS = ['oro', 'plata', 'bronce'];

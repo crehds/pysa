@@ -1,11 +1,8 @@
-import styled from 'styled-components';
+import styled, { css } from 'styled-components';
 
-// Top right of <main> until the page header (T4) takes it over.
-export const Button = styled.button`
-  position: absolute;
-  top: var(--space-4);
-  right: var(--space-4);
-  z-index: 1;
+// The look shared by the buttons in the page header ("Actualizar", the medal
+// ranges toggle).
+export const actionButton = css`
   display: inline-flex;
   align-items: center;
   gap: var(--space-2);
@@ -26,4 +23,18 @@ export const Button = styled.button`
   & svg {
     font-size: var(--font-size-xl);
   }
+`;
+
+// Pages without a page header yet float it at the top right of <main>.
+export const Button = styled.button`
+  ${actionButton}
+
+  ${({ $floating }) =>
+    $floating &&
+    css`
+      position: absolute;
+      top: var(--space-4);
+      right: var(--space-4);
+      z-index: 1;
+    `}
 `;

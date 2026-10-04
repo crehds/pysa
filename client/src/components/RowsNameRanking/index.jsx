@@ -1,9 +1,8 @@
 import React from 'react';
 import { Heading, HeadingRow } from './styles';
 
-// Header row of the ranking table. `medalInfo` is the icon that shows the medal
-// ranges; it lives in the Medalla header.
-export const RowsNameRanking = ({ medalInfo }) => {
+// Header row of the ranking table.
+export const RowsNameRanking = () => {
   return (
     <thead>
       <HeadingRow>
@@ -20,7 +19,6 @@ export const RowsNameRanking = ({ medalInfo }) => {
         </Heading>
         <Heading scope='col' $optional>
           Medalla
-          {medalInfo}
         </Heading>
       </HeadingRow>
     </thead>

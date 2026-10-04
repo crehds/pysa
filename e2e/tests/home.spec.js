@@ -13,15 +13,22 @@ test('shows the calibrated active players ranked by mmr', async ({ page }) => {
   // 0) — the reducer only assigns a medail (instead of 'Sin Calibrar') to a
   // calibrated player, and the ranking only shows calibrated, active ones.
   //
-  // The ranking is a real table: one <tr> per player, found by role so it
+  // The top three are the podium (an ordered list), so the top player is its
+  // first item; the rest are rows of the ranking table.
+  const topPlayer = page
+    .getByRole('list', { name: 'Podio' })
+    .getByRole('listitem')
+    .first();
+  await expect(topPlayer).toContainText('Nnnnnnn');
+  await expect(topPlayer).toContainText('3400');
+
+  // From rank 4 on, the players are rows of a real table, found by role so it
   // does not depend on how the cells are wrapped.
-  const topPlayerRow = page
-    .getByRole('row')
-    .filter({ has: page.getByRole('cell', { name: 'Nnnnnnn', exact: true }) });
-  await expect(topPlayerRow).toBeVisible();
+  const table = page.getByRole('table', { name: 'Ranking' });
+  await expect(table.getByRole('row')).toHaveCount(1 + 9);
   await expect(
-    topPlayerRow.getByRole('cell', { name: '3400', exact: true })
-  ).toBeVisible();
+    table.getByRole('row').nth(1).getByRole('cell').first()
+  ).toContainText('4');
 
   // Oaps is active but still uncalibrated (calibration.estado: 1), so it
   // must not appear in the ranking.

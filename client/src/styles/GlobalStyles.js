@@ -62,6 +62,9 @@ export const GlobalStyle = createGlobalStyle`
     --rail-width: 5.5rem;
     --bottom-bar-height: 4rem;
 
+    /* Widest a podium card grows on wide screens. */
+    --podium-card-max-width: 16rem;
+
     --focus-ring-width: 2px;
     --focus-ring-offset: 2px;
   }
