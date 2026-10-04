@@ -147,3 +147,73 @@ test('navigating to another route moves focus to the route container, so screen 
   expect(names.length).toBeGreaterThan(0);
   expect(document.activeElement).toBe(routeContainer);
 });
+
+describe('app shell', () => {
+  test('the nav links have accessible names', async () => {
+    renderAppAt('/');
+    await screen.findByText('PlayerOne');
+
+    expect(screen.getByRole('link', { name: 'Ranking' })).toHaveAttribute('href', '/');
+    expect(screen.getByRole('link', { name: 'Jugadores' })).toHaveAttribute(
+      'href',
+      '/players'
+    );
+  });
+
+  test('there is exactly one navigation landmark', async () => {
+    renderAppAt('/');
+    await screen.findByText('PlayerOne');
+
+    expect(screen.getAllByRole('navigation')).toHaveLength(1);
+  });
+
+  test('the external game link opens safely and has a name', async () => {
+    renderAppAt('/');
+    await screen.findByText('PlayerOne');
+
+    const link = screen.getByRole('link', { name: 'Juego' });
+    expect(link).toHaveAttribute('href', 'https://game-with-keyboard.vercel.app/');
+    expect(link).toHaveAttribute('target', '_blank');
+    expect(link).toHaveAttribute('rel', 'noopener noreferrer');
+  });
+
+  test('"Loguéate" is a button inside the navigation', async () => {
+    renderAppAt('/');
+    await screen.findByText('PlayerOne');
+
+    const button = screen.getByRole('button', { name: 'Loguéate' });
+    expect(screen.getByRole('navigation')).toContainElement(button);
+  });
+
+  test('"Actualizar" is a button', async () => {
+    renderAppAt('/');
+    await screen.findByText('PlayerOne');
+
+    expect(screen.getByRole('button', { name: 'Actualizar' })).toBeInTheDocument();
+  });
+
+  test('the link of the current page is marked with aria-current', async () => {
+    const user = userEvent.setup();
+    renderAppAt('/');
+    await screen.findByText('PlayerOne');
+
+    expect(screen.getByRole('link', { name: 'Ranking' })).toHaveAttribute(
+      'aria-current',
+      'page'
+    );
+    expect(screen.getByRole('link', { name: 'Jugadores' })).not.toHaveAttribute(
+      'aria-current'
+    );
+
+    await user.click(screen.getByRole('link', { name: 'Jugadores' }));
+    await screen.findAllByText('PlayerOne');
+
+    expect(screen.getByRole('link', { name: 'Jugadores' })).toHaveAttribute(
+      'aria-current',
+      'page'
+    );
+    expect(screen.getByRole('link', { name: 'Ranking' })).not.toHaveAttribute(
+      'aria-current'
+    );
+  });
+});

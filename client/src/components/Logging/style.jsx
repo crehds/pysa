@@ -1,36 +1,13 @@
 import styled from 'styled-components';
+import { media } from '../../styles/breakpoints';
+import { navItem } from '../NavBar/styles';
 
-export const LoggingWrapper = styled.div`
-  position: absolute;
-  top: 10px;
-  right: 20px;
-  z-index: 3000;
-  display: flex;
-  & div {
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    :hover {
-      > .logging__door {
-        fill: white;
-      }
-      > p {
-        color: rgba(214, 122, 122, 0.863);
-      }
-    }
-    & p {
-      color: rgb(201, 187, 187);
-      font-family: var(--font-body);
-    }
-    & svg {
-      color: gray;
-    }
-  }
-  & .logging__refresh {
-    cursor: pointer;
-    margin-right: 15px;
-    &:hover {
-      fill: white;
-    }
+// The login/logout control is a real button that looks like the other
+// navigation items. On the rail it sits at the bottom, below the links.
+export const AuthButton = styled.button`
+  ${navItem}
+
+  ${media.md} {
+    margin-top: auto;
   }
 `;

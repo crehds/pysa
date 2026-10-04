@@ -9,6 +9,8 @@ import { Players } from './pages/Players';
 import { AdminPlayers } from './pages/AdminPlayers';
 import './App.css';
 import { Logging } from './components/Logging';
+import { RefreshButton } from './components/RefreshButton';
+import { Main } from './styles/Main';
 import { useGetData } from './hooks/useGetData';
 import { useCheckAuth } from './hooks/useCheckAuth';
 import { useStateValue } from './Context';
@@ -70,24 +72,19 @@ function App() {
       <GlobalStyle />
       {isLoading ? (
         <>
-          <NavBar isLogging={isLogging} />
-          <Logging
-            handleLogging={handleLogging}
-            isLogging={isLogging}
-            handleRefreshApp={handleRefreshApp}
-          />
-          {/* react-router's <Routes> renders no wrapper element, unlike
-          @reach/router's <Router>, so this element keeps the same 100vh box
-          the rest of the layout (see WrapperDiv's height: inherit) relies
-          on. It also doubles as the route container: focused on every route
-          change (outline suppressed since that focus is programmatic, not
-          from keyboard navigation) so assistive tech announces the new
-          page. */}
-          <main
-            ref={routeContainerRef}
-            tabIndex={-1}
-            style={{ height: '100vh', outline: 'none' }}
-          >
+          <NavBar isLogging={isLogging}>
+            <Logging
+              handleLogging={handleLogging}
+              isLogging={isLogging}
+            />
+          </NavBar>
+          {/* react-router's <Routes> renders no wrapper element, so <main>
+          is the page container. It doubles as the route container: focused
+          on every route change (outline suppressed since that focus is
+          programmatic, not from keyboard navigation) so assistive tech
+          announces the new page. */}
+          <Main ref={routeContainerRef} tabIndex={-1}>
+            <RefreshButton onClick={handleRefreshApp} />
             <Routes>
               <Route path='/' element={<Home />} />
               <Route path='/players' element={<Players />} />
@@ -102,7 +99,7 @@ function App() {
                 }
               />
             </Routes>
-          </main>
+          </Main>
         </>
       ) : (
         <Loading />

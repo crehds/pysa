@@ -1,4 +1,5 @@
 import { createGlobalStyle } from 'styled-components';
+import { media } from './breakpoints';
 
 // Design tokens (CSS custom properties on :root) and the base styles every page
 // shares. Read a token with var(--token-name) from any styled component.
@@ -58,7 +59,7 @@ export const GlobalStyle = createGlobalStyle`
     --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.35);
 
     /* Shell layout: the labeled rail on wide screens, the bottom bar on phones. */
-    --rail-width: 5rem;
+    --rail-width: 5.5rem;
     --bottom-bar-height: 4rem;
 
     --focus-ring-width: 2px;
@@ -77,14 +78,15 @@ export const GlobalStyle = createGlobalStyle`
   ul { list-style: none; }
   button { background: transparent; border: 0; }
   button, input, select, textarea { font-family: inherit; }
-  /* The admin styles its form fields as light fields with dark text, so they
-     keep the browser's light rendering instead of the page's dark scheme. */
-  input, select, textarea { color-scheme: light; }
+  /* The admin styles its form fields and some buttons with light fills and no
+     text color, so they keep the browser's light rendering (dark text) instead
+     of the page's dark scheme. Buttons that need light text set it themselves. */
+  input, select, textarea, button { color-scheme: light; }
 
   body {
     margin: 0;
     padding: 0;
-    height: 100vh;
+    min-height: 100vh;
     background-color: var(--color-bg);
     color: var(--color-text);
     font-family: var(--font-body);
@@ -106,12 +108,19 @@ export const GlobalStyle = createGlobalStyle`
     min-height: 100vh;
   }
 
+  /* The document scrolls. Below the md breakpoint the nav is a fixed bottom
+     bar out of the grid flow; from it up it is the first column. */
   .App {
     display: grid;
-    grid-template-columns: auto 1fr;
-    height: 100vh;
+    grid-template-columns: minmax(0, 1fr);
+    min-height: 100vh;
     position: relative;
-    overflow: hidden;
+  }
+
+  ${media.md} {
+    .App {
+      grid-template-columns: var(--rail-width) minmax(0, 1fr);
+    }
   }
 
   @media (prefers-reduced-motion: reduce) {

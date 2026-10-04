@@ -1,21 +1,26 @@
 import { useEffect, useState } from 'react';
 
+// Width of the area the pages draw in: the <main> element when it is on the
+// page (it is the full width on phones and the width next to the rail on
+// wide screens), else the whole app.
+function measureContentWidth() {
+  const content =
+    document.querySelector('main') || document.getElementById('app');
+  return content.clientWidth;
+}
+
 export function useGetWidth() {
   const [width, setWidth] = useState();
 
   useEffect(() => {
-    let elementToSetWidth = document.getElementById('app').offsetWidth - 60;
-    const onResize = () => {
-      let newWidth = document.getElementById('app').offsetWidth - 60;
-      setWidth(newWidth);
-    };
+    const onResize = () => setWidth(measureContentWidth());
 
     window.addEventListener('resize', onResize);
-    setWidth(elementToSetWidth);
+    setWidth(measureContentWidth());
     return () => {
-      return window.removeEventListener('resize', onResize);
+      window.removeEventListener('resize', onResize);
     };
-  }, [width]);
+  }, []);
 
   return width;
 }

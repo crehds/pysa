@@ -1,30 +1,41 @@
 import React from 'react';
 
-import { Anchor, Icon, ImgWrapper, NavBarContainer } from './styles';
+import { ExternalItem, Item, LogoLink, NavBarContainer } from './styles';
 import { ImTable, ImProfile, ImUsers } from 'react-icons/im';
 import { CgGames } from 'react-icons/cg';
 import logo from '../../assets/logopysa_90x90.png';
 
-export const NavBar = ({ isLogging }) => {
+// `children` is the login/logout control: it sits last, at the bottom of the
+// rail, inside this same <nav> (there is only one navigation on the page).
+export const NavBar = ({ isLogging, children }) => {
   return (
     <NavBarContainer>
-      <ImgWrapper>
+      <LogoLink to='/'>
         <img src={logo} alt='logo pysa' />
-      </ImgWrapper>
-      <Icon to='/'>
-        <ImTable />
-      </Icon>
-      <Icon to='/players'>
-        <ImProfile />
-      </Icon>
+      </LogoLink>
+      <Item to='/' end>
+        <ImTable aria-hidden='true' />
+        Ranking
+      </Item>
+      <Item to='/players'>
+        <ImProfile aria-hidden='true' />
+        Jugadores
+      </Item>
       {isLogging && (
-        <Icon to='/adminPlayers'>
-          <ImUsers />
-        </Icon>
+        <Item to='/adminPlayers'>
+          <ImUsers aria-hidden='true' />
+          Admin
+        </Item>
       )}
-      <Anchor href='https://game-with-keyboard.vercel.app/' target='_blank'>
-        <CgGames />
-      </Anchor>
+      <ExternalItem
+        href='https://game-with-keyboard.vercel.app/'
+        target='_blank'
+        rel='noopener noreferrer'
+      >
+        <CgGames aria-hidden='true' />
+        Juego
+      </ExternalItem>
+      {children}
     </NavBarContainer>
   );
 };
