@@ -1,9 +1,16 @@
 import React from 'react';
-import { render, screen } from '@testing-library/react';
+import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import App from './App';
 import { Provider } from './Context';
 import { BrowserRouter } from 'react-router';
+import Swal from 'sweetalert2';
+
+// The login/logout dialogs are SweetAlert2 modals; these tests only check that
+// the buttons start those flows, so the dialog itself is replaced.
+vi.mock('sweetalert2', () => ({
+  default: { fire: vi.fn(() => Promise.resolve({})) },
+}));
 
 const mockRoles = [{ _id: 'role-1', name: 'Hard Carry' }];
 const mockMedails = [{ _id: 'medail-1', name: 'Cruzado' }];
@@ -97,8 +104,16 @@ function renderAppAt(path) {
   );
 }
 
+const MENU_KEY = 'pysa:menu';
+
 beforeEach(() => {
   global.fetch = mockFetch;
+  window.localStorage.clear();
+  vi.mocked(Swal.fire).mockClear();
+});
+
+afterEach(() => {
+  vi.restoreAllMocks();
 });
 
 test('the ranking at / renders player names from the mocked api', async () => {
@@ -206,7 +221,10 @@ describe('app shell', () => {
     );
 
     await user.click(screen.getByRole('link', { name: 'Jugadores' }));
-    await screen.findAllByText('PlayerOne');
+    // Only the Players page renders the carousel (the ranking also shows the names).
+    await waitFor(() =>
+      expect(document.getElementById('playersCarousel')).toBeInTheDocument()
+    );
 
     expect(screen.getByRole('link', { name: 'Jugadores' })).toHaveAttribute(
       'aria-current',
@@ -215,5 +233,146 @@ describe('app shell', () => {
     expect(screen.getByRole('link', { name: 'Ranking' })).not.toHaveAttribute(
       'aria-current'
     );
+  });
+});
+
+describe('hiding the menu', () => {
+  test('the menu is visible by default and only the hide button is offered', async () => {
+    renderAppAt('/');
+    await screen.findByText('PlayerOne');
+
+    const hide = screen.getByRole('button', { name: 'Ocultar menú' });
+    expect(hide).toHaveAttribute('aria-expanded', 'true');
+    expect(screen.getByRole('navigation')).toContainElement(hide);
+    expect(screen.queryByRole('button', { name: 'Mostrar menú' })).not.toBeInTheDocument();
+  });
+
+  test('hiding shows the "Mostrar menú" button, reports collapsed, stores the choice and moves focus', async () => {
+    const user = userEvent.setup();
+    renderAppAt('/');
+    await screen.findByText('PlayerOne');
+    const nav = screen.getByRole('navigation');
+
+    await user.click(screen.getByRole('button', { name: 'Ocultar menú' }));
+
+    const show = screen.getByRole('button', { name: 'Mostrar menú' });
+    expect(show).toHaveAttribute('aria-expanded', 'false');
+    expect(show).toHaveAttribute('aria-controls', nav.id);
+    expect(screen.getByRole('button', { name: 'Ocultar menú' })).toHaveAttribute(
+      'aria-expanded',
+      'false'
+    );
+    expect(nav.id).not.toBe('');
+    expect(window.localStorage.getItem(MENU_KEY)).toBe('hidden');
+    expect(show).toHaveFocus();
+  });
+
+  test('showing goes back to expanded, stores the choice and moves focus to the hide button', async () => {
+    const user = userEvent.setup();
+    renderAppAt('/');
+    await screen.findByText('PlayerOne');
+
+    await user.click(screen.getByRole('button', { name: 'Ocultar menú' }));
+    await user.click(screen.getByRole('button', { name: 'Mostrar menú' }));
+
+    const hide = screen.getByRole('button', { name: 'Ocultar menú' });
+    expect(hide).toHaveAttribute('aria-expanded', 'true');
+    expect(screen.queryByRole('button', { name: 'Mostrar menú' })).not.toBeInTheDocument();
+    expect(window.localStorage.getItem(MENU_KEY)).toBe('visible');
+    expect(hide).toHaveFocus();
+  });
+
+  test('a stored "hidden" choice is restored on load', async () => {
+    window.localStorage.setItem(MENU_KEY, 'hidden');
+    renderAppAt('/');
+    await screen.findByText('PlayerOne');
+
+    expect(screen.getByRole('button', { name: 'Mostrar menú' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Ocultar menú' })).toHaveAttribute(
+      'aria-expanded',
+      'false'
+    );
+  });
+
+  test('blocked storage keeps the menu visible and toggling does not crash', async () => {
+    const user = userEvent.setup();
+    vi.spyOn(Storage.prototype, 'getItem').mockImplementation(() => {
+      throw new Error('blocked');
+    });
+    vi.spyOn(Storage.prototype, 'setItem').mockImplementation(() => {
+      throw new Error('blocked');
+    });
+    renderAppAt('/');
+    await screen.findByText('PlayerOne');
+
+    expect(screen.queryByRole('button', { name: 'Mostrar menú' })).not.toBeInTheDocument();
+
+    await user.click(screen.getByRole('button', { name: 'Ocultar menú' }));
+    expect(screen.getByRole('button', { name: 'Mostrar menú' })).toBeInTheDocument();
+  });
+});
+
+describe('the shell controls are wired', () => {
+  function playersFetches() {
+    return vi
+      .mocked(global.fetch)
+      .mock.calls.filter(([url]) => url.includes('players/getAllPlayers')).length;
+  }
+
+  test('"Actualizar" fetches the data again', async () => {
+    const user = userEvent.setup();
+    global.fetch = vi.fn(mockFetch);
+    renderAppAt('/');
+    await screen.findByText('PlayerOne');
+    expect(playersFetches()).toBe(1);
+
+    await user.click(screen.getByRole('button', { name: 'Actualizar' }));
+
+    await waitFor(() => expect(playersFetches()).toBe(2));
+    expect(await screen.findByText('PlayerOne')).toBeInTheDocument();
+  });
+
+  test('"Loguéate" starts the login dialog', async () => {
+    const user = userEvent.setup();
+    renderAppAt('/');
+    await screen.findByText('PlayerOne');
+
+    await user.click(screen.getByRole('button', { name: 'Loguéate' }));
+
+    expect(Swal.fire).toHaveBeenCalledWith(expect.objectContaining({ title: 'Login' }));
+  });
+
+  describe('when an admin session is active', () => {
+    beforeEach(() => {
+      global.fetch = vi.fn((url, options) =>
+        url.includes('auth/me')
+          ? jsonResponse({ authenticated: true })
+          : mockFetch(url, options)
+      );
+    });
+
+    test('the "Admin" link shows and "Desloguéate" replaces "Loguéate"', async () => {
+      renderAppAt('/');
+      await screen.findByText('PlayerOne');
+
+      expect(await screen.findByRole('link', { name: 'Admin' })).toHaveAttribute(
+        'href',
+        '/adminPlayers'
+      );
+      expect(screen.getByRole('button', { name: 'Desloguéate' })).toBeInTheDocument();
+      expect(screen.queryByRole('button', { name: 'Loguéate' })).not.toBeInTheDocument();
+    });
+
+    test('"Desloguéate" starts the logout dialog', async () => {
+      const user = userEvent.setup();
+      renderAppAt('/');
+      await screen.findByText('PlayerOne');
+
+      await user.click(await screen.findByRole('button', { name: 'Desloguéate' }));
+
+      expect(Swal.fire).toHaveBeenCalledWith(
+        expect.objectContaining({ title: 'Te deslogueas papu?' })
+      );
+    });
   });
 });

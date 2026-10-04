@@ -14,6 +14,8 @@ import { Main } from './styles/Main';
 import { useGetData } from './hooks/useGetData';
 import { useCheckAuth } from './hooks/useCheckAuth';
 import { useStateValue } from './Context';
+import { useMenuHidden } from './hooks/useMenuHidden';
+import { ShowMenuButton } from './components/ShowMenuButton';
 
 function App() {
   const [{ isAuth }] = useStateValue();
@@ -25,6 +27,11 @@ function App() {
   const { pathname } = useLocation();
   const routeContainerRef = useRef(null);
   const isInitialRender = useRef(true);
+  const [menuHidden, setMenuHidden] = useMenuHidden();
+  const hideButtonRef = useRef(null);
+  const showButtonRef = useRef(null);
+  // Set by a toggle click so focus follows it (never on the initial render).
+  const focusAfterToggle = useRef(null);
 
   useEffect(() => {
     if (loadingData) {
@@ -54,6 +61,22 @@ function App() {
     routeContainerRef.current?.focus();
   }, [pathname]);
 
+  // After a toggle the clicked button disappears or stops being reachable, so
+  // focus moves to the opposite control.
+  useEffect(() => {
+    if (focusAfterToggle.current === 'show') {
+      showButtonRef.current?.focus();
+    } else if (focusAfterToggle.current === 'hide') {
+      hideButtonRef.current?.focus();
+    }
+    focusAfterToggle.current = null;
+  }, [menuHidden]);
+
+  function toggleMenu(hidden) {
+    focusAfterToggle.current = hidden ? 'show' : 'hide';
+    setMenuHidden(hidden);
+  }
+
   function handleLogging(value) {
     setLogging(value);
     if (value) {
@@ -68,11 +91,16 @@ function App() {
 
   console.log(loadingData);
   return (
-    <div id='app' className='App'>
+    <div id='app' className='App' data-menu-hidden={menuHidden}>
       <GlobalStyle />
       {isLoading ? (
         <>
-          <NavBar isLogging={isLogging}>
+          <NavBar
+            isLogging={isLogging}
+            menuHidden={menuHidden}
+            onHide={() => toggleMenu(true)}
+            hideButtonRef={hideButtonRef}
+          >
             <Logging
               handleLogging={handleLogging}
               isLogging={isLogging}
@@ -84,6 +112,12 @@ function App() {
           programmatic, not from keyboard navigation) so assistive tech
           announces the new page. */}
           <Main ref={routeContainerRef} tabIndex={-1}>
+            {menuHidden && (
+              <ShowMenuButton
+                onClick={() => toggleMenu(false)}
+                buttonRef={showButtonRef}
+              />
+            )}
             <RefreshButton onClick={handleRefreshApp} />
             <Routes>
               <Route path='/' element={<Home />} />

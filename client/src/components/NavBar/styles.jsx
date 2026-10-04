@@ -1,6 +1,6 @@
 import styled, { css } from 'styled-components';
 import { Link as LinkRouter, NavLink } from 'react-router';
-import { media } from '../../styles/breakpoints';
+import { media, mediaBelow } from '../../styles/breakpoints';
 
 // Shared by every control in the navigation (links and the login button): an
 // icon over a label. The active page is marked by a gold bar plus bolder text,
@@ -87,6 +87,10 @@ export const NavBarContainer = styled.nav`
     height: 100vh;
     padding: var(--space-4) 0;
     overflow-y: auto;
+
+    /* The visitor hid the menu: it is not shown at all (and leaves the
+       accessibility tree). Phones ignore this; the bottom bar always shows. */
+    ${({ $hidden }) => $hidden && 'display: none;'}
   }
 `;
 
@@ -113,4 +117,20 @@ export const Item = styled(NavLink)`
 
 export const ExternalItem = styled.a`
   ${navItem}
+`;
+
+// Only on the rail: below md the bottom bar can't be hidden.
+export const HideButton = styled.button`
+  ${navItem}
+  min-height: var(--space-8);
+  padding: var(--space-2) var(--space-1);
+  font-weight: 400;
+
+  & svg {
+    font-size: var(--font-size-lg);
+  }
+
+  ${mediaBelow.md} {
+    display: none;
+  }
 `;

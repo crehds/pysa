@@ -19,3 +19,9 @@ export const media = {
   md: `@media (min-width: ${breakpoints.md}px)`,
   lg: `@media (min-width: ${breakpoints.lg}px)`,
 };
+
+// The exact complement of media.*: below the breakpoint. Use it for things that
+// exist everywhere except phones.
+export const mediaBelow = {
+  md: `@media not all and (min-width: ${breakpoints.md}px)`,
+};

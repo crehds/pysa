@@ -18,8 +18,8 @@ export const GlobalStyle = createGlobalStyle`
     --color-text-muted: #99adb3;
     /* Logo red. About 2.6:1 on --color-bg, so use it for fills and marks, never for text. */
     --color-brand: #cc1924;
-    /* Flat red for the navigation rail. Candidate to compare in screenshots: #a03131. */
-    --color-rail: #7a1313;
+    /* Flat red for the navigation rail (6.08:1 for the text on it). */
+    --color-rail: #a03131;
     --color-gold: #ffd369;
     --color-silver: #c0c0c0;
     --color-bronze: #cd7f32;
@@ -120,6 +120,10 @@ export const GlobalStyle = createGlobalStyle`
   ${media.md} {
     .App {
       grid-template-columns: var(--rail-width) minmax(0, 1fr);
+    }
+    /* The rail is hidden (display: none) so the content takes the full width. */
+    .App[data-menu-hidden='true'] {
+      grid-template-columns: minmax(0, 1fr);
     }
   }
 
