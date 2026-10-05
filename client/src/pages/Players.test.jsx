@@ -287,7 +287,11 @@ describe('the role stats', () => {
       { rol: 'Hard Carry', victories: 5, victoriesDouble: 0, defeats: 2, defeatsDouble: 0, kills: 20, deaths: 10, assists: 15 },
       { rol: 'Mid Laner', victories: 3, victoriesDouble: 1, defeats: 1, defeatsDouble: 1, kills: 8, deaths: 5, assists: 6 },
     ];
-    render(<RoleStats name='PlayerOne' roles={roles} kda='3.27' />);
+    render(
+      <Provider>
+        <RoleStats name='PlayerOne' roles={roles} kda='3.27' />
+      </Provider>
+    );
 
     expect(screen.getByText('Partidas').nextSibling).toHaveTextContent('13');
   });

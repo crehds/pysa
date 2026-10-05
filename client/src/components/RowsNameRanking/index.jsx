@@ -1,24 +1,26 @@
 import React from 'react';
 import { Heading, HeadingRow } from './styles';
+import { useLanguage } from '../../i18n/LanguageContext';
 
 // Header row of the ranking table.
 export const RowsNameRanking = () => {
+  const { t } = useLanguage();
   return (
     <thead>
       <HeadingRow>
-        <Heading scope='col'>#</Heading>
-        <Heading scope='col'>Player</Heading>
+        <Heading scope='col'>{t('ranking.rank')}</Heading>
+        <Heading scope='col'>{t('ranking.player')}</Heading>
         <Heading scope='col' $numeric $optional>
-          Nº Partidas
+          {t('ranking.games')}
         </Heading>
         <Heading scope='col' $numeric>
-          MMR
+          {t('ranking.mmr')}
         </Heading>
         <Heading scope='col' $numeric>
-          KDA
+          {t('ranking.kda')}
         </Heading>
         <Heading scope='col' $optional>
-          Medalla
+          {t('ranking.medal')}
         </Heading>
       </HeadingRow>
     </thead>

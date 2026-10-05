@@ -32,7 +32,7 @@ test.describe('on a phone (390x844)', () => {
 
     await expect(nav.getByRole('link', { name: 'Ranking' })).toBeVisible();
     await expect(nav.getByRole('link', { name: 'Jugadores' })).toBeVisible();
-    await expect(nav.getByRole('button', { name: 'Loguéate' })).toBeVisible();
+    await expect(nav.getByRole('button', { name: 'Iniciar sesión' })).toBeVisible();
 
     const noHorizontalOverflow = await page.evaluate(
       () => document.documentElement.scrollWidth <= window.innerWidth
@@ -47,7 +47,7 @@ test.describe('on a phone (390x844)', () => {
     const table = page.getByRole('table', { name: 'Ranking' });
     await expect(table).toBeVisible();
 
-    for (const name of ['#', 'Player', 'MMR', 'KDA']) {
+    for (const name of ['#', 'Jugador', 'MMR', 'KDA']) {
       await expect(table.getByRole('columnheader', { name, exact: true })).toBeVisible();
     }
     // Hidden columns are out of the accessibility tree, so the role query finds none.
@@ -86,13 +86,13 @@ test.describe('on a desktop (1440x900)', () => {
       // The label is visible text, not just an accessible name.
       await expect(link.getByText(name, { exact: true })).toBeVisible();
     }
-    await expect(nav.getByRole('button', { name: 'Loguéate' })).toBeVisible();
+    await expect(nav.getByRole('button', { name: 'Iniciar sesión' })).toBeVisible();
   });
 
   test('the ranking shows all six columns', async ({ page }) => {
     await page.goto('/');
     const table = page.getByRole('table', { name: 'Ranking' });
-    for (const name of ['#', 'Player', 'Nº Partidas', 'MMR', 'KDA', 'Medalla']) {
+    for (const name of ['#', 'Jugador', 'Nº Partidas', 'MMR', 'KDA', 'Medalla']) {
       await expect(table.getByRole('columnheader', { name, exact: true })).toBeVisible();
     }
   });

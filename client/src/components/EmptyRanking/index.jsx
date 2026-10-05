@@ -1,9 +1,13 @@
 import React from 'react';
 import { Box, Hint, Message } from './styles';
+import { useLanguage } from '../../i18n/LanguageContext';
 
-export const EmptyRanking = () => (
-  <Box>
-    <Message>Todavía no hay jugadores en el ranking.</Message>
-    <Hint>Aparecerán aquí cuando terminen su calibración.</Hint>
-  </Box>
-);
+export const EmptyRanking = () => {
+  const { t } = useLanguage();
+  return (
+    <Box>
+      <Message>{t('empty.message')}</Message>
+      <Hint>{t('empty.hint')}</Hint>
+    </Box>
+  );
+};

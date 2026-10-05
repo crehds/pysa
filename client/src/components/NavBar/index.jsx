@@ -4,6 +4,7 @@ import { ExternalItem, HideButton, Item, LogoLink, NavBarContainer } from './sty
 import { ImTable, ImProfile, ImUsers, ImArrowLeft2 } from 'react-icons/im';
 import { CgGames } from 'react-icons/cg';
 import { LanguageSwitch } from '../LanguageSwitch';
+import { useLanguage } from '../../i18n/LanguageContext';
 import logo from '../../assets/logopysa_90x90.png';
 
 export const NAV_ID = 'main-nav';
@@ -12,23 +13,24 @@ export const NAV_ID = 'main-nav';
 // inside this same <nav> (there is only one navigation on the page). The hide
 // button comes after it and only exists on the rail (from md up).
 export const NavBar = ({ isLogging, children, menuHidden, onHide, hideButtonRef }) => {
+  const { t } = useLanguage();
   return (
     <NavBarContainer id={NAV_ID} $hidden={menuHidden}>
       <LogoLink to='/'>
-        <img src={logo} alt='logo pysa' />
+        <img src={logo} alt={t('logo.alt')} />
       </LogoLink>
       <Item to='/' end>
         <ImTable aria-hidden='true' />
-        Ranking
+        {t('nav.ranking')}
       </Item>
       <Item to='/players'>
         <ImProfile aria-hidden='true' />
-        Jugadores
+        {t('nav.players')}
       </Item>
       {isLogging && (
         <Item to='/adminPlayers'>
           <ImUsers aria-hidden='true' />
-          Admin
+          {t('nav.admin')}
         </Item>
       )}
       <ExternalItem
@@ -37,7 +39,7 @@ export const NavBar = ({ isLogging, children, menuHidden, onHide, hideButtonRef 
         rel='noopener noreferrer'
       >
         <CgGames aria-hidden='true' />
-        Juego
+        {t('nav.game')}
       </ExternalItem>
       {children}
       <LanguageSwitch />
@@ -49,7 +51,7 @@ export const NavBar = ({ isLogging, children, menuHidden, onHide, hideButtonRef 
         aria-controls={NAV_ID}
       >
         <ImArrowLeft2 aria-hidden='true' />
-        Ocultar menú
+        {t('nav.hide')}
       </HideButton>
     </NavBarContainer>
   );

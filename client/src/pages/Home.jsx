@@ -6,20 +6,22 @@ import { Ranking } from '../components/Ranking';
 import { EmptyRanking } from '../components/EmptyRanking';
 import { Footer } from '../components/Footer';
 import { Page } from '../styles/Page';
+import { useLanguage } from '../i18n/LanguageContext';
 
 const PODIUM_SIZE = 3;
 
 // Page header, the top three as a podium, the rest in the table, the footer.
 export const Home = ({ onRefresh }) => {
   const [state] = useStateValue();
+  const { t } = useLanguage();
   const players = state.ranking;
   const rest = players.slice(PODIUM_SIZE);
 
   return (
     <Page>
       <PageHeader
-        title='Ranking'
-        intro='Clasificación de la comunidad Pysa de Dota 2, ordenada por MMR.'
+        title={t('home.title')}
+        intro={t('home.intro')}
         medalRanges
         onRefresh={onRefresh}
       />

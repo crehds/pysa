@@ -192,11 +192,11 @@ describe('app shell', () => {
     expect(link).toHaveAttribute('rel', 'noopener noreferrer');
   });
 
-  test('"Loguéate" is a button inside the navigation', async () => {
+  test('"Iniciar sesión" is a button inside the navigation', async () => {
     renderAppAt('/');
     await screen.findByText('PlayerOne');
 
-    const button = screen.getByRole('button', { name: 'Loguéate' });
+    const button = screen.getByRole('button', { name: 'Iniciar sesión' });
     expect(screen.getByRole('navigation')).toContainElement(button);
   });
 
@@ -332,14 +332,14 @@ describe('the shell controls are wired', () => {
     expect(await screen.findByText('PlayerOne')).toBeInTheDocument();
   });
 
-  test('"Loguéate" starts the login dialog', async () => {
+  test('"Iniciar sesión" starts the login dialog', async () => {
     const user = userEvent.setup();
     renderAppAt('/');
     await screen.findByText('PlayerOne');
 
-    await user.click(screen.getByRole('button', { name: 'Loguéate' }));
+    await user.click(screen.getByRole('button', { name: 'Iniciar sesión' }));
 
-    expect(Swal.fire).toHaveBeenCalledWith(expect.objectContaining({ title: 'Login' }));
+    expect(Swal.fire).toHaveBeenCalledWith(expect.objectContaining({ title: 'Iniciar sesión' }));
   });
 
   describe('when an admin session is active', () => {
@@ -351,7 +351,7 @@ describe('the shell controls are wired', () => {
       );
     });
 
-    test('the "Admin" link shows and "Desloguéate" replaces "Loguéate"', async () => {
+    test('the "Admin" link shows and "Cerrar sesión" replaces "Iniciar sesión"', async () => {
       renderAppAt('/');
       await screen.findByText('PlayerOne');
 
@@ -359,19 +359,19 @@ describe('the shell controls are wired', () => {
         'href',
         '/adminPlayers'
       );
-      expect(screen.getByRole('button', { name: 'Desloguéate' })).toBeInTheDocument();
-      expect(screen.queryByRole('button', { name: 'Loguéate' })).not.toBeInTheDocument();
+      expect(screen.getByRole('button', { name: 'Cerrar sesión' })).toBeInTheDocument();
+      expect(screen.queryByRole('button', { name: 'Iniciar sesión' })).not.toBeInTheDocument();
     });
 
-    test('"Desloguéate" starts the logout dialog', async () => {
+    test('"Cerrar sesión" starts the logout dialog', async () => {
       const user = userEvent.setup();
       renderAppAt('/');
       await screen.findByText('PlayerOne');
 
-      await user.click(await screen.findByRole('button', { name: 'Desloguéate' }));
+      await user.click(await screen.findByRole('button', { name: 'Cerrar sesión' }));
 
       expect(Swal.fire).toHaveBeenCalledWith(
-        expect.objectContaining({ title: 'Te deslogueas papu?' })
+        expect.objectContaining({ title: '¿Cerrar sesión?' })
       );
     });
   });

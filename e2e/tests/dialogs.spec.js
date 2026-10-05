@@ -12,7 +12,7 @@ test.describe('the login dialog on a desktop (1440x900)', () => {
 
   test('has labeled fields on the dark surface', async ({ page }) => {
     await page.goto('/');
-    await page.getByRole('button', { name: 'Loguéate' }).click();
+    await page.getByRole('button', { name: 'Iniciar sesión' }).click();
 
     const popup = page.locator('.swal2-popup');
     await expect(popup).toBeVisible();
@@ -28,7 +28,7 @@ test.describe('the login dialog on a desktop (1440x900)', () => {
     await ranges.click();
     await expect(ranges).toHaveAttribute('aria-expanded', 'true');
 
-    await page.getByRole('button', { name: 'Loguéate' }).click();
+    await page.getByRole('button', { name: 'Iniciar sesión' }).click();
     await expect(page.locator('.swal2-popup')).toBeVisible();
     await page.keyboard.press('Escape');
     await expect(page.locator('.swal2-popup')).toBeHidden();
@@ -38,12 +38,37 @@ test.describe('the login dialog on a desktop (1440x900)', () => {
   });
 });
 
+test.describe('the dialogs speak plainly (1440x900)', () => {
+  test.use({ viewport: { width: 1440, height: 900 } });
+
+  test('the logout dialog asks "¿Cerrar sesión?" and then says the session is closed', async ({
+    page,
+  }) => {
+    const login = await page.request.post(`${E2E_BACKEND_URL}/auth/login`, {
+      data: { username: E2E_ADMIN_USERNAME, password: E2E_ADMIN_PASSWORD },
+    });
+    expect(login.ok()).toBe(true);
+    await page.goto('/');
+    await page.getByRole('button', { name: 'Cerrar sesión' }).click();
+
+    const popup = page.locator('.swal2-popup');
+    await expect(popup).toContainText('¿Cerrar sesión?');
+    await expect(popup.locator('.swal2-cancel')).toHaveText('Quedarme');
+    await popup.locator('.swal2-confirm').click();
+
+    await expect(popup).toContainText('Sesión cerrada.');
+    await expect(popup).not.toContainText(/papu|ñafo/i);
+    await popup.locator('.swal2-confirm').click();
+    await expect(page.getByRole('button', { name: 'Iniciar sesión' })).toBeVisible();
+  });
+});
+
 test.describe('the login dialog on a phone (390x844)', () => {
   test.use({ viewport: { width: 390, height: 844 } });
 
   test('fits the screen', async ({ page }) => {
     await page.goto('/');
-    await page.getByRole('button', { name: 'Loguéate' }).click();
+    await page.getByRole('button', { name: 'Iniciar sesión' }).click();
 
     const box = await page.locator('.swal2-popup').boundingBox();
     expect(box.x).toBeGreaterThanOrEqual(0);
@@ -62,12 +87,12 @@ test.describe('the login dialog on a phone (390x844)', () => {
     await page.goto('/');
 
     const nav = page.getByRole('navigation');
-    const names = ['Ranking', 'Jugadores', 'Admin', 'Juego', 'Desloguéate'];
+    const names = ['Ranking', 'Jugadores', 'Admin', 'Juego', 'Cerrar sesión'];
     await expect(nav.getByRole('link', { name: 'Admin' })).toBeVisible();
 
     const items = [];
     for (const name of names) {
-      const item = nav.getByRole(name === 'Desloguéate' ? 'button' : 'link', { name });
+      const item = nav.getByRole(name === 'Cerrar sesión' ? 'button' : 'link', { name });
       await expect(item).toBeVisible();
       const info = await item.evaluate((element) => {
         const rect = element.getBoundingClientRect();

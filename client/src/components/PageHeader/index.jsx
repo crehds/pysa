@@ -4,6 +4,7 @@ import Swal from 'sweetalert2';
 import { Actions, Header, Intro, Logo, MedalRangesButton, Title, TitleBlock } from './styles';
 import { RefreshButton } from '../RefreshButton';
 import { Medails } from '../Medails';
+import { useLanguage } from '../../i18n/LanguageContext';
 import logo from '../../assets/logopysa_90x90.png';
 
 const MEDAILS_ID = 'medails';
@@ -13,6 +14,7 @@ const MEDAILS_ID = 'medails';
 // button (keyboard and touch) and lives here, not in the table header, so phones
 // can reach it too.
 export const PageHeader = ({ title, intro, medalRanges = false, onRefresh }) => {
+  const { t } = useLanguage();
   const [rangesOpen, setRangesOpen] = useState(false);
   const rangesButtonRef = useRef(null);
 
@@ -50,7 +52,7 @@ export const PageHeader = ({ title, intro, medalRanges = false, onRefresh }) => 
             onClick={() => setRangesOpen((open) => !open)}
           >
             <ImInfo aria-hidden='true' size='1em' />
-            Rangos de medallas
+            {t('ranges.button')}
           </MedalRangesButton>
         )}
       </Actions>

@@ -51,6 +51,57 @@ test.describe('with an English browser', () => {
   });
 });
 
+test.describe('English copy with an English browser', () => {
+  test.use({ locale: 'en-US', viewport: { width: 1440, height: 900 } });
+
+  test('Home reads in English: menu, header, podium, table, medals and footer', async ({ page }) => {
+    await page.goto('/');
+    const nav = page.getByRole('navigation');
+    await expect(nav.getByRole('link', { name: 'Players' })).toBeVisible();
+    await expect(nav.getByRole('button', { name: 'Log in' })).toBeVisible();
+    await expect(nav.getByRole('button', { name: 'Hide menu' })).toBeVisible();
+
+    await expect(page.getByRole('heading', { level: 1, name: 'Ranking' })).toBeVisible();
+    await expect(
+      page.getByText('Pysa Dota 2 community ranking, ordered by MMR.')
+    ).toBeVisible();
+    await expect(page.getByRole('button', { name: 'Refresh' })).toBeVisible();
+    await expect(page.getByRole('button', { name: 'Medal ranges' })).toBeVisible();
+
+    const podium = page.getByRole('list', { name: 'Podium' });
+    await expect(podium.getByRole('listitem')).toHaveCount(3);
+    await expect(podium).toContainText('gold');
+
+    const table = page.getByRole('table', { name: 'Ranking' });
+    for (const name of ['#', 'Player', 'Games', 'MMR', 'KDA', 'Medal']) {
+      await expect(table.getByRole('columnheader', { name, exact: true })).toBeVisible();
+    }
+    // The database keeps Spanish medal names; none of them shows in English.
+    const spanishMedals = /Heraldo|Guardián|Cruzado|Arconte|Leyenda|Divino|Inmortal/;
+    await expect(page.locator('main')).not.toContainText(spanishMedals);
+    await expect(page.getByText('Pysa. Built with React, Express and MongoDB.')).toBeVisible();
+  });
+
+  test('Players reads in English', async ({ page }) => {
+    await page.goto('/players');
+    await expect(page.getByRole('heading', { level: 1, name: 'Players' })).toBeVisible();
+    const first = page.getByRole('article').first();
+    await expect(first.getByRole('table', { name: /^Stats by role for / })).toBeVisible();
+    await expect(first.getByRole('columnheader', { name: 'Results' })).toBeVisible();
+    await expect(first.getByText('Games')).toBeVisible();
+  });
+
+  test('the login dialog reads in English', async ({ page }) => {
+    await page.goto('/');
+    await page.getByRole('button', { name: 'Log in' }).click();
+
+    const popup = page.locator('.swal2-popup');
+    await expect(popup).toContainText('Log in');
+    await expect(page.getByLabel('Username')).toHaveAttribute('id', 'user');
+    await expect(page.getByLabel('Password')).toHaveAttribute('id', 'password');
+  });
+});
+
 test.describe('on a phone (390x844)', () => {
   test.use({ viewport: { width: 390, height: 844 } });
 

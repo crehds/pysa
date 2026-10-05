@@ -83,7 +83,7 @@ async function renderHome(playerCount) {
     await screen.findByText(NAMES[0]);
   } else {
     await waitFor(() => expect(fetchesTo('roles/getRoles')).toBe(1));
-    await waitFor(() => expect(screen.queryByAltText('logo de pysa')).not.toBeInTheDocument());
+    await waitFor(() => expect(screen.queryByRole('status', { name: 'Cargando' })).not.toBeInTheDocument());
   }
   return heading;
 }
@@ -179,7 +179,7 @@ describe('the ranking table', () => {
     const headers = within(table).getAllByRole('columnheader', { hidden: true });
     expect(headers.map((header) => header.textContent.trim())).toEqual([
       '#',
-      'Player',
+      'Jugador',
       'Nº Partidas',
       'MMR',
       'KDA',
