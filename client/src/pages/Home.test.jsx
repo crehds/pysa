@@ -1,6 +1,7 @@
 import React from 'react';
 import { render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import Swal from 'sweetalert2';
 import App from '../App';
 import { Provider } from '../Context';
 import { BrowserRouter } from 'react-router';
@@ -89,6 +90,10 @@ async function renderHome(playerCount) {
 
 beforeEach(() => {
   window.localStorage.clear();
+});
+
+afterEach(() => {
+  vi.restoreAllMocks();
 });
 
 describe('the page header', () => {
@@ -226,6 +231,8 @@ describe('the medal ranges', () => {
     expect(button).toHaveAttribute('aria-expanded', 'true');
 
     // A SweetAlert2 dialog is open (login, logout): Escape belongs to it.
+    // jsdom has no layout, so SweetAlert2 can't measure the popup: say it's open.
+    vi.spyOn(Swal, 'isVisible').mockReturnValue(true);
     const dialog = document.createElement('div');
     dialog.className = 'swal2-container';
     const input = document.createElement('input');
@@ -238,6 +245,26 @@ describe('the medal ranges', () => {
     expect(button).not.toHaveFocus();
     expect(button).toHaveAttribute('aria-expanded', 'true');
     dialog.remove();
+  });
+
+  test('Escape works again while a closing dialog still leaves its container in the page', async () => {
+    const user = userEvent.setup();
+    await renderHome(5);
+    const button = screen.getByRole('button', { name: 'Rangos de medallas' });
+    await user.click(button);
+    expect(button).toHaveAttribute('aria-expanded', 'true');
+
+    // SweetAlert2 keeps its container during the hide animation, but no dialog
+    // is open any more, so Escape is the ranges' again.
+    vi.spyOn(Swal, 'isVisible').mockReturnValue(false);
+    const leftover = document.createElement('div');
+    leftover.className = 'swal2-container';
+    document.body.append(leftover);
+
+    await user.keyboard('{Escape}');
+    expect(button).toHaveAttribute('aria-expanded', 'false');
+    expect(button).toHaveFocus();
+    leftover.remove();
   });
 
   test('works from the keyboard', async () => {

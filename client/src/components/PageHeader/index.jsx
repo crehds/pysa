@@ -1,13 +1,12 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { ImInfo } from 'react-icons/im';
+import Swal from 'sweetalert2';
 import { Actions, Header, Intro, Logo, MedalRangesButton, Title, TitleBlock } from './styles';
 import { RefreshButton } from '../RefreshButton';
 import { Medails } from '../Medails';
 import logo from '../../assets/logopysa_90x90.png';
 
 const MEDAILS_ID = 'medails';
-// SweetAlert2's overlay, present while a login/logout dialog is open.
-const DIALOG_SELECTOR = '.swal2-container';
 
 // A page's header: the h1 and an optional intro, the refresh button and, when
 // `medalRanges` is set, the medal ranges disclosure. The ranges toggle is a real
@@ -19,11 +18,12 @@ export const PageHeader = ({ title, intro, medalRanges = false, onRefresh }) => 
 
   // Escape closes the ranges and hands focus back to the button, unless a
   // dialog is open: Escape then belongs to the dialog (the listener is on the
-  // document, so it would otherwise also move focus out from under it).
+  // document, so it would otherwise also move focus out from under it). Ask
+  // SweetAlert2, not the DOM: it keeps its container while a dialog fades out.
   useEffect(() => {
     if (!rangesOpen) return undefined;
     function onKeyDown(event) {
-      if (event.key === 'Escape' && !document.querySelector(DIALOG_SELECTOR)) {
+      if (event.key === 'Escape' && !Swal.isVisible()) {
         setRangesOpen(false);
         rangesButtonRef.current?.focus();
       }

@@ -32,8 +32,11 @@ test.describe('on a desktop (1440x900)', () => {
     const splash = page.getByRole('status', { name: 'Cargando' });
     await expect(splash).toBeVisible();
     const box = await splash.boundingBox();
-    expect(box.x).toBe(0);
-    expect(box.width).toBe(1440);
+    // The page may reserve a scrollbar, so compare with the usable width, to
+    // within a pixel.
+    const clientWidth = await page.evaluate(() => document.documentElement.clientWidth);
+    expect(Math.abs(box.x)).toBeLessThanOrEqual(1);
+    expect(Math.abs(box.width - clientWidth)).toBeLessThanOrEqual(1);
     expect(await noHorizontalOverflow(page)).toBe(true);
     release();
   });

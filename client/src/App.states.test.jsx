@@ -136,6 +136,45 @@ describe('when the data cannot be loaded', () => {
   });
 });
 
+describe('refreshing from the loaded state', () => {
+  test('one "Actualizar" click makes exactly one players request', async () => {
+    const user = userEvent.setup();
+    mockApi();
+    renderAppAt('/');
+    await screen.findByText('PlayerOne');
+    expect(playersFetches()).toBe(1);
+
+    await user.click(screen.getByRole('button', { name: 'Actualizar' }));
+
+    await screen.findByText('PlayerOne');
+    await waitFor(() => expect(playersFetches()).toBe(2));
+    // Let any stray second request show up before asserting there is none.
+    await new Promise((resolve) => setTimeout(resolve, 50));
+    expect(playersFetches()).toBe(2);
+  });
+
+  test('a failed refetch swaps the page for the error screen with "Reintentar"', async () => {
+    const user = userEvent.setup();
+    mockApi();
+    renderAppAt('/');
+    await screen.findByText('PlayerOne');
+
+    // The next players request fails.
+    const working = global.fetch.getMockImplementation();
+    global.fetch = vi.fn((url) =>
+      url.includes('players/getAllPlayers')
+        ? Promise.reject(new TypeError('Failed to fetch'))
+        : working(url)
+    );
+    await user.click(screen.getByRole('button', { name: 'Actualizar' }));
+
+    expect(await screen.findByText(ERROR_TEXT)).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Reintentar' })).toBeInTheDocument();
+    expect(screen.queryByText(EMPTY_TEXT)).not.toBeInTheDocument();
+    expect(screen.queryByRole('navigation')).not.toBeInTheDocument();
+  });
+});
+
 describe('/players with no players', () => {
   test('shows the empty state once the data has loaded', async () => {
     mockApi({ playerList: [] });
