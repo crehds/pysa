@@ -17,6 +17,7 @@ import { useGetData } from './hooks/useGetData';
 import { useCheckAuth } from './hooks/useCheckAuth';
 import { useStateValue } from './Context';
 import { useMenuHidden } from './hooks/useMenuHidden';
+import { useLanguage } from './i18n/LanguageContext';
 import { ShowMenuButton } from './components/ShowMenuButton';
 
 // Routes whose page header holds the refresh button.
@@ -24,6 +25,7 @@ const ROUTES_WITH_HEADER = ['/', '/players'];
 
 function App() {
   const [{ isAuth }] = useStateValue();
+  const { language } = useLanguage();
   const [isLoading, setLoading] = useState(false);
   const [isLogging, setLogging] = useState(isAuth);
   const [loadingData, setLoadingData] = useGetData(isLoading);
@@ -46,8 +48,8 @@ function App() {
   }, [loadingData]);
 
   useEffect(() => {
-    document.title = pageTitle(pathname);
-  }, [pathname]);
+    document.title = pageTitle(pathname, language);
+  }, [pathname, language]);
 
   // isAuth starts out null (not yet known) and resolves asynchronously once
   // useCheckAuth's GET /auth/me completes; mirror it into isLogging once it

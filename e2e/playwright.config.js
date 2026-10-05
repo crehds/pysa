@@ -30,6 +30,10 @@ export default defineConfig({
   reporter: [['list'], ['html', { open: 'never' }]],
   use: {
     baseURL: CLIENT_URL,
+    // The site picks its language from the browser (navigator.languages), so pin
+    // it: every spec runs in Spanish unless it asks for another locale with
+    // test.use({ locale }) (see tests/language.spec.js).
+    locale: 'es-ES',
     trace: 'retain-on-failure',
   },
   projects: [

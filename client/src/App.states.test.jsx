@@ -206,11 +206,19 @@ describe('the document title', () => {
   });
 
   test('pageTitle names each route and falls back to the brand', () => {
-    expect(pageTitle('/')).toBe('Ranking · Pysa');
-    expect(pageTitle('/players')).toBe('Jugadores · Pysa');
-    expect(pageTitle('/players/')).toBe('Jugadores · Pysa');
-    expect(pageTitle('/adminPlayers')).toBe('Admin · Pysa');
-    expect(pageTitle('/nowhere')).toBe('Pysa');
+    expect(pageTitle('/', 'es')).toBe('Ranking · Pysa');
+    expect(pageTitle('/players', 'es')).toBe('Jugadores · Pysa');
+    expect(pageTitle('/players/', 'es')).toBe('Jugadores · Pysa');
+    expect(pageTitle('/adminPlayers', 'es')).toBe('Admin · Pysa');
+    expect(pageTitle('/nowhere', 'es')).toBe('Pysa');
+  });
+
+  test('pageTitle names each route in English too', () => {
+    expect(pageTitle('/', 'en')).toBe('Ranking · Pysa');
+    expect(pageTitle('/players', 'en')).toBe('Players · Pysa');
+    expect(pageTitle('/players/', 'en')).toBe('Players · Pysa');
+    expect(pageTitle('/adminPlayers', 'en')).toBe('Admin · Pysa');
+    expect(pageTitle('/nowhere', 'en')).toBe('Pysa');
   });
 });
 

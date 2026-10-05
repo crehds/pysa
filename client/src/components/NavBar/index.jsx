@@ -3,6 +3,7 @@ import React from 'react';
 import { ExternalItem, HideButton, Item, LogoLink, NavBarContainer } from './styles';
 import { ImTable, ImProfile, ImUsers, ImArrowLeft2 } from 'react-icons/im';
 import { CgGames } from 'react-icons/cg';
+import { LanguageSwitch } from '../LanguageSwitch';
 import logo from '../../assets/logopysa_90x90.png';
 
 export const NAV_ID = 'main-nav';
@@ -39,6 +40,7 @@ export const NavBar = ({ isLogging, children, menuHidden, onHide, hideButtonRef 
         Juego
       </ExternalItem>
       {children}
+      <LanguageSwitch />
       <HideButton
         type='button'
         ref={hideButtonRef}
