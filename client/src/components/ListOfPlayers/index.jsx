@@ -1,21 +1,14 @@
 import React from 'react';
 import { Player } from '../Player';
-import { WrapperDiv } from '../WrapperDiv';
-import { useGetWidth } from '../../hooks/useGetWidth';
-import { CarouselWrapper, PlayersCarousel } from './styles';
+import { PlayersGrid } from './styles';
 
-export const ListOfPlayers = ({ players }) => {
-  const width = useGetWidth();
-  console.log(players);
-  return (
-    <WrapperDiv>
-      <CarouselWrapper id='CarouselWrapper' size={width}>
-        <PlayersCarousel id='playersCarousel'>
-          {players.map((player, i) => (
-            <Player key={i} {...player} size={width}/>
-          ))}
-        </PlayersCarousel>
-      </CarouselWrapper>
-    </WrapperDiv>
-  );
-};
+// `players` is already sorted by ranking, so the rank is the position.
+export const ListOfPlayers = ({ players }) => (
+  <PlayersGrid role='list' aria-label='Lista de jugadores'>
+    {players.map((player, i) => (
+      <li key={player._id ?? i}>
+        <Player {...player} rank={i + 1} />
+      </li>
+    ))}
+  </PlayersGrid>
+);

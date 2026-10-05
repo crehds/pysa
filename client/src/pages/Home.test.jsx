@@ -97,11 +97,6 @@ describe('the page header', () => {
     )).toBeInTheDocument();
   });
 
-  test('"Actualizar" is still offered on /players', async () => {
-    renderAppAt(5, '/players');
-
-    expect(await screen.findByRole('button', { name: 'Actualizar' })).toBeInTheDocument();
-  });
 });
 
 describe('the podium', () => {

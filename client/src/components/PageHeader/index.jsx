@@ -7,10 +7,11 @@ import logo from '../../assets/logopysa_90x90.png';
 
 const MEDAILS_ID = 'medails';
 
-// Home's header: the title and intro, the refresh button and the medal ranges
-// disclosure. The ranges toggle is a real button (keyboard and touch) and lives
-// here, not in the table header, so phones can reach it too.
-export const PageHeader = ({ onRefresh }) => {
+// A page's header: the h1 and an optional intro, the refresh button and, when
+// `medalRanges` is set, the medal ranges disclosure. The ranges toggle is a real
+// button (keyboard and touch) and lives here, not in the table header, so phones
+// can reach it too.
+export const PageHeader = ({ title, intro, medalRanges = false, onRefresh }) => {
   const [rangesOpen, setRangesOpen] = useState(false);
   const rangesButtonRef = useRef(null);
 
@@ -31,23 +32,25 @@ export const PageHeader = ({ onRefresh }) => {
     <Header>
       <Logo src={logo} alt='' />
       <TitleBlock>
-        <Title>Ranking</Title>
-        <Intro>Clasificación de la comunidad Pysa de Dota 2, ordenada por MMR.</Intro>
+        <Title>{title}</Title>
+        {intro && <Intro>{intro}</Intro>}
       </TitleBlock>
       <Actions>
         <RefreshButton onClick={onRefresh} />
-        <MedalRangesButton
-          type='button'
-          ref={rangesButtonRef}
-          aria-expanded={rangesOpen}
-          aria-controls={MEDAILS_ID}
-          onClick={() => setRangesOpen((open) => !open)}
-        >
-          <ImInfo aria-hidden='true' size='1em' />
-          Rangos de medallas
-        </MedalRangesButton>
+        {medalRanges && (
+          <MedalRangesButton
+            type='button'
+            ref={rangesButtonRef}
+            aria-expanded={rangesOpen}
+            aria-controls={MEDAILS_ID}
+            onClick={() => setRangesOpen((open) => !open)}
+          >
+            <ImInfo aria-hidden='true' size='1em' />
+            Rangos de medallas
+          </MedalRangesButton>
+        )}
       </Actions>
-      <Medails open={rangesOpen} />
+      {medalRanges && <Medails open={rangesOpen} />}
     </Header>
   );
 };

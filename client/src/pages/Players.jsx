@@ -1,7 +1,12 @@
 import React from 'react';
-// import { ListOfPlayers } from '../ListOfPlayers';
 import { GetPlayers } from '../container/GetPlayers';
+import { PageHeader } from '../components/PageHeader';
+import { Page } from '../styles/Page';
 
-export const Players = () => {
-  return <GetPlayers user='player'/>;
-};
+// The page header (title and refresh) above the player cards.
+export const Players = ({ onRefresh }) => (
+  <Page>
+    <PageHeader title='Jugadores' onRefresh={onRefresh} />
+    <GetPlayers user='player' />
+  </Page>
+);

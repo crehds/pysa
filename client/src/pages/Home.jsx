@@ -1,21 +1,13 @@
 import React from 'react';
-import styled from 'styled-components';
 import { useStateValue } from '../Context';
 import { PageHeader } from '../components/PageHeader';
 import { Podium } from '../components/Podium';
 import { Ranking } from '../components/Ranking';
 import { EmptyRanking } from '../components/EmptyRanking';
 import { Footer } from '../components/Footer';
+import { Page } from '../styles/Page';
 
 const PODIUM_SIZE = 3;
-
-const Page = styled.div`
-  display: flex;
-  flex: 1;
-  flex-direction: column;
-  width: 100%;
-  min-width: 0;
-`;
 
 // Page header, the top three as a podium, the rest in the table, the footer.
 export const Home = ({ onRefresh }) => {
@@ -25,7 +17,12 @@ export const Home = ({ onRefresh }) => {
 
   return (
     <Page>
-      <PageHeader onRefresh={onRefresh} />
+      <PageHeader
+        title='Ranking'
+        intro='Clasificación de la comunidad Pysa de Dota 2, ordenada por MMR.'
+        medalRanges
+        onRefresh={onRefresh}
+      />
       {players.length === 0 ? (
         <EmptyRanking />
       ) : (

@@ -123,7 +123,7 @@ test('the ranking at / renders player names from the mocked api', async () => {
   expect(screen.getByText('PlayerTwo')).toBeInTheDocument();
 });
 
-test('/players renders the players carousel', async () => {
+test('/players renders the player cards', async () => {
   renderAppAt('/players');
 
   const names = await screen.findAllByText('PlayerOne');
@@ -221,10 +221,10 @@ describe('app shell', () => {
     );
 
     await user.click(screen.getByRole('link', { name: 'Jugadores' }));
-    // Only the Players page renders the carousel (the ranking also shows the names).
-    await waitFor(() =>
-      expect(document.getElementById('playersCarousel')).toBeInTheDocument()
-    );
+    // Only the Players page has the "Jugadores" heading (the ranking also shows the names).
+    expect(
+      await screen.findByRole('heading', { level: 1, name: 'Jugadores' })
+    ).toBeInTheDocument();
 
     expect(screen.getByRole('link', { name: 'Jugadores' })).toHaveAttribute(
       'aria-current',

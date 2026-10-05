@@ -1,4 +1,4 @@
-import styled, { css } from 'styled-components';
+import styled from 'styled-components';
 import { optionalColumn } from '../RowsNameRanking/styles';
 
 // Zebra rows plus a hairline between them, all from the tokens.
@@ -32,26 +32,6 @@ export const NameCell = styled(Cell)`
   overflow-wrap: anywhere;
 `;
 
-const podiumColors = {
-  1: 'var(--color-gold)',
-  2: 'var(--color-silver)',
-  3: 'var(--color-bronze)',
-};
-
-// Ranks 1-3 get a filled round badge (a shape cue, with dark text on the
-// metal color); the others are plain numbers.
 export const Rank = styled.span`
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  min-width: var(--space-6);
-  height: var(--space-6);
-  border-radius: var(--radius-full);
   font-weight: 700;
-  ${({ $rank }) =>
-    podiumColors[$rank] &&
-    css`
-      background-color: ${podiumColors[$rank]};
-      color: var(--color-bg);
-    `}
 `;

@@ -17,6 +17,9 @@ import { useStateValue } from './Context';
 import { useMenuHidden } from './hooks/useMenuHidden';
 import { ShowMenuButton } from './components/ShowMenuButton';
 
+// Routes whose page header holds the refresh button.
+const ROUTES_WITH_HEADER = ['/', '/players'];
+
 function App() {
   const [{ isAuth }] = useStateValue();
   const [isLoading, setLoading] = useState(false);
@@ -118,14 +121,17 @@ function App() {
                 buttonRef={showButtonRef}
               />
             )}
-            {/* Home holds the refresh button in its page header; the other
-            pages have no header yet, so it floats there. */}
-            {pathname !== '/' && (
+            {/* Home and Players hold the refresh button in their page header;
+            the other pages have no header yet, so it floats there. */}
+            {!ROUTES_WITH_HEADER.includes(pathname) && (
               <RefreshButton floating onClick={handleRefreshApp} />
             )}
             <Routes>
               <Route path='/' element={<Home onRefresh={handleRefreshApp} />} />
-              <Route path='/players' element={<Players />} />
+              <Route
+                path='/players'
+                element={<Players onRefresh={handleRefreshApp} />}
+              />
               <Route
                 path='/adminPlayers'
                 element={

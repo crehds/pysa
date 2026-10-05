@@ -11,9 +11,7 @@ import {
   PodiumSection,
 } from './styles';
 import { VisuallyHidden } from '../../styles/VisuallyHidden';
-
-// Names the metal in text, so the gold/silver/bronze fill is never the only cue.
-const METAL_LABELS = ['oro', 'plata', 'bronce'];
+import { metalLabels } from '../../styles/podium';
 
 // The top three, as an ordered list. `players` is already sorted and holds at
 // most three; fewer than three are shown as they are.
@@ -26,7 +24,7 @@ export const Podium = ({ players }) => (
           <Card key={player._id ?? i} $rank={rank}>
             <Badge $rank={rank}>
               {rank}
-              <VisuallyHidden>, {METAL_LABELS[i]}</VisuallyHidden>
+              <VisuallyHidden>, {metalLabels[i]}</VisuallyHidden>
             </Badge>
             <Name>{player.nickname}</Name>
             <Medal>{player.medail}</Medal>

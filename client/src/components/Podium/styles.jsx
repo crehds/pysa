@@ -1,12 +1,7 @@
 import styled, { css } from 'styled-components';
 import { media } from '../../styles/breakpoints';
 import { pageGutter } from '../../styles/layout';
-
-const metals = {
-  1: 'var(--color-gold)',
-  2: 'var(--color-silver)',
-  3: 'var(--color-bronze)',
-};
+import { metalColors as metals } from '../../styles/podium';
 
 export const PodiumSection = styled.section`
   ${pageGutter}
