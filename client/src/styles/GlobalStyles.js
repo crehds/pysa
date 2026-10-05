@@ -111,6 +111,61 @@ export const GlobalStyle = createGlobalStyle`
     min-height: 100vh;
   }
 
+  /* SweetAlert2 dialogs (login, logout, admin) follow the tokens: dark surface,
+     light text, a gold focus ring and no purple. SweetAlert2 reads its own
+     custom properties, so these are set on its overlay. */
+  .swal2-container {
+    color-scheme: dark;
+    --swal2-background: var(--color-surface);
+    --swal2-color: var(--color-text);
+    --swal2-border-radius: var(--radius-md);
+    --swal2-backdrop: color-mix(in srgb, var(--color-bg) 80%, transparent);
+    --swal2-input-background: var(--color-bg);
+    /* The muted text color keeps the field's edge above 3:1 on the surface. */
+    --swal2-input-border: 1px solid var(--color-text-muted);
+    --swal2-input-border-radius: var(--radius-sm);
+    --swal2-input-box-shadow: none;
+    --swal2-input-hover-box-shadow: none;
+    --swal2-input-focus-border: 1px solid var(--color-focus);
+    --swal2-input-focus-box-shadow: 0 0 0 var(--focus-ring-width) var(--color-focus);
+    --swal2-confirm-button-background-color: var(--color-brand);
+    --swal2-confirm-button-color: var(--color-text);
+    --swal2-confirm-button-border-radius: var(--radius-sm);
+    --swal2-cancel-button-background-color: var(--color-surface-raised);
+    --swal2-cancel-button-color: var(--color-text);
+    --swal2-cancel-button-border-radius: var(--radius-sm);
+    --swal2-action-button-focus-box-shadow: 0 0 0 var(--focus-ring-width) var(--color-focus);
+  }
+
+  /* The login dialog's titles use the body font: Reggae One only has a 400
+     weight and reads too ornamental in a small dialog. */
+  .swal2-container .swal2-title {
+    font-family: var(--font-body);
+    font-size: var(--font-size-xl);
+    font-weight: 700;
+  }
+
+  .swal2-container .swal2-html-container {
+    font-size: var(--font-size-base);
+  }
+
+  .swal2-container .swal-label {
+    display: block;
+    margin: var(--space-4) 0 var(--space-1);
+    font-size: var(--font-size-sm);
+    font-weight: 500;
+    text-align: left;
+  }
+
+  .swal2-container .swal2-input {
+    width: 100%;
+    margin: 0;
+    color: var(--color-text);
+    font-family: var(--font-body);
+    /* The admin fields are light on purpose; the dialogs are dark. */
+    color-scheme: dark;
+  }
+
   /* The document scrolls. Below the md breakpoint the nav is a fixed bottom
      bar out of the grid flow; from it up it is the first column. */
   .App {

@@ -218,6 +218,28 @@ describe('the medal ranges', () => {
     expect(button).toHaveFocus();
   });
 
+  test('Escape inside a dialog leaves the ranges alone and does not pull focus to their button', async () => {
+    const user = userEvent.setup();
+    await renderHome(5);
+    const button = screen.getByRole('button', { name: 'Rangos de medallas' });
+    await user.click(button);
+    expect(button).toHaveAttribute('aria-expanded', 'true');
+
+    // A SweetAlert2 dialog is open (login, logout): Escape belongs to it.
+    const dialog = document.createElement('div');
+    dialog.className = 'swal2-container';
+    const input = document.createElement('input');
+    dialog.append(input);
+    document.body.append(dialog);
+    input.focus();
+
+    await user.keyboard('{Escape}');
+    expect(input).toHaveFocus();
+    expect(button).not.toHaveFocus();
+    expect(button).toHaveAttribute('aria-expanded', 'true');
+    dialog.remove();
+  });
+
   test('works from the keyboard', async () => {
     const user = userEvent.setup();
     await renderHome(5);

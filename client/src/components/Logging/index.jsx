@@ -19,9 +19,13 @@ export const Logging = (props) => {
   async function loginMod() {
     const { value } = await Swal.fire({
       title: 'Login',
+      // Visible labels, tied to the inputs by id; #user and #password stay as
+      // the hooks the tests and preConfirm use.
       html:
-        '<input id="user" class="swal2-input">' +
-        '<input id="password" type="password" class="swal2-input">',
+        '<label for="user" class="swal-label">Usuario</label>' +
+        '<input id="user" class="swal2-input" autocomplete="username">' +
+        '<label for="password" class="swal-label">Contraseña</label>' +
+        '<input id="password" type="password" class="swal2-input" autocomplete="current-password">',
       focusConfirm: false,
       preConfirm: async () => {
         let user = document.getElementById('user').value;
