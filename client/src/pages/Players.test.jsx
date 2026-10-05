@@ -2,6 +2,7 @@ import React from 'react';
 import { render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import App from '../App';
+import { RoleStats } from '../components/Player/RoleStats';
 import { Provider } from '../Context';
 import { BrowserRouter } from 'react-router';
 
@@ -187,12 +188,18 @@ describe('the role stats', () => {
     const table = await firstCardTable();
 
     const headers = within(table).getAllByRole('columnheader');
-    expect(headers.map((header) => header.getAttribute('scope'))).toEqual(
-      Array(8).fill('col')
-    );
+    // "Rol" and the two group labels come first (the first header row), then the stats.
+    expect(headers.map((header) => header.getAttribute('scope'))).toEqual([
+      'col',
+      'colgroup',
+      'colgroup',
+      ...Array(7).fill('col'),
+    ]);
     // The visible text is short ("V", "D x2"); the accessible name is the full word.
     expect(headers.map((header) => header.textContent)).toEqual([
       'Rol',
+      'Resultados',
+      'KDA',
       'VVictorias',
       'V x2Victorias dobles',
       'DDerrotas',
@@ -215,10 +222,29 @@ describe('the role stats', () => {
     }
   });
 
+  test('group the headers: "Resultados" over the wins and defeats, "KDA" over the rest', async () => {
+    const table = await firstCardTable();
+
+    const results = within(table).getByRole('columnheader', { name: 'Resultados' });
+    const kda = within(table).getByRole('columnheader', { name: 'KDA' });
+    expect(results).toHaveAttribute('scope', 'colgroup');
+    expect(results).toHaveAttribute('colspan', '4');
+    expect(kda).toHaveAttribute('scope', 'colgroup');
+    expect(kda).toHaveAttribute('colspan', '3');
+    // "Rol" spans both header rows.
+    expect(within(table).getByRole('columnheader', { name: 'Rol' })).toHaveAttribute(
+      'rowspan',
+      '2'
+    );
+    // A <colgroup> per group, matching the spans: the role column, then 4 and 3.
+    const groups = [...table.querySelectorAll('colgroup')];
+    expect(groups.map((group) => group.querySelectorAll('col').length)).toEqual([1, 4, 3]);
+  });
+
   test('list one row per role with its numbers', async () => {
     const table = await firstCardTable();
 
-    const [, carry, mid] = within(table).getAllByRole('row');
+    const [, , carry, mid] = within(table).getAllByRole('row');
     expect(
       within(carry)
         .getAllByRole('cell')
@@ -253,6 +279,16 @@ describe('the role stats', () => {
 
     const card = screen.getAllByRole('article')[0];
     expect(within(card).getByText('Partidas').nextSibling).toHaveTextContent('13');
-    expect(within(card).getByText('KDA').nextSibling).toHaveTextContent('3.27');
+    expect(within(card).getByText('KDA', { selector: 'dt' }).nextSibling).toHaveTextContent('3.27');
+  });
+
+  test('derive the games played when the player has no "partidas" (the x2 ones count)', () => {
+    const roles = [
+      { rol: 'Hard Carry', victories: 5, victoriesDouble: 0, defeats: 2, defeatsDouble: 0, kills: 20, deaths: 10, assists: 15 },
+      { rol: 'Mid Laner', victories: 3, victoriesDouble: 1, defeats: 1, defeatsDouble: 1, kills: 8, deaths: 5, assists: 6 },
+    ];
+    render(<RoleStats name='PlayerOne' roles={roles} kda='3.27' />);
+
+    expect(screen.getByText('Partidas').nextSibling).toHaveTextContent('13');
   });
 });

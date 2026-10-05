@@ -3,6 +3,7 @@ import {
   Abbreviation,
   Cell,
   ColumnHeader,
+  GroupHeader,
   RowHeader,
   Summary,
   Table,
@@ -22,6 +23,13 @@ const COLUMNS = [
   { short: 'A', full: 'Asistencias', key: 'assists' },
 ];
 
+// The stats are grouped under two labels so each "D" reads in context: the
+// first four columns are results, the last three are the KDA parts.
+const GROUPS = [
+  { label: 'Resultados', columns: COLUMNS.slice(0, 4) },
+  { label: 'KDA', columns: COLUMNS.slice(4) },
+];
+
 // Totals over every role. The x2 victories and defeats count in the totals.
 function totalsOf(roles) {
   const sum = (key) => roles.reduce((total, role) => total + role[key], 0);
@@ -38,15 +46,34 @@ function totalsOf(roles) {
 // a totals row in the footer. The games played and the KDA sit below it.
 export const RoleStats = ({ name, roles, partidas, kda }) => {
   const totals = totalsOf(roles);
+  // Without a stored count, the games are the wins plus the defeats (x2 included).
+  const games = partidas ?? totals.victories + totals.defeats;
   return (
     <>
       <Table>
         <VisuallyHidden as='caption'>Estadísticas por rol de {name}</VisuallyHidden>
+        <colgroup>
+          <col />
+        </colgroup>
+        {GROUPS.map(({ label, columns }) => (
+          <colgroup key={label}>
+            {columns.map(({ key }) => (
+              <col key={key} />
+            ))}
+          </colgroup>
+        ))}
         <thead>
           <tr>
-            <ColumnHeader scope='col' $role>
+            <ColumnHeader scope='col' rowSpan={2} $role>
               Rol
             </ColumnHeader>
+            {GROUPS.map(({ label, columns }) => (
+              <GroupHeader key={label} scope='colgroup' colSpan={columns.length}>
+                {label}
+              </GroupHeader>
+            ))}
+          </tr>
+          <tr>
             {COLUMNS.map(({ short, full }, i) => (
               <ColumnHeader key={i} scope='col'>
                 <Abbreviation aria-hidden='true' title={full}>
@@ -81,7 +108,7 @@ export const RoleStats = ({ name, roles, partidas, kda }) => {
       <Summary>
         <div>
           <dt>Partidas</dt>
-          <dd>{partidas}</dd>
+          <dd>{games}</dd>
         </div>
         <div>
           <dt>KDA</dt>

@@ -20,6 +20,18 @@ export const ColumnHeader = styled.th`
   color: var(--color-text-muted);
   font-weight: 500;
   text-align: ${({ $role }) => ($role ? 'left' : 'right')};
+  vertical-align: ${({ $role }) => ($role ? 'bottom' : 'baseline')};
+  white-space: nowrap;
+`;
+
+// The group label spans its columns; a hairline under it ties the letters below
+// to it. The header row under it keeps the usual bottom border.
+export const GroupHeader = styled.th`
+  padding: var(--space-1);
+  border-bottom: 1px solid var(--color-border);
+  color: var(--color-text);
+  font-weight: 500;
+  text-align: center;
   white-space: nowrap;
 `;
 

@@ -50,9 +50,12 @@ test.describe('on a phone (390x844)', () => {
 test.describe('the role stats table', () => {
   // A card's stats table must fit inside its card: 8 columns on a 390px screen
   // is the tightest case, and at 1024px three narrow cards share a row.
-  for (const width of [390, 1024]) {
-    test(`stays inside its card at ${width}px wide`, async ({ page }) => {
-      await page.setViewportSize({ width, height: 900 });
+  for (const [width, height] of [
+    [390, 844],
+    [1024, 800],
+  ]) {
+    test(`stays inside its card at ${width}px wide, group headers included`, async ({ page }) => {
+      await page.setViewportSize({ width, height });
       await page.goto('/players');
 
       const cards = page.getByRole('article');
@@ -62,6 +65,9 @@ test.describe('the role stats table', () => {
         const card = cards.nth(i);
         const table = card.getByRole('table');
         await expect(table).toBeVisible();
+        // The group labels sit in the table, so they are part of what must fit.
+        await expect(table.getByRole('columnheader', { name: 'Resultados' })).toBeVisible();
+        await expect(table.getByRole('columnheader', { name: 'KDA' })).toBeVisible();
         const cardBox = await card.boundingBox();
         const tableBox = await table.boundingBox();
         expect(tableBox.x).toBeGreaterThanOrEqual(cardBox.x);
