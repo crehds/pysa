@@ -1,14 +1,9 @@
 import React from 'react';
 import logo from '../../assets/logo_pysa_6.png';
-import { Div, Img, ImgWrapper, Overlay } from './styles.jsx';
+import { Img, Screen } from './styles.jsx';
 
-export const Loading = () => {
-  return (
-    <Div>
-      <Overlay />
-      <ImgWrapper>
-        <Img width='480px' src={logo} alt='logo de pysa' />
-      </ImgWrapper>
-    </Div>
-  );
-};
+export const Loading = () => (
+  <Screen role='status' aria-label='Cargando'>
+    <Img src={logo} alt='logo de pysa' />
+  </Screen>
+);

@@ -1,5 +1,5 @@
 import React from 'react';
-import { render, screen, within } from '@testing-library/react';
+import { render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import App from '../App';
 import { Provider } from '../Context';
@@ -45,14 +45,18 @@ function jsonResponse(body) {
 }
 
 function mockApi(players) {
-  global.fetch = (url) => {
+  global.fetch = vi.fn((url) => {
     if (url.includes('players/getAllPlayers')) return jsonResponse(players);
     if (url.includes('scores/getScoreOfPlayers')) return jsonResponse(buildScores(players));
     if (url.includes('medails/getMedails')) return jsonResponse(mockMedails);
     if (url.includes('roles/getRoles')) return jsonResponse(mockRoles);
     if (url.includes('auth/me')) return jsonResponse({ authenticated: false });
     return Promise.reject(new Error(`Unexpected fetch call: ${url}`));
-  };
+  });
+}
+
+function fetchesTo(path) {
+  return global.fetch.mock.calls.filter(([url]) => url.includes(path)).length;
 }
 
 function renderAppAt(playerCount, path) {
@@ -67,10 +71,20 @@ function renderAppAt(playerCount, path) {
   );
 }
 
-// Renders Home and waits until the page header is there.
+// Renders Home and waits until the data has loaded, not just the page header:
+// with players, until the podium lists them; with none, until the fetches ran
+// and the app left the splash.
 async function renderHome(playerCount) {
   renderAppAt(playerCount, '/');
-  return screen.findByRole('heading', { level: 1, name: 'Ranking' });
+  const heading = await screen.findByRole('heading', { level: 1, name: 'Ranking' });
+  if (playerCount > 0) {
+    await screen.findByRole('list', { name: 'Podio' });
+    await screen.findByText(NAMES[0]);
+  } else {
+    await waitFor(() => expect(fetchesTo('roles/getRoles')).toBe(1));
+    await waitFor(() => expect(screen.queryByAltText('logo de pysa')).not.toBeInTheDocument());
+  }
+  return heading;
 }
 
 beforeEach(() => {

@@ -1,10 +1,12 @@
 // import './App.css';
 import { useEffect, useRef, useState } from 'react';
 import { Loading } from './components/initLoading';
+import { LoadError } from './components/LoadError';
 import { GlobalStyle } from './styles/GlobalStyles';
 import { Home } from './pages/Home';
 import { NavBar } from './components/NavBar';
 import { Navigate, Route, Routes, useLocation, useNavigate } from 'react-router';
+import { normalizePath, pageTitle } from './utils/pageTitle';
 import { Players } from './pages/Players';
 import { AdminPlayers } from './pages/AdminPlayers';
 import './App.css';
@@ -28,6 +30,7 @@ function App() {
   useCheckAuth();
   const navigate = useNavigate();
   const { pathname } = useLocation();
+  const path = normalizePath(pathname);
   const routeContainerRef = useRef(null);
   const isInitialRender = useRef(true);
   const [menuHidden, setMenuHidden] = useMenuHidden();
@@ -41,6 +44,10 @@ function App() {
       setLoading(true);
     }
   }, [loadingData]);
+
+  useEffect(() => {
+    document.title = pageTitle(pathname);
+  }, [pathname]);
 
   // isAuth starts out null (not yet known) and resolves asynchronously once
   // useCheckAuth's GET /auth/me completes; mirror it into isLogging once it
@@ -92,7 +99,9 @@ function App() {
     setLoading(false);
   }
 
-  console.log(loadingData);
+  // loadingData is null when the request failed (see useGetData).
+  const loadFailed = !isLoading && loadingData === null;
+
   return (
     <div id='app' className='App' data-menu-hidden={menuHidden}>
       <GlobalStyle />
@@ -123,7 +132,7 @@ function App() {
             )}
             {/* Home and Players hold the refresh button in their page header;
             the other pages have no header yet, so it floats there. */}
-            {!ROUTES_WITH_HEADER.includes(pathname) && (
+            {!ROUTES_WITH_HEADER.includes(path) && (
               <RefreshButton floating onClick={handleRefreshApp} />
             )}
             <Routes>
@@ -145,6 +154,8 @@ function App() {
             </Routes>
           </Main>
         </>
+      ) : loadFailed ? (
+        <LoadError onRetry={handleRefreshApp} />
       ) : (
         <Loading />
       )}

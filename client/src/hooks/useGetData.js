@@ -2,6 +2,9 @@ import { useEffect, useState } from 'react';
 import { useStateValue } from '../Context';
 import { API_BASE_URL } from '../config';
 
+// Returns [status, setStatus]: false while loading (and the signal to start a
+// load), true once the data arrived, null when the request failed. Setting it
+// back to false fetches again (a retry or a refresh).
 export function useGetData(loadingApp) {
   const [state, dispatch] = useStateValue();
   const [loading, setLoading] = useState(false);
@@ -50,10 +53,10 @@ export function useGetData(loadingApp) {
       }
     }
 
-    if (!loadingApp) {
+    if (!loadingApp && loading === false) {
       getDataPlayers();
     }
-  }, [loadingApp, dispatch]);
+  }, [loadingApp, loading, dispatch]);
 
   return [loading, setLoading];
 }
