@@ -89,6 +89,14 @@ describe('the page header', () => {
     ).toBeInTheDocument();
   });
 
+  test('introduces the page as the Pysa Dota 2 community ranking', async () => {
+    const heading = await renderHome(5);
+
+    expect(within(heading.closest('header')).getByText(
+      'Clasificación de la comunidad Pysa de Dota 2, ordenada por MMR.'
+    )).toBeInTheDocument();
+  });
+
   test('"Actualizar" is still offered on /players', async () => {
     renderAppAt(5, '/players');
 

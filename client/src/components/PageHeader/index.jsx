@@ -32,7 +32,7 @@ export const PageHeader = ({ onRefresh }) => {
       <Logo src={logo} alt='' />
       <TitleBlock>
         <Title>Ranking</Title>
-        <Intro>Ranking de jugadores de Pysa según su MMR, con partidas, KDA y medalla.</Intro>
+        <Intro>Clasificación de la comunidad Pysa de Dota 2, ordenada por MMR.</Intro>
       </TitleBlock>
       <Actions>
         <RefreshButton onClick={onRefresh} />
