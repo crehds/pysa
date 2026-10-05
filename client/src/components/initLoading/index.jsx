@@ -7,7 +7,8 @@ export const Loading = () => {
   const { t } = useLanguage();
   return (
     <Screen role='status' aria-label={t('loading')}>
-      <Img src={logo} alt={t('logo.alt')} />
+      {/* Decorative: the container above already carries the accessible name. */}
+      <Img src={logo} alt='' />
     </Screen>
   );
 };

@@ -14,8 +14,7 @@ export const dictionary = {
     'title.players': 'Jugadores',
     'title.admin': 'Admin',
 
-    'logo.alt': 'logo de pysa',
-
+    'nav.home': 'Pysa, inicio',
     'nav.ranking': 'Ranking',
     'nav.players': 'Jugadores',
     'nav.admin': 'Admin',
@@ -105,8 +104,7 @@ export const dictionary = {
     'title.players': 'Players',
     'title.admin': 'Admin',
 
-    'logo.alt': 'Pysa logo',
-
+    'nav.home': 'Pysa, home',
     'nav.ranking': 'Ranking',
     'nav.players': 'Players',
     'nav.admin': 'Admin',

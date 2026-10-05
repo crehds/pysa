@@ -17,7 +17,7 @@ export const NavBar = ({ isLogging, children, menuHidden, onHide, hideButtonRef 
   return (
     <NavBarContainer id={NAV_ID} $hidden={menuHidden}>
       <LogoLink to='/'>
-        <img src={logo} alt={t('logo.alt')} />
+        <img src={logo} alt={t('nav.home')} />
       </LogoLink>
       <Item to='/' end>
         <ImTable aria-hidden='true' />

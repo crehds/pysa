@@ -119,7 +119,9 @@ describe.each([
     renderLogging();
     await user.click(screen.getByRole('button', { name: copy.loginButton }));
 
-    expect(Swal.fire).toHaveBeenLastCalledWith({ icon: 'success', text: copy.welcome });
+    await vi.waitFor(() =>
+      expect(Swal.fire).toHaveBeenLastCalledWith({ icon: 'success', text: copy.welcome })
+    );
   });
 
   test.each(Object.entries(copy.errors))('a failed login (%s) says why', async (reason, text) => {
@@ -128,7 +130,9 @@ describe.each([
     renderLogging();
     await user.click(screen.getByRole('button', { name: copy.loginButton }));
 
-    expect(Swal.fire).toHaveBeenLastCalledWith({ icon: 'error', text });
+    await vi.waitFor(() =>
+      expect(Swal.fire).toHaveBeenLastCalledWith({ icon: 'error', text })
+    );
   });
 
   test('the logout dialog asks plainly and says goodbye', async () => {

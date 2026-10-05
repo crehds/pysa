@@ -49,7 +49,8 @@ test.describe('on a phone (390x844)', () => {
     const release = await holdPlayersRequest(page);
     await page.goto('/');
 
-    const logo = page.getByRole('img', { name: 'logo de pysa' });
+    // The splash logo is decorative (alt=""), so find it inside the splash.
+    const logo = page.getByRole('status', { name: 'Cargando' }).locator('img');
     await expect(logo).toBeVisible();
     const box = await logo.boundingBox();
     expect(box.x).toBeGreaterThanOrEqual(0);

@@ -96,7 +96,7 @@ describe('in English', () => {
     expect(within(nav).getByRole('button', { name: 'Hide menu' })).toBeInTheDocument();
     // The logo link is hidden on phones (jsdom ignores the media query, so it
     // reads as hidden here).
-    expect(within(nav).getByRole('img', { name: 'Pysa logo', hidden: true })).toBeInTheDocument();
+    expect(within(nav).getByRole('img', { name: 'Pysa, home', hidden: true })).toBeInTheDocument();
   });
 
   test('Home: header, podium, table and footer', async () => {
@@ -165,8 +165,12 @@ describe('in English', () => {
     mockApi(buildPlayers(1));
     renderAppAt('/');
 
-    expect(screen.getByRole('status', { name: 'Loading' })).toBeInTheDocument();
-    expect(screen.getByAltText('Pysa logo')).toBeInTheDocument();
+    const splash = screen.getByRole('status', { name: 'Loading' });
+    expect(splash).toBeInTheDocument();
+    // The splash container carries the name; its logo is decorative, so it
+    // shares no accessible name with the nav logo.
+    expect(within(splash).queryByRole('img')).not.toBeInTheDocument();
+    expect(splash.querySelector('img')).toHaveAttribute('alt', '');
     await screen.findByText('PlayerOne');
   });
 
@@ -240,7 +244,7 @@ describe('in Spanish', () => {
 
     const nav = screen.getByRole('navigation');
     expect(within(nav).getByRole('button', { name: 'Iniciar sesión' })).toBeInTheDocument();
-    expect(within(nav).getByRole('img', { name: 'logo de pysa', hidden: true })).toBeInTheDocument();
+    expect(within(nav).getByRole('img', { name: 'Pysa, inicio', hidden: true })).toBeInTheDocument();
     expect(screen.getByText('Pysa. Hecho con React, Express y MongoDB.')).toBeInTheDocument();
     expect(screen.getByRole('table', { name: 'Ranking' })).toBeInTheDocument();
     expect(document.body.textContent).not.toMatch(/papu|ñafo|logue/i);
