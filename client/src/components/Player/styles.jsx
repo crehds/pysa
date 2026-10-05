@@ -12,6 +12,9 @@ export const Card = styled.article`
   border-radius: var(--radius-md);
   background-color: var(--color-surface);
   text-align: left;
+  /* Lets the header and the table adapt to the card's own width (three narrow
+     cards share a row at 1024px), not the viewport's. */
+  container-type: inline-size;
 `;
 
 export const Score = styled.div`

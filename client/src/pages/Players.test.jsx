@@ -5,7 +5,10 @@ import App from '../App';
 import { Provider } from '../Context';
 import { BrowserRouter } from 'react-router';
 
-const mockRoles = [{ _id: 'role-1', name: 'Hard Carry' }];
+const mockRoles = [
+  { _id: 'role-1', name: 'Hard Carry' },
+  { _id: 'role-2', name: 'Mid Laner' },
+];
 const mockMedails = [{ _id: 'medail-1', name: 'Cruzado' }];
 
 const NAMES = ['PlayerOne', 'PlayerTwo', 'PlayerThree', 'PlayerFour', 'PlayerFive'];
@@ -35,6 +38,16 @@ function buildScores(players) {
         kills: 20,
         deaths: 10,
         assists: 15,
+      },
+      {
+        rol: 'role-2',
+        victories: 3,
+        victoriesDouble: 1,
+        defeats: 1,
+        defeatsDouble: 1,
+        kills: 8,
+        deaths: 5,
+        assists: 6,
       },
     ],
   }));
@@ -147,5 +160,99 @@ describe('the player cards', () => {
 
     expect(document.getElementById('playersCarousel')).not.toBeInTheDocument();
     expect(document.getElementById('CarouselWrapper')).not.toBeInTheDocument();
+  });
+});
+
+describe('the role stats', () => {
+  async function firstCardTable() {
+    await renderPlayers(5);
+    const card = screen.getAllByRole('article')[0];
+    return within(card).getByRole('table', { name: 'Estadísticas por rol de PlayerOne' });
+  }
+
+  test('are a table in each card, captioned with the player name', async () => {
+    await renderPlayers(5);
+
+    for (const [i, card] of screen.getAllByRole('article').entries()) {
+      const table = within(card).getByRole('table', {
+        name: `Estadísticas por rol de ${NAMES[i]}`,
+      });
+      expect(table.querySelector('caption')).toHaveTextContent(
+        `Estadísticas por rol de ${NAMES[i]}`
+      );
+    }
+  });
+
+  test('have a column header for the role and each stat, with full accessible names', async () => {
+    const table = await firstCardTable();
+
+    const headers = within(table).getAllByRole('columnheader');
+    expect(headers.map((header) => header.getAttribute('scope'))).toEqual(
+      Array(8).fill('col')
+    );
+    // The visible text is short ("V", "D x2"); the accessible name is the full word.
+    expect(headers.map((header) => header.textContent)).toEqual([
+      'Rol',
+      'VVictorias',
+      'V x2Victorias dobles',
+      'DDerrotas',
+      'D x2Derrotas dobles',
+      'KAsesinatos',
+      'DMuertes',
+      'AAsistencias',
+    ]);
+    for (const name of [
+      'Rol',
+      'Victorias',
+      'Victorias dobles',
+      'Derrotas',
+      'Derrotas dobles',
+      'Asesinatos',
+      'Muertes',
+      'Asistencias',
+    ]) {
+      expect(within(table).getByRole('columnheader', { name })).toBeInTheDocument();
+    }
+  });
+
+  test('list one row per role with its numbers', async () => {
+    const table = await firstCardTable();
+
+    const [, carry, mid] = within(table).getAllByRole('row');
+    expect(
+      within(carry)
+        .getAllByRole('cell')
+        .map((cell) => cell.textContent)
+    ).toEqual(['5', '0', '2', '0', '20', '10', '15']);
+    expect(within(carry).getByRole('rowheader', { name: 'Hard Carry' })).toBeInTheDocument();
+    expect(within(mid).getByRole('rowheader', { name: 'Mid Laner' })).toBeInTheDocument();
+    expect(
+      within(mid)
+        .getAllByRole('cell')
+        .map((cell) => cell.textContent)
+    ).toEqual(['3', '1', '1', '1', '8', '5', '6']);
+  });
+
+  test('end with a labeled totals row in the table footer', async () => {
+    const table = await firstCardTable();
+
+    const footer = table.querySelector('tfoot');
+    expect(footer).not.toBeNull();
+    const totals = within(footer).getByRole('row');
+    expect(within(totals).getByRole('rowheader', { name: 'Total' })).toBeInTheDocument();
+    // Victories and defeats include the x2 ones: 5+0+3+1, 2+0+1+1.
+    expect(
+      within(totals)
+        .getAllByRole('cell')
+        .map((cell) => cell.textContent)
+    ).toEqual(['9', '4', '28', '15', '21']);
+  });
+
+  test('show the games played and the KDA next to the table', async () => {
+    await renderPlayers(5);
+
+    const card = screen.getAllByRole('article')[0];
+    expect(within(card).getByText('Partidas').nextSibling).toHaveTextContent('13');
+    expect(within(card).getByText('KDA').nextSibling).toHaveTextContent('3.27');
   });
 });

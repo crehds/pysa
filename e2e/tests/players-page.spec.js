@@ -47,6 +47,33 @@ test.describe('on a phone (390x844)', () => {
   });
 });
 
+test.describe('the role stats table', () => {
+  // A card's stats table must fit inside its card: 8 columns on a 390px screen
+  // is the tightest case, and at 1024px three narrow cards share a row.
+  for (const width of [390, 1024]) {
+    test(`stays inside its card at ${width}px wide`, async ({ page }) => {
+      await page.setViewportSize({ width, height: 900 });
+      await page.goto('/players');
+
+      const cards = page.getByRole('article');
+      await expect(cards.first()).toBeVisible();
+      const count = await cards.count();
+      for (let i = 0; i < count; i += 1) {
+        const card = cards.nth(i);
+        const table = card.getByRole('table');
+        await expect(table).toBeVisible();
+        const cardBox = await card.boundingBox();
+        const tableBox = await table.boundingBox();
+        expect(tableBox.x).toBeGreaterThanOrEqual(cardBox.x);
+        expect(tableBox.x + tableBox.width).toBeLessThanOrEqual(cardBox.x + cardBox.width);
+        // Nothing inside the table is wider than the table itself.
+        const clipped = await table.evaluate((el) => el.scrollWidth > el.clientWidth);
+        expect(clipped).toBe(false);
+      }
+    });
+  }
+});
+
 test.describe('on a small tablet (700x900)', () => {
   test.use({ viewport: { width: 700, height: 900 } });
 

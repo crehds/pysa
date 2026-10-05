@@ -1,8 +1,7 @@
 import React, { useId } from 'react';
 import { Card, Score } from './styles';
-import { ScoreContent } from './ScoreContent';
 import { PlayerImageMedail } from './PlayerImageMedail';
-import { ScoreColumnsName } from './ScoreColumnsNames';
+import { RoleStats } from './RoleStats';
 
 // One player's card: the header (rank, name, medal, MMR) and the stats. The
 // article is named by its heading.
@@ -19,8 +18,12 @@ export const Player = (props) => {
         src={props.imgURL}
       />
       <Score>
-        <ScoreColumnsName />
-        <ScoreContent roles={props.rolesScore} kda={props.kda} />
+        <RoleStats
+          name={props.nickname}
+          roles={props.rolesScore}
+          partidas={props.partidas}
+          kda={props.kda}
+        />
       </Score>
     </Card>
   );

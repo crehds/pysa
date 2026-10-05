@@ -6,6 +6,11 @@ export const Header = styled.header`
   grid-template-columns: auto auto minmax(0, 1fr) auto;
   align-items: center;
   column-gap: var(--space-3);
+
+  /* A narrow card moves the MMR to its own line so the name keeps its room. */
+  @container (max-width: 20rem) {
+    grid-template-columns: auto auto minmax(0, 1fr);
+  }
 `;
 
 // A round badge for every rank; ranks 1-3 fill it with the metal (and carry the
@@ -43,7 +48,7 @@ export const Name = styled.h2`
   font-size: var(--font-size-lg);
   font-weight: 700;
   line-height: 1.2;
-  overflow-wrap: anywhere;
+  overflow-wrap: break-word;
 `;
 
 export const Medal = styled.p`
@@ -57,6 +62,12 @@ export const Medal = styled.p`
 export const Mmr = styled.p`
   text-align: right;
   font-variant-numeric: tabular-nums;
+
+  @container (max-width: 20rem) {
+    grid-column: 1 / -1;
+    margin-top: var(--space-2);
+    text-align: left;
+  }
 `;
 
 export const MmrLabel = styled.span`
