@@ -13,17 +13,22 @@ test('shows the calibrated active players ranked by mmr', async ({ page }) => {
   // 0) — the reducer only assigns a medail (instead of 'Sin Calibrar') to a
   // calibrated player, and the ranking only shows calibrated, active ones.
   //
-  // RowPlayerRanking (client/src/components/RowPlayerRanking) renders one
-  // row per player as a <div> whose direct children are five <p> cells
-  // (name, partidas, mmr, kda, medail), so `div:has(> p)` matches exactly
-  // one row per player regardless of what wraps the name text — unlike a
-  // single `xpath=..` hop, which breaks the moment a wrapper element is
-  // added between the name and its row.
-  const topPlayerRow = page
-    .locator('div:has(> p)')
-    .filter({ hasText: 'Nnnnnnn' });
-  await expect(topPlayerRow).toBeVisible();
-  await expect(topPlayerRow.getByText('3400', { exact: true })).toBeVisible();
+  // The top three are the podium (an ordered list), so the top player is its
+  // first item; the rest are rows of the ranking table.
+  const topPlayer = page
+    .getByRole('list', { name: 'Podio' })
+    .getByRole('listitem')
+    .first();
+  await expect(topPlayer).toContainText('Nnnnnnn');
+  await expect(topPlayer).toContainText('3400');
+
+  // From rank 4 on, the players are rows of a real table, found by role so it
+  // does not depend on how the cells are wrapped.
+  const table = page.getByRole('table', { name: 'Ranking' });
+  await expect(table.getByRole('row')).toHaveCount(1 + 9);
+  await expect(
+    table.getByRole('row').nth(1).getByRole('cell').first()
+  ).toContainText('4');
 
   // Oaps is active but still uncalibrated (calibration.estado: 1), so it
   // must not appear in the ranking.

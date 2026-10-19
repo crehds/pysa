@@ -1,38 +1,19 @@
 import React from 'react';
-import { Info, RankingTable } from './styles';
-import { useStateValue } from '../../Context';
-import { Positions } from '../Positions';
+import { RankingContainer, RankingTable } from './styles';
 import { PlayersInRanking } from '../PlayersInRanking';
 import { RowsNameRanking } from '../RowsNameRanking';
-import { ImInfo } from 'react-icons/im';
-import { Medails } from '../Medails';
-import { WrapperDiv } from '../WrapperDiv';
-import { useGetWidth } from '../../hooks/useGetWidth';
+import { useLanguage } from '../../i18n/LanguageContext';
 
-export const Ranking = () => {
-  const [state, dispatch] = useStateValue();
-  const width = useGetWidth();
-
-  function onMouseEnter() {
-    let medails = document.getElementById('medails');
-    medails.style.display = 'grid';
-  }
-  function onMouseLeave() {
-    let medails = document.getElementById('medails');
-    medails.style.display = 'none';
-  }
-
+// The table for the players after the podium. `startRank` is the rank of the
+// first one, so the numbers stay the real positions.
+export const Ranking = ({ players, startRank }) => {
+  const { t } = useLanguage();
   return (
-    <WrapperDiv>
-      <RankingTable size={width}>
-        <Medails />
-        <Info onMouseEnter={onMouseEnter} onMouseLeave={onMouseLeave}>
-          <ImInfo size='30px' />
-        </Info>
+    <RankingContainer>
+      <RankingTable aria-label={t('ranking.label')}>
         <RowsNameRanking />
-        <Positions positions={state.ranking.length} />
-        <PlayersInRanking players={state.ranking} />
+        <PlayersInRanking players={players} startRank={startRank} />
       </RankingTable>
-    </WrapperDiv>
+    </RankingContainer>
   );
 };

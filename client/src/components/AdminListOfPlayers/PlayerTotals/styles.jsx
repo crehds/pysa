@@ -4,7 +4,7 @@ export const PlayerTotalsWrapper = styled.div`
   display: grid;
   grid-template-columns: 1.5fr 5.2fr 3.9fr;
   grid-template-rows: 3fr 1fr;
-  font-family: 'Ubuntu';
+  font-family: var(--font-body);
   font-size: 16px;
   position: relative;
   border: 1px solid rgb(190, 181, 181);
@@ -98,7 +98,7 @@ export const ButtonsWrapper = styled.div`
     cursor: pointer;
     /* border: 1px solid gray; */
     border-radius: 5px;
-    font-family: 'Reggae One';
+    font-family: var(--font-display);
     background-color: lightcyan;
     padding: 5px 15px;
     margin-right: 10px;

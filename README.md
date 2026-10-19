@@ -1,6 +1,50 @@
 # Pysa
 
-Ranking app for Pysa players: `backend/` (Express + MongoDB) and `client/` (React).
+Pysa is the ranking of a Dota 2 community. It lists the players ordered by
+MMR, with their games, KDA, medals and per-role stats.
+
+**Live site: <https://pysa.vercel.app>**
+
+![Pysa home page on a desktop: the top three players on a podium and the ranking table below](docs/screenshots/home-desktop.png)
+
+![Pysa players page on a desktop: a grid of player cards, each with a table of stats by role](docs/screenshots/players-desktop.png)
+
+<img src="docs/screenshots/home-phone.png" alt="Pysa home page on a phone: the top three players stacked, the ranking table and a bottom navigation bar" width="320">
+
+The screenshots show seeded sample data from a local run.
+
+## Features
+
+- A podium for the top three players and a ranking table for the rest, with
+  medals (Herald to Immortal).
+- Player cards with per-role stats (wins, double wins, losses, double losses,
+  kills, deaths, assists) and KDA.
+- Spanish and English, detected automatically, with an ES | EN switch.
+- Accessible: keyboard navigation with visible focus, screen reader labels,
+  `prefers-reduced-motion` respected.
+- Works on phones: the side menu becomes a bottom bar and the pages scroll.
+- A single admin account to manage players (not reachable without credentials).
+
+## Stack
+
+- **Client:** React 19, Vite, styled-components, SweetAlert2 for dialogs.
+- **API:** Express 5 and Mongoose on MongoDB.
+- **Tests:** Vitest and Testing Library (client), Node's test runner
+  (backend), Playwright end-to-end tests, and a read-only Playwright smoke
+  suite that runs against production.
+- **CI and hosting:** GitHub Actions; Vercel (client), Railway (API) and
+  MongoDB Atlas. See [Deploying](#deploying) and [CI](#ci).
+
+## How the language is chosen
+
+1. The choice made with the ES | EN switch, remembered in the browser.
+2. Otherwise, the first Spanish or English entry in the browser's language
+   list.
+3. Otherwise, the device's region (or, failing that, its time zone): a
+   Spanish-speaking country gives Spanish.
+4. Otherwise, English.
+
+Nothing is sent to a server and no location permission is asked for.
 
 ## Local development
 

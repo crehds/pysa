@@ -1,44 +1,24 @@
-import styled, { css } from 'styled-components';
+import styled from 'styled-components';
+import { media } from '../../styles/breakpoints';
+import { pageGutter } from '../../styles/layout';
 
-export const CarouselWrapper = styled.div`
-  /* border: 1px solid red; */
-  /* margin: 30px 0; */
-  ${({ size }) =>
-    css`
-      max-width: ${size}px;
-    `}
-  overflow-x: scroll;
-  overflow-y: hidden;
-  padding: 10px;
-  &::-webkit-scrollbar-thumb {
-    background: #ccc;
-    border-radius: 4px;
-  }
-  &::-webkit-scrollbar {
-    width: 8px;
-    height: 8px;
-    background: rgba(255, 255, 255, 0.4);
-    border-radius: 4px;
-  }
-  &::-webkit-scrollbar:hover {
-    background: #b3b3b3;
-    box-shadow: 0 0 2px 1px rgba(0, 0, 0, 0.2);
-  }
-  &::-webkit-scrollbar:hover:active {
-    background: #999;
-  }
-`;
+// One column on phones, two from sm, three from lg. `minmax(0, 1fr)` lets the
+// cards shrink instead of widening the page.
+export const PlayersGrid = styled.ul`
+  ${pageGutter}
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--space-4);
+  margin: 0;
+  padding-top: 0;
+  padding-bottom: var(--space-8);
+  list-style: none;
 
-export const PlayersCarousel = styled.div`
-  white-space: nowrap;
-  margin: 60px 0;
-  &:hover article:hover {
-    transform: scale(1.2);
-    opacity: 1;
-    position: relative;
+  ${media.sm} {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
-  &:hover article {
-    transform: scale(0.9);
-    opacity: 0.3;
+
+  ${media.lg} {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 `;

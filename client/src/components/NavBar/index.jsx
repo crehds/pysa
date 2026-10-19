@@ -1,30 +1,58 @@
 import React from 'react';
 
-import { Anchor, Icon, ImgWrapper, NavBarContainer } from './styles';
-import { ImTable, ImProfile, ImUsers } from 'react-icons/im';
+import { ExternalItem, HideButton, Item, LogoLink, NavBarContainer } from './styles';
+import { ImTable, ImProfile, ImUsers, ImArrowLeft2 } from 'react-icons/im';
 import { CgGames } from 'react-icons/cg';
+import { LanguageSwitch } from '../LanguageSwitch';
+import { useLanguage } from '../../i18n/LanguageContext';
 import logo from '../../assets/logopysa_90x90.png';
 
-export const NavBar = ({ isLogging }) => {
+export const NAV_ID = 'main-nav';
+
+// `children` is the login/logout control: it sits at the bottom of the rail,
+// inside this same <nav> (there is only one navigation on the page). The hide
+// button comes after it and only exists on the rail (from md up).
+export const NavBar = ({ isLogging, children, menuHidden, onHide, hideButtonRef }) => {
+  const { t } = useLanguage();
   return (
-    <NavBarContainer>
-      <ImgWrapper>
-        <img src={logo} alt='logo pysa' />
-      </ImgWrapper>
-      <Icon to='/'>
-        <ImTable />
-      </Icon>
-      <Icon to='/players'>
-        <ImProfile />
-      </Icon>
+    <NavBarContainer id={NAV_ID} $hidden={menuHidden}>
+      <LogoLink to='/'>
+        <img src={logo} alt={t('nav.home')} />
+      </LogoLink>
+      <Item to='/' end>
+        <ImTable aria-hidden='true' />
+        {t('nav.ranking')}
+      </Item>
+      <Item to='/players'>
+        <ImProfile aria-hidden='true' />
+        {t('nav.players')}
+      </Item>
       {isLogging && (
-        <Icon to='/adminPlayers'>
-          <ImUsers />
-        </Icon>
+        <Item to='/adminPlayers'>
+          <ImUsers aria-hidden='true' />
+          {t('nav.admin')}
+        </Item>
       )}
-      <Anchor href='https://game-with-keyboard.vercel.app/' target='_blank'>
-        <CgGames />
-      </Anchor>
+      <ExternalItem
+        href='https://game-with-keyboard.vercel.app/'
+        target='_blank'
+        rel='noopener noreferrer'
+      >
+        <CgGames aria-hidden='true' />
+        {t('nav.game')}
+      </ExternalItem>
+      {children}
+      <LanguageSwitch />
+      <HideButton
+        type='button'
+        ref={hideButtonRef}
+        onClick={onHide}
+        aria-expanded={!menuHidden}
+        aria-controls={NAV_ID}
+      >
+        <ImArrowLeft2 aria-hidden='true' />
+        {t('nav.hide')}
+      </HideButton>
     </NavBarContainer>
   );
 };

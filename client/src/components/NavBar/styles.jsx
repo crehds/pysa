@@ -1,67 +1,136 @@
-import styled from 'styled-components';
-import { Link as LinkRouter } from 'react-router';
+import styled, { css } from 'styled-components';
+import { Link as LinkRouter, NavLink } from 'react-router';
+import { media, mediaBelow } from '../../styles/breakpoints';
+
+// Shared by every control in the navigation (links and the login button): an
+// icon over a label. The active page is marked by a gold bar plus bolder text,
+// so color is never the only signal; the matching aria-current="page" comes
+// from NavLink.
+export const navItem = css`
+  display: flex;
+  flex: 1 1 0;
+  min-width: 0;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-1);
+  min-height: var(--space-12);
+  padding: var(--space-2) var(--space-1);
+  border: 0;
+  border-top: var(--space-1) solid transparent;
+  border-radius: 0;
+  background: transparent;
+  color: var(--color-text);
+  font-family: var(--font-body);
+  font-size: var(--font-size-xs);
+  font-weight: 500;
+  line-height: 1.2;
+  text-align: center;
+  text-decoration: none;
+  cursor: pointer;
+
+  & svg {
+    font-size: var(--font-size-2xl);
+    flex-shrink: 0;
+  }
+
+  &:hover {
+    background-color: color-mix(in srgb, var(--color-text) 14%, transparent);
+  }
+
+  &[aria-current='page'] {
+    border-top-color: var(--color-focus);
+    font-weight: 700;
+    background-color: color-mix(in srgb, var(--color-text) 14%, transparent);
+  }
+
+  ${media.md} {
+    flex: 0 0 auto;
+    width: 100%;
+    padding: var(--space-3) var(--space-1);
+    border-top: 0;
+    border-left: var(--space-1) solid transparent;
+
+    &[aria-current='page'] {
+      border-left-color: var(--color-focus);
+    }
+  }
+`;
 
 // A semantic <nav> (rather than a plain <div>) gives this container an
 // implicit role="navigation" landmark, which is both correct accessibility
 // markup and the stable handle e2e/tests/players-navigation.spec.js uses to
 // scope its click to the navbar instead of matching a link anywhere on the
-// page.
+// page. It is the only navigation on the page: a fixed bottom bar below the
+// md breakpoint and a sticky left rail from it up.
 export const NavBarContainer = styled.nav`
-  height: 100vh;
-  /* border: 1px solid blue; */
-  width: 60px;
-  display: grid;
-  grid-template-rows: 1fr 1fr 1fr 1fr 1fr 1fr;
-  top: 0;
+  position: fixed;
+  right: 0;
+  bottom: 0;
   left: 0;
-  background-image: linear-gradient(
-    89.8deg,
-    rgba(160, 49, 49, 0.87) 4.7%,
-    rgba(30, 29, 29, 0.9) 120.3%
-  );
-  border-right: 3px solid rgba(30, 29, 29, 0.85);
-  position: relative;
-`;
-
-export const ImgWrapper = styled.div`
-  margin: auto 0;
-  & img {
-    max-width: 100%;
-  }
-`;
-
-export const Icon = styled(LinkRouter)`
-  /* font-size: 25px; */
+  z-index: 10;
   display: flex;
-  justify-content: center;
-  align-items: center;
-  text-decoration: none;
-  &:hover {
-    box-shadow: 0px 0px 2px 2px rgba(25, 40, 36, 1);
-    > svg {
-      fill: rgba(185, 164, 41, 0.836);
-    }
-  }
-  & svg {
-    color: rgba(211, 211, 211, 0.6);
-    font-size: 30px;
+  height: calc(var(--bottom-bar-height) + env(safe-area-inset-bottom));
+  padding-bottom: env(safe-area-inset-bottom);
+  background-color: var(--color-rail);
+  color: var(--color-text);
+
+  ${media.md} {
+    position: sticky;
+    top: 0;
+    right: auto;
+    bottom: auto;
+    left: auto;
+    align-self: start;
+    flex-direction: column;
+    width: var(--rail-width);
+    height: 100vh;
+    padding: var(--space-4) 0;
+    overflow-y: auto;
+
+    /* The visitor hid the menu: it is not shown at all (and leaves the
+       accessibility tree). Phones ignore this; the bottom bar always shows. */
+    ${({ $hidden }) => $hidden && 'display: none;'}
   }
 `;
 
-export const Anchor = styled.a`
-  position: absolute;
-  left: 10px;
-  bottom: 10px;
-  padding: 4px;
-  &:hover {
-    box-shadow: 0px 0px 2px 2px rgba(25, 40, 36, 1);
-    > svg {
-      /* fill: rgba(185, 164, 41, 0.836); */
-      color: rgba(185, 164, 41, 0.836);
+// The logo only shows on the rail; on phones the "Ranking" link is the way home.
+export const LogoLink = styled(LinkRouter)`
+  display: none;
+
+  ${media.md} {
+    display: block;
+    margin-bottom: var(--space-4);
+    padding: 0 var(--space-3);
+
+    & img {
+      display: block;
+      width: 100%;
+      height: auto;
     }
   }
+`;
+
+export const Item = styled(NavLink)`
+  ${navItem}
+`;
+
+export const ExternalItem = styled.a`
+  ${navItem}
+`;
+
+// Only on the rail: below md the bottom bar can't be hidden.
+export const HideButton = styled.button`
+  ${navItem}
+  min-height: var(--space-8);
+  padding: var(--space-2) var(--space-1);
+  font-weight: 400;
+
   & svg {
-    color: rgba(211, 211, 211, 0.6);
-    font-size: 30px;
+    font-size: var(--font-size-lg);
+  }
+
+  ${mediaBelow.md} {
+    display: none;
   }
 `;

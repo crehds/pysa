@@ -11,7 +11,7 @@ export const RolScoreWrapper = styled.div`
     grid-template-columns: 1fr 2fr 1fr;
     grid-column-gap: 5px;
     align-items: center;
-    font-family: 'Ubuntu';
+    font-family: var(--font-body);
     border-left: 1px solid lightgray;
     border-right: 1px solid lightgray;
     font-size: 15px;

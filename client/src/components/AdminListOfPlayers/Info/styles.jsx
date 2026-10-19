@@ -9,7 +9,7 @@ export const InfoWrapper = styled.div`
   font-size: 16px;
   background-color: rgba(16, 93, 182, 0.92);
   border-radius: 5px;
-  font-family: 'Source Sans Pro';
+  font-family: var(--font-body);
   font-weight: 600;
   display:none;
 `;

@@ -1,28 +1,28 @@
 import React from 'react';
-import { ImTrophy } from 'react-icons/im';
-import { Name, RowName, RowsNames } from './styles';
+import { Heading, HeadingRow } from './styles';
+import { useLanguage } from '../../i18n/LanguageContext';
 
+// Header row of the ranking table.
 export const RowsNameRanking = () => {
+  const { t } = useLanguage();
   return (
-    <RowsNames>
-      <RowName>
-        <ImTrophy color='gold' size='33px' />
-      </RowName>
-      <RowName>
-        <Name>Player</Name>
-      </RowName>
-      <RowName>
-        <Name>Nº Partidas</Name>
-      </RowName>
-      <RowName>
-        <Name>MMR</Name>
-      </RowName>
-      <RowName>
-        <Name>KDA</Name>
-      </RowName>
-      <RowName>
-        <Name>Medalla</Name>
-      </RowName>
-    </RowsNames>
+    <thead>
+      <HeadingRow>
+        <Heading scope='col'>{t('ranking.rank')}</Heading>
+        <Heading scope='col'>{t('ranking.player')}</Heading>
+        <Heading scope='col' $numeric $optional>
+          {t('ranking.games')}
+        </Heading>
+        <Heading scope='col' $numeric>
+          {t('ranking.mmr')}
+        </Heading>
+        <Heading scope='col' $numeric>
+          {t('ranking.kda')}
+        </Heading>
+        <Heading scope='col' $optional>
+          {t('ranking.medal')}
+        </Heading>
+      </HeadingRow>
+    </thead>
   );
 };

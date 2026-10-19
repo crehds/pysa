@@ -9,7 +9,7 @@ export const NamesScoreWrapper = styled.div`
   display: grid;
   grid-template-columns: 1.5fr repeat(7, 1.3fr);
   grid-column-gap: 10px;
-  font-family: 'Source Sans Pro';
+  font-family: var(--font-body);
   font-weight: 600;
   border: 1px solid lightgray;
   /* font-size: 17px; */
