@@ -1,23 +1,42 @@
 import React from 'react';
 import { GiMedal } from 'react-icons/gi';
-import { Icon, ImageWrapper, NamePlayer, PlayerImageWrapper } from './styles';
+import {
+  Avatar,
+  Badge,
+  Header,
+  Identity,
+  Medal,
+  Mmr,
+  MmrLabel,
+  MmrValue,
+  Name,
+} from './styles';
+import { VisuallyHidden } from '../../../styles/VisuallyHidden';
+import { metalKeys } from '../../../styles/podium';
 import { playerImageSrc } from '../../../utils/playerImage';
+import { useLanguage } from '../../../i18n/LanguageContext';
 
-export const PlayerImageMedail = ({ name, medail, mmr, src, size }) => {
-  const imgData = playerImageSrc(src);
+// The card header: rank, avatar, name (the card's heading), medal and MMR.
+export const PlayerImageMedail = ({ headingId, rank, name, medail, mmr, src }) => {
+  const { t, medal } = useLanguage();
+  const metalKey = metalKeys[rank - 1];
   return (
-    <PlayerImageWrapper size={size}>
-      <NamePlayer className='playerName'>
-        <p>{name}</p>
-      </NamePlayer>
-      <Icon className='icon'>
-        <GiMedal />
-        <p>{medail}</p>
-        <p>{mmr}</p>
-      </Icon>
-      <ImageWrapper>
-        <img src={`${imgData}`} alt='foto del jugador' />
-      </ImageWrapper>
-    </PlayerImageWrapper>
+    <Header>
+      <Badge $rank={rank}>
+        {rank}
+        {metalKey && <VisuallyHidden>, {t(metalKey)}</VisuallyHidden>}
+      </Badge>
+      <Avatar src={playerImageSrc(src)} alt={t('player.photo', { name })} />
+      <Identity>
+        <Name id={headingId}>{name}</Name>
+        <Medal>
+          <GiMedal aria-hidden='true' />
+          {medal(medail)}
+        </Medal>
+      </Identity>
+      <Mmr>
+        <MmrLabel>MMR</MmrLabel> <MmrValue>{mmr}</MmrValue>
+      </Mmr>
+    </Header>
   );
 };

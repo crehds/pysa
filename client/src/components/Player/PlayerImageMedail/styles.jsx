@@ -1,72 +1,81 @@
-import styled, { css } from 'styled-components';
+import styled from 'styled-components';
+import { metalColors } from '../../../styles/podium';
 
-export const PlayerImageWrapper = styled.div`
-  /* border: 1px solid red; */
+export const Header = styled.header`
   display: grid;
-  /* grid-template-columns: 1fr 3fr; */
-  ${({size}) => css`
-    grid-template-rows: 1fr ${size / 7}px;
-    grid-template-columns: 1fr ${size / 6.5}px;
-  `}
-  grid-row-gap: 5px;
-  text-align: center;
-
-  font-size: 14px;
-  /* max-height: 100%; */
-`;
-
-export const NamePlayer = styled.div`
-  grid-column: 1 / 3;
-  & p {
-    /* padding: 5px 0; */
-    font-family: 'Source Sans Pro';
-    font-size: 18px;
-    font-weight:bold;
-    background-image: radial-gradient(
-      circle farthest-corner at 12.3% 19.3%,
-      #aa6f57 0%,
-      #881e16 100.2%
-    );
-    background-clip: text;
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    /* &:nth-of-type(1) {
-      background-image: radial-gradient(
-      circle farthest-corner at 12.3% 19.3%,
-      #dbc752 0%,
-      rgb(219, 189, 19) 100.2%
-    );
-    } */
-  }
-`;
-
-export const Icon = styled.div`
-  /* border: 1px solid red; */
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
+  grid-template-columns: auto auto minmax(0, 1fr) auto;
   align-items: center;
-  & svg {
-    font-size: 30px;
-    color: gray;
-  }
-  & p {
-    padding: 5px 0;
-    font-family: 'Source Sans Pro';
-    font-size: 18px;
-    color: #a16262;
+  column-gap: var(--space-3);
+
+  /* A narrow card moves the MMR to its own line so the name keeps its room. */
+  @container (max-width: 20rem) {
+    grid-template-columns: auto auto minmax(0, 1fr);
   }
 `;
-export const ImageWrapper = styled.div`
-  width: 100%;
-  height: auto;
-  display: flex;
-  justify-content: center;
-  padding: 0px 5px;
-  & img {
-    width: 100%;
-    border-radius: 10px;
 
-    /* max-height: 10%; */
+// A round badge for every rank; ranks 1-3 fill it with the metal (and carry the
+// metal's name as hidden text), the others keep it plain.
+export const Badge = styled.span`
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: var(--space-8);
+  height: var(--space-8);
+  border-radius: var(--radius-full);
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  ${({ $rank }) =>
+    metalColors[$rank]
+      ? `background-color: ${metalColors[$rank]}; color: var(--color-bg);`
+      : 'border: 1px solid var(--color-border); color: var(--color-text-muted);'}
+`;
+
+export const Avatar = styled.img`
+  display: block;
+  width: var(--space-12);
+  height: var(--space-12);
+  border-radius: var(--radius-md);
+  object-fit: cover;
+`;
+
+export const Identity = styled.div`
+  min-width: 0;
+`;
+
+// A heading with data: Ubuntu, never the display font.
+export const Name = styled.h2`
+  font-family: var(--font-body);
+  font-size: var(--font-size-lg);
+  font-weight: 700;
+  line-height: 1.2;
+  overflow-wrap: break-word;
+`;
+
+export const Medal = styled.p`
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+  color: var(--color-text-muted);
+  font-size: var(--font-size-sm);
+`;
+
+export const Mmr = styled.p`
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+
+  @container (max-width: 20rem) {
+    grid-column: 1 / -1;
+    margin-top: var(--space-2);
+    text-align: left;
   }
+`;
+
+export const MmrLabel = styled.span`
+  color: var(--color-text-muted);
+  font-size: var(--font-size-sm);
+`;
+
+export const MmrValue = styled.span`
+  font-size: var(--font-size-xl);
+  font-weight: 700;
 `;

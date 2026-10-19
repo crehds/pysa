@@ -1,54 +1,36 @@
 import React from 'react';
 import { MedailsDiv, GridDiv } from './styles';
+import { useLanguage } from '../../i18n/LanguageContext';
 
-export const Medails = () => {
+// The medal ranges: [minimum, maximum, name as the database keeps it]. The name
+// is shown through the language's display map.
+const RANGES = [
+  [0, 600, 'Heraldo'],
+  [601, 1200, 'Guardián'],
+  [1201, 1800, 'Cruzado'],
+  [1801, 2400, 'Arconte'],
+  [2401, 3000, 'Leyenda'],
+  [3001, 3600, 'Ancient'],
+  [3601, 4200, 'Divino'],
+  [4201, 4800, 'Inmortal'],
+];
+
+export const Medails = ({ open = false }) => {
+  const { t, medal } = useLanguage();
   return (
-    <MedailsDiv id='medails'>
+    <MedailsDiv id='medails' hidden={!open}>
       <GridDiv>
-        <p>Mínimo</p>
-        <p>Máximo</p>
-        <p>Medalla</p>
+        <p>{t('ranges.min')}</p>
+        <p>{t('ranges.max')}</p>
+        <p>{t('ranges.medal')}</p>
       </GridDiv>
-      <GridDiv>
-        <p>0</p>
-        <p>600</p>
-        <p>Heraldo</p>
-      </GridDiv>
-      <GridDiv>
-        <p>601</p>
-        <p>1200</p>
-        <p>Guardián</p>
-      </GridDiv>
-      <GridDiv>
-        <p>1201</p>
-        <p>1800</p>
-        <p>Cruzado</p>
-      </GridDiv>
-      <GridDiv>
-        <p>1801</p>
-        <p>2400</p>
-        <p>Arconte</p>
-      </GridDiv>
-      <GridDiv>
-        <p>2401</p>
-        <p>3000</p>
-        <p>Leyenda</p>
-      </GridDiv>
-      <GridDiv>
-        <p>3001</p>
-        <p>3600</p>
-        <p>Ancient</p>
-      </GridDiv>
-      <GridDiv>
-        <p>3601</p>
-        <p>4200</p>
-        <p>Divino</p>
-      </GridDiv>
-      <GridDiv>
-        <p>4201</p>
-        <p>4800</p>
-        <p>Inmortal</p>
-      </GridDiv>
+      {RANGES.map(([min, max, name]) => (
+        <GridDiv key={name}>
+          <p>{min}</p>
+          <p>{max}</p>
+          <p>{medal(name)}</p>
+        </GridDiv>
+      ))}
     </MedailsDiv>
   );
 };

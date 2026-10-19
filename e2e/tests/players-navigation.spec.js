@@ -7,7 +7,8 @@ import { test, expect } from '../fixtures.js';
 // ranking data as Home, just through a different component
 // (client/src/components/ListOfPlayers instead of PlayersInRanking), so
 // asserting player names/scores here would also pass on Home by accident.
-// #playersCarousel only exists in ListOfPlayers's markup, never on Home.
+// The "Jugadores" h1 and the player cards (articles) only exist on this page;
+// Home shows a podium list and a table instead.
 test('navigating to the players page via the navbar shows the players page', async ({
   page,
 }) => {
@@ -19,5 +20,6 @@ test('navigating to the players page via the navbar shows the players page', asy
   await page.getByRole('navigation').locator('a[href="/players"]').click();
 
   await expect(page).toHaveURL('/players');
-  await expect(page.locator('#playersCarousel')).toBeVisible();
+  await expect(page.getByRole('heading', { level: 1, name: 'Jugadores' })).toBeVisible();
+  await expect(page.getByRole('article').first()).toBeVisible();
 });

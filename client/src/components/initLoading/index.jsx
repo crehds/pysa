@@ -1,14 +1,14 @@
 import React from 'react';
 import logo from '../../assets/logo_pysa_6.png';
-import { Div, Img, ImgWrapper, Overlay } from './styles.jsx';
+import { Img, Screen } from './styles.jsx';
+import { useLanguage } from '../../i18n/LanguageContext';
 
 export const Loading = () => {
+  const { t } = useLanguage();
   return (
-    <Div>
-      <Overlay />
-      <ImgWrapper>
-        <Img width='480px' src={logo} alt='logo de pysa' />
-      </ImgWrapper>
-    </Div>
+    <Screen role='status' aria-label={t('loading')}>
+      {/* Decorative: the container above already carries the accessible name. */}
+      <Img src={logo} alt='' />
+    </Screen>
   );
 };

@@ -1,13 +1,13 @@
 import React from 'react';
 import { RowPlayerRanking } from '../RowPlayerRanking';
-import { PlayersData } from './styles';
 
-export const PlayersInRanking = ({ players }) => {
+export const PlayersInRanking = ({ players, startRank = 1 }) => {
   return (
-    <PlayersData>
+    <tbody>
       {players.map((player, i) => (
         <RowPlayerRanking
-          key={i}
+          key={player._id ?? i}
+          rank={startRank + i}
           name={player.nickname}
           partidas={player.partidas}
           mmr={player.mmr}
@@ -15,6 +15,6 @@ export const PlayersInRanking = ({ players }) => {
           kda={player.kda}
         />
       ))}
-    </PlayersData>
+    </tbody>
   );
 };

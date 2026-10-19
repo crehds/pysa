@@ -17,13 +17,13 @@ test('a wrong password shows the error and does not reach the admin page', async
   allowConsoleError('the server responded with a status of 401');
 
   await page.goto('/');
-  await page.getByText('Loguéate').click();
+  await page.getByText('Iniciar sesión').click();
 
   await page.locator('#user').fill(E2E_ADMIN_USERNAME);
   await page.locator('#password').fill('definitely-the-wrong-password');
   await page.locator('.swal2-confirm').click();
 
-  await expect(page.getByText('Lo más probable es que aún no eres digno')).toBeVisible();
+  await expect(page.getByText('Usuario o contraseña incorrectos.')).toBeVisible();
   await page.locator('.swal2-confirm').click();
 
   await expect(page).toHaveURL('/');

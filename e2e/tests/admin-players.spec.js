@@ -16,13 +16,13 @@ test('logging in through the real login modal renders the admin players page', a
   page,
 }) => {
   await page.goto('/');
-  await page.getByText('Loguéate').click();
+  await page.getByText('Iniciar sesión').click();
 
   await page.locator('#user').fill(E2E_ADMIN_USERNAME);
   await page.locator('#password').fill(E2E_ADMIN_PASSWORD);
   await page.locator('.swal2-confirm').click();
 
-  await expect(page.getByText('Bienvenido papu')).toBeVisible();
+  await expect(page.getByText('Sesión iniciada.')).toBeVisible();
   // Dismisses the success alert; SweetAlert2 reuses one popup, so this is
   // the same confirm button, now showing the success dialog's OK action.
   await page.locator('.swal2-confirm').click();

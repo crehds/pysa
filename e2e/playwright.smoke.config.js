@@ -37,6 +37,10 @@ export default defineConfig({
   reporter: [['list'], ['html', { open: 'never' }]],
   use: {
     baseURL: SMOKE_BASE_URL,
+    // The site speaks the browser's language, and this suite runs on a GitHub
+    // runner whose locale is whatever the image says (likely en-US). Pin it so
+    // the copy the specs assert ("Iniciar sesión") is the same on every run.
+    locale: 'es-ES',
     trace: 'retain-on-failure',
   },
   projects: [

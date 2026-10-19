@@ -1,34 +1,55 @@
 // import './App.css';
 import { useEffect, useRef, useState } from 'react';
 import { Loading } from './components/initLoading';
+import { LoadError } from './components/LoadError';
 import { GlobalStyle } from './styles/GlobalStyles';
 import { Home } from './pages/Home';
 import { NavBar } from './components/NavBar';
 import { Navigate, Route, Routes, useLocation, useNavigate } from 'react-router';
+import { normalizePath, pageTitle } from './utils/pageTitle';
 import { Players } from './pages/Players';
 import { AdminPlayers } from './pages/AdminPlayers';
 import './App.css';
 import { Logging } from './components/Logging';
+import { RefreshButton } from './components/RefreshButton';
+import { Main } from './styles/Main';
 import { useGetData } from './hooks/useGetData';
 import { useCheckAuth } from './hooks/useCheckAuth';
 import { useStateValue } from './Context';
+import { useMenuHidden } from './hooks/useMenuHidden';
+import { useLanguage } from './i18n/LanguageContext';
+import { ShowMenuButton } from './components/ShowMenuButton';
+
+// Routes whose page header holds the refresh button.
+const ROUTES_WITH_HEADER = ['/', '/players'];
 
 function App() {
   const [{ isAuth }] = useStateValue();
+  const { language } = useLanguage();
   const [isLoading, setLoading] = useState(false);
   const [isLogging, setLogging] = useState(isAuth);
   const [loadingData, setLoadingData] = useGetData(isLoading);
   useCheckAuth();
   const navigate = useNavigate();
   const { pathname } = useLocation();
+  const path = normalizePath(pathname);
   const routeContainerRef = useRef(null);
   const isInitialRender = useRef(true);
+  const [menuHidden, setMenuHidden] = useMenuHidden();
+  const hideButtonRef = useRef(null);
+  const showButtonRef = useRef(null);
+  // Set by a toggle click so focus follows it (never on the initial render).
+  const focusAfterToggle = useRef(null);
 
   useEffect(() => {
     if (loadingData) {
       setLoading(true);
     }
   }, [loadingData]);
+
+  useEffect(() => {
+    document.title = pageTitle(pathname, language);
+  }, [pathname, language]);
 
   // isAuth starts out null (not yet known) and resolves asynchronously once
   // useCheckAuth's GET /auth/me completes; mirror it into isLogging once it
@@ -52,6 +73,22 @@ function App() {
     routeContainerRef.current?.focus();
   }, [pathname]);
 
+  // After a toggle the clicked button disappears or stops being reachable, so
+  // focus moves to the opposite control.
+  useEffect(() => {
+    if (focusAfterToggle.current === 'show') {
+      showButtonRef.current?.focus();
+    } else if (focusAfterToggle.current === 'hide') {
+      hideButtonRef.current?.focus();
+    }
+    focusAfterToggle.current = null;
+  }, [menuHidden]);
+
+  function toggleMenu(hidden) {
+    focusAfterToggle.current = hidden ? 'show' : 'hide';
+    setMenuHidden(hidden);
+  }
+
   function handleLogging(value) {
     setLogging(value);
     if (value) {
@@ -64,33 +101,48 @@ function App() {
     setLoading(false);
   }
 
-  console.log(loadingData);
+  // loadingData is null when the request failed (see useGetData).
+  const loadFailed = !isLoading && loadingData === null;
+
   return (
-    <div id='app' className='App'>
+    <div id='app' className='App' data-menu-hidden={menuHidden}>
       <GlobalStyle />
       {isLoading ? (
         <>
-          <NavBar isLogging={isLogging} />
-          <Logging
-            handleLogging={handleLogging}
+          <NavBar
             isLogging={isLogging}
-            handleRefreshApp={handleRefreshApp}
-          />
-          {/* react-router's <Routes> renders no wrapper element, unlike
-          @reach/router's <Router>, so this element keeps the same 100vh box
-          the rest of the layout (see WrapperDiv's height: inherit) relies
-          on. It also doubles as the route container: focused on every route
-          change (outline suppressed since that focus is programmatic, not
-          from keyboard navigation) so assistive tech announces the new
-          page. */}
-          <main
-            ref={routeContainerRef}
-            tabIndex={-1}
-            style={{ height: '100vh', outline: 'none' }}
+            menuHidden={menuHidden}
+            onHide={() => toggleMenu(true)}
+            hideButtonRef={hideButtonRef}
           >
+            <Logging
+              handleLogging={handleLogging}
+              isLogging={isLogging}
+            />
+          </NavBar>
+          {/* react-router's <Routes> renders no wrapper element, so <main>
+          is the page container. It doubles as the route container: focused
+          on every route change (outline suppressed since that focus is
+          programmatic, not from keyboard navigation) so assistive tech
+          announces the new page. */}
+          <Main ref={routeContainerRef} tabIndex={-1}>
+            {menuHidden && (
+              <ShowMenuButton
+                onClick={() => toggleMenu(false)}
+                buttonRef={showButtonRef}
+              />
+            )}
+            {/* Home and Players hold the refresh button in their page header;
+            the other pages have no header yet, so it floats there. */}
+            {!ROUTES_WITH_HEADER.includes(path) && (
+              <RefreshButton floating onClick={handleRefreshApp} />
+            )}
             <Routes>
-              <Route path='/' element={<Home />} />
-              <Route path='/players' element={<Players />} />
+              <Route path='/' element={<Home onRefresh={handleRefreshApp} />} />
+              <Route
+                path='/players'
+                element={<Players onRefresh={handleRefreshApp} />}
+              />
               <Route
                 path='/adminPlayers'
                 element={
@@ -102,8 +154,10 @@ function App() {
                 }
               />
             </Routes>
-          </main>
+          </Main>
         </>
+      ) : loadFailed ? (
+        <LoadError onRetry={handleRefreshApp} />
       ) : (
         <Loading />
       )}

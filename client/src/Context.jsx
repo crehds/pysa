@@ -6,6 +6,7 @@ import {
   updateImagePlayer,
   updatingPlayer,
 } from './utils/Context';
+import { LanguageProvider } from './i18n/LanguageContext';
 const Context = createContext();
 
 let initialState = {
@@ -83,7 +84,7 @@ const reducer2 = (state, action) => {
 
 export const Provider = ({ children }) => (
   <Context.Provider value={useReducer(reducer2, initialState)}>
-    {children}
+    <LanguageProvider>{children}</LanguageProvider>
   </Context.Provider>
 );
 

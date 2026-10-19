@@ -20,5 +20,5 @@ test('/admin is served by the SPA fallback and shows the logged-out shell', asyn
 
   // The login trigger (client/src/components/Logging) — reused from
   // e2e/tests/admin-login.spec.js. Asserted visible only, never clicked.
-  await expect(page.getByText('Loguéate')).toBeVisible();
+  await expect(page.getByText('Iniciar sesión')).toBeVisible();
 });
