@@ -1,0 +1,72 @@
+import React from 'react';
+import { render, screen } from '@testing-library/react';
+import { LanguageProvider } from '../../i18n/LanguageContext';
+import { MotionProvider } from '../../motion/MotionContext';
+import { Player } from '.';
+
+const PLAYER = {
+  nickname: 'Cuatro',
+  medail: 'm',
+  mmr: 1000,
+  imgURL: '/default/default-user.png',
+  rolesScore: [],
+  partidas: 0,
+  kda: 0,
+};
+
+function glowRule(element) {
+  const classes = [...element.classList];
+  return [...document.styleSheets]
+    .flatMap((sheet) => [...sheet.cssRules])
+    .find(
+      (rule) =>
+        rule.selectorText?.includes('::after') &&
+        classes.some((name) => rule.selectorText.includes(`.${name}`))
+    );
+}
+
+function renderPlayer(rank) {
+  render(
+    <LanguageProvider>
+      <MotionProvider>
+        <Player {...PLAYER} rank={rank} />
+      </MotionProvider>
+    </LanguageProvider>
+  );
+  return screen.getByRole('article');
+}
+
+describe('Player card glow', () => {
+  afterEach(() => {
+    delete window.matchMedia;
+    delete navigator.connection;
+  });
+
+  test('full: a top-3 card pulses twice', () => {
+    const rule = glowRule(renderPlayer(2));
+    expect(rule.style.getPropertyValue('animation')).toMatch(
+      /1100ms ease-in-out 0ms 2 backwards/
+    );
+  });
+
+  test('lite: a top-3 card is lit and still', () => {
+    Object.defineProperty(navigator, 'connection', {
+      value: { effectiveType: '3g' },
+      configurable: true,
+    });
+    const rule = glowRule(renderPlayer(1));
+    expect(rule).toBeDefined();
+    expect(rule.style.getPropertyValue('animation')).toBe('');
+  });
+
+  test('none: a top-3 card is lit and still', () => {
+    window.matchMedia = vi.fn(() => ({ matches: true }));
+    const rule = glowRule(renderPlayer(3));
+    expect(rule).toBeDefined();
+    expect(rule.style.getPropertyValue('animation')).toBe('');
+  });
+
+  test('a card outside the top 3 has no glow', () => {
+    expect(glowRule(renderPlayer(4))).toBeUndefined();
+  });
+});

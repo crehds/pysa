@@ -2,6 +2,7 @@ import styled, { css } from 'styled-components';
 import { media } from '../../styles/breakpoints';
 import { pageGutter } from '../../styles/layout';
 import { metalColors as metals } from '../../styles/podium';
+import { entranceCss, topGlowCss } from '../../styles/podiumMotion';
 
 export const PodiumSection = styled.section`
   ${pageGutter}
@@ -55,6 +56,8 @@ export const Card = styled.li`
   border-top: var(--space-1) solid ${({ $rank }) => metals[$rank]};
   border-radius: var(--radius-md);
   background-color: var(--color-surface);
+  ${({ $entrance }) => entranceCss($entrance)}
+  ${topGlowCss}
 
   /* Phones: a compact row per player. Wide screens: a centered card. */
   ${media.md} {

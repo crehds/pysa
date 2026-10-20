@@ -2,13 +2,16 @@ import React, { useId } from 'react';
 import { Card, Score } from './styles';
 import { PlayerImageMedail } from './PlayerImageMedail';
 import { RoleStats } from './RoleStats';
+import { glowFor } from '../../styles/podiumMotion';
+import { useMotionLevel } from '../../motion/MotionContext';
 
 // One player's card: the header (rank, name, medal, MMR) and the stats. The
 // article is named by its heading.
 export const Player = (props) => {
   const headingId = useId();
+  const level = useMotionLevel();
   return (
-    <Card aria-labelledby={headingId} $rank={props.rank}>
+    <Card aria-labelledby={headingId} $rank={props.rank} $glow={glowFor(level)}>
       <PlayerImageMedail
         headingId={headingId}
         rank={props.rank}
