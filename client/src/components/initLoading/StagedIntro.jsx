@@ -7,10 +7,12 @@ import { useMotionLevel } from '../../motion/MotionContext';
 
 // The first-load intro. The container is the status the other loading
 // assertions look for; everything visual is decorative. A click anywhere, Esc
-// or the button skips it (focus is never moved here on mount).
-export const StagedIntro = ({ curtain, onSkip }) => {
+// or the button skips it (focus is never moved here on mount). `level` is the
+// level the intro started with; it falls back to the live one.
+export const StagedIntro = ({ curtain, onSkip, level: startLevel }) => {
   const { t } = useLanguage();
-  const level = useMotionLevel();
+  const liveLevel = useMotionLevel();
+  const level = startLevel ?? liveLevel;
   const sweep = level === 'full';
   const { curtainMs } = INTRO_TIMING[level] ?? INTRO_TIMING.lite;
 

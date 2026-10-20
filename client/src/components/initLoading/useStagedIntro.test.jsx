@@ -26,6 +26,21 @@ function renderIntro(props = {}) {
   });
 }
 
+// A live NetworkInformation / MediaQueryList: the provider re-detects on 'change'.
+function liveSource(initial) {
+  const listeners = new Set();
+  return {
+    ...initial,
+    addEventListener: (type, fn) => type === 'change' && listeners.add(fn),
+    removeEventListener: (type, fn) => type === 'change' && listeners.delete(fn),
+    emit: () => listeners.forEach((fn) => fn()),
+  };
+}
+
+function setConnection(connection) {
+  Object.defineProperty(navigator, 'connection', { value: connection, configurable: true });
+}
+
 const advance = (ms) => act(() => vi.advanceTimersByTime(ms));
 
 describe('useStagedIntro', () => {
@@ -141,5 +156,67 @@ describe('useStagedIntro', () => {
     advance(2000);
     advance(500);
     expect(result.current.active).toBe(false);
+  });
+
+  describe('a motion change while the intro plays', () => {
+    test('full to lite keeps the minimum and the curtain of full', () => {
+      const connection = liveSource({ effectiveType: '4g' });
+      setConnection(connection);
+      const { result } = renderIntro({ ready: true });
+      advance(1000);
+
+      connection.effectiveType = '3g';
+      act(() => connection.emit());
+      advance(999);
+      expect(result.current.curtain).toBe(false);
+      advance(1);
+      expect(result.current.curtain).toBe(true);
+      advance(499);
+      expect(result.current.active).toBe(true);
+      advance(1);
+      expect(result.current.active).toBe(false);
+    });
+
+    test('lite to full keeps the minimum of lite', () => {
+      const connection = liveSource({ effectiveType: '3g' });
+      setConnection(connection);
+      const { result } = renderIntro({ ready: true });
+      advance(400);
+
+      connection.effectiveType = '4g';
+      act(() => connection.emit());
+      advance(399);
+      expect(result.current.curtain).toBe(false);
+      advance(1);
+      expect(result.current.curtain).toBe(true);
+      advance(400);
+      expect(result.current.active).toBe(false);
+    });
+
+    test('exposes the level the intro started with', () => {
+      const connection = liveSource({ effectiveType: '4g' });
+      setConnection(connection);
+      const { result } = renderIntro();
+      expect(result.current.level).toBe('full');
+
+      connection.effectiveType = '3g';
+      act(() => connection.emit());
+      expect(result.current.level).toBe('full');
+    });
+
+    test('a flip to none ends the intro at once, with no curtain', () => {
+      const query = liveSource({ matches: false });
+      window.matchMedia = vi.fn(() => query);
+      const { result } = renderIntro({ ready: true });
+      advance(500);
+      expect(result.current.active).toBe(true);
+
+      query.matches = true;
+      act(() => query.emit());
+      expect(result.current.active).toBe(false);
+      expect(result.current.curtain).toBe(false);
+      advance(5000);
+      expect(result.current.active).toBe(false);
+    });
   });
 });

@@ -113,7 +113,7 @@ function App() {
   return (
     <div id='app' className='App' data-menu-hidden={menuHidden}>
       <GlobalStyle />
-      {intro.active && <StagedIntro curtain={intro.curtain} onSkip={intro.skip} />}
+      {intro.active && <StagedIntro curtain={intro.curtain} onSkip={intro.skip} level={intro.level} />}
       {showPage ? (
         <>
           <NavBar

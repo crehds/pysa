@@ -17,14 +17,19 @@ export const INTRO_TIMING = {
 //   ready  the data have landed
 //   failed the request failed: the intro ends at once, with no curtain
 //
-// Returns { active, curtain, skip }. `active` is true while the intro is on
-// screen, `curtain` during the last phase. Skipping ends the intro right away:
+// The intro's timing and look are frozen at the level it started with: a live
+// full <-> lite change does not restart its clock. Only a flip to 'none' (the
+// visitor asked for reduced motion) ends it early.
+//
+// Returns { active, curtain, skip, level }. `active` is true while the intro is
+// on screen, `curtain` during the last phase, `level` the frozen level. Skipping ends the intro right away:
 // with the data ready the page shows, otherwise the fast loader does until they
 // land.
 export function useStagedIntro({ ready, failed }) {
-  const level = useMotionLevel();
+  const currentLevel = useMotionLevel();
+  const [level] = useState(() => (currentLevel === 'none' ? 'lite' : currentLevel));
   const [phase, setPhase] = useState(() =>
-    level !== 'none' && !hasIntroPlayed() ? 'playing' : 'done'
+    currentLevel !== 'none' && !hasIntroPlayed() ? 'playing' : 'done'
   );
   const [minElapsed, setMinElapsed] = useState(false);
   const { minMs, curtainMs } = INTRO_TIMING[level] ?? INTRO_TIMING.lite;
@@ -51,14 +56,15 @@ export function useStagedIntro({ ready, failed }) {
 
   // A failure, or the visitor asking for reduced motion mid-intro, ends it.
   useEffect(() => {
-    if (failed || level === 'none') setPhase('done');
-  }, [failed, level]);
+    if (failed || currentLevel === 'none') setPhase('done');
+  }, [failed, currentLevel]);
 
   const skip = useCallback(() => setPhase('done'), []);
 
   return {
-    active: phase !== 'done' && !failed && level !== 'none',
+    active: phase !== 'done' && !failed && currentLevel !== 'none',
     curtain: phase === 'curtain',
     skip,
+    level,
   };
 }

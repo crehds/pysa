@@ -261,4 +261,51 @@ describe('the staged intro in the app', () => {
     expect(page()).toBeInTheDocument();
     expect(status()).not.toBeInTheDocument();
   });
+
+  describe('reduced motion switched on mid-intro', () => {
+    function startFullIntro() {
+      const listeners = new Set();
+      const query = {
+        matches: false,
+        addEventListener: (type, fn) => type === 'change' && listeners.add(fn),
+        removeEventListener: (type, fn) => type === 'change' && listeners.delete(fn),
+      };
+      window.matchMedia = vi.fn(() => query);
+      return () => {
+        query.matches = true;
+        act(() => listeners.forEach((fn) => fn()));
+      };
+    }
+
+    test('with the data pending, the intro goes and the fast loader waits for them', async () => {
+      const reduce = startFullIntro();
+      const { gate, release } = makeGate();
+      mockApi({ gate });
+      renderApp();
+      await advance(500);
+      expect(skipButton()).toBeInTheDocument();
+
+      reduce();
+      expect(skipButton()).not.toBeInTheDocument();
+      expect(status()).toBeInTheDocument();
+      expect(page()).not.toBeInTheDocument();
+
+      release();
+      await advance(10);
+      expect(page()).toBeInTheDocument();
+      expect(status()).not.toBeInTheDocument();
+    });
+
+    test('with the data ready, the intro goes and the page shows at once', async () => {
+      const reduce = startFullIntro();
+      mockApi();
+      renderApp();
+      await advance(500);
+      expect(page()).not.toBeInTheDocument();
+
+      reduce();
+      expect(page()).toBeInTheDocument();
+      expect(status()).not.toBeInTheDocument();
+    });
+  });
 });
