@@ -1,5 +1,5 @@
 import React from 'react';
-import { render, screen } from '@testing-library/react';
+import { act, render, screen } from '@testing-library/react';
 import { LanguageProvider } from '../../i18n/LanguageContext';
 import { MotionProvider } from '../../motion/MotionContext';
 import { Podium } from '.';
@@ -33,6 +33,17 @@ function rulesOf(element) {
 function animationOf(element, pseudo = false) {
   const rule = rulesOf(element).find((r) => r.selectorText.includes('::after') === pseudo);
   return rule?.style.getPropertyValue('animation') || null;
+}
+
+// A minimal MediaQueryList / NetworkInformation whose change can be emitted.
+function fakeEmitter(initial) {
+  const listeners = new Set();
+  return {
+    ...initial,
+    addEventListener: (type, fn) => type === 'change' && listeners.add(fn),
+    removeEventListener: (type, fn) => type === 'change' && listeners.delete(fn),
+    emit: () => listeners.forEach((fn) => fn()),
+  };
 }
 
 const hasGlow = (element) => rulesOf(element).some((r) => r.selectorText.includes('::after'));
@@ -86,6 +97,53 @@ describe('Podium motion', () => {
       expect(hasGlow(card(name))).toBe(true);
       expect(animationOf(card(name), true)).toBeNull();
     });
+  });
+
+  test('a lite to full change after mount does not replay the entrance or the pulse', () => {
+    const connection = fakeEmitter({ effectiveType: '3g' });
+    Object.defineProperty(navigator, 'connection', { value: connection, configurable: true });
+    renderPodium();
+    const entrance = animationOf(card('Uno'));
+    expect(entrance).toMatch(/300ms ease-out 0ms backwards/);
+
+    connection.effectiveType = '4g';
+    act(() => connection.emit());
+    expect(animationOf(card('Uno'))).toBe(entrance);
+    expect(animationOf(card('Uno'), true)).toBeNull();
+  });
+
+  test('a full to lite change after mount keeps the entrance and the pulse as they were', () => {
+    const connection = fakeEmitter({ effectiveType: '4g' });
+    Object.defineProperty(navigator, 'connection', { value: connection, configurable: true });
+    renderPodium();
+    const entrance = animationOf(card('Uno'));
+    const glow = animationOf(card('Uno'), true);
+    expect(glow).toMatch(/2 backwards/);
+
+    connection.effectiveType = '3g';
+    act(() => connection.emit());
+    expect(animationOf(card('Uno'))).toBe(entrance);
+    expect(animationOf(card('Uno'), true)).toBe(glow);
+  });
+
+  test('a flip to none after mount stops the motion, and it stays stopped', () => {
+    const query = fakeEmitter({ matches: false });
+    window.matchMedia = vi.fn(() => query);
+    renderPodium();
+    expect(animationOf(card('Uno'))).not.toBeNull();
+
+    query.matches = true;
+    act(() => query.emit());
+    ['Uno', 'Dos', 'Tres'].forEach((name) => {
+      expect(animationOf(card(name))).toBeNull();
+      expect(animationOf(card(name), true)).toBeNull();
+    });
+
+    // Back to full: no replay.
+    query.matches = false;
+    act(() => query.emit());
+    expect(animationOf(card('Uno'))).toBeNull();
+    expect(animationOf(card('Uno'), true)).toBeNull();
   });
 
   test('the visible rank stays the cue, whatever the motion', () => {

@@ -28,6 +28,20 @@ function animationOf(locator, pseudo) {
 
 const seconds = (value) => parseFloat(value) * (value.endsWith('ms') ? 0.001 : 1);
 
+// Waits (bounded) for every animation of a card and its ::after to finish, then
+// returns how many are still running. Scoped to the card, so an animation
+// elsewhere on the page can not make the check flaky.
+async function settledAnimations(locator) {
+  return locator.evaluate(async (el) => {
+    const finished = Promise.all(el.getAnimations({ subtree: true }).map((a) => a.finished));
+    const timeout = new Promise((_, reject) =>
+      setTimeout(() => reject(new Error('the card animations did not finish')), 6000)
+    );
+    await Promise.race([finished, timeout]);
+    return el.getAnimations({ subtree: true }).length;
+  });
+}
+
 async function noHorizontalOverflow(page) {
   return page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth);
 }
@@ -71,14 +85,15 @@ test.describe('with full motion', () => {
     }
 
     // After the whole sequence the glow rests lit (not dark, not fully bright).
-    await page.waitForTimeout(4500);
+    for (let i = 0; i < 3; i++) {
+      expect(await settledAnimations(podiumCards(page).nth(i))).toBe(0);
+    }
     const resting = await animationOf(podiumCards(page).nth(0), '::after');
     expect(Number(resting.opacity)).toBeGreaterThan(0.4);
     const shadow = await podiumCards(page)
       .nth(0)
       .evaluate((el) => getComputedStyle(el, '::after').boxShadow);
     expect(shadow).not.toBe('none');
-    expect(await page.evaluate(() => document.getAnimations().length)).toBe(0);
   });
 
   test('the Players top 3 glow too, and the rest do not', async ({ page }) => {
@@ -128,8 +143,8 @@ test.describe('with reduced motion', () => {
       const glow = await animationOf(card, '::after');
       expect(glow.name).toBe('none');
       expect(Number(glow.opacity)).toBeGreaterThan(0.4);
+      expect(await card.evaluate((el) => el.getAnimations({ subtree: true }).length)).toBe(0);
     }
-    expect(await page.evaluate(() => document.getAnimations().length)).toBe(0);
 
     await page.goto('/players');
     await expect(page.getByRole('article').first()).toBeVisible();

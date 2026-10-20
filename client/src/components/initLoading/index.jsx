@@ -6,6 +6,9 @@ import { useMotionLevel } from '../../motion/MotionContext';
 
 // The fast loader: every load after the first one in a tab, and every load for
 // a visitor who wants no motion. Only the logo, pulsing unless motion is off.
+// Lite keeps the pulse on purpose: lite has no decorative loops, but this one
+// is functional "loading" feedback, and lite visitors (slow connections) wait
+// the longest.
 export const Loading = () => {
   const { t } = useLanguage();
   const level = useMotionLevel();

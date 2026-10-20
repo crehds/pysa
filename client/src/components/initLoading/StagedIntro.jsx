@@ -35,7 +35,14 @@ export const StagedIntro = ({ curtain, onSkip, level: startLevel }) => {
           <Logo src={logo} alt='' />
         </LogoWrap>
         {!curtain && (
-          <SkipButton type='button' onClick={onSkip}>
+          <SkipButton
+            type='button'
+            onClick={(event) => {
+              // The Overlay skips on click too; one click skips once.
+              event.stopPropagation();
+              onSkip();
+            }}
+          >
             {t('intro.skip')}
           </SkipButton>
         )}

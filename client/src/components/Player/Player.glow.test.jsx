@@ -1,5 +1,5 @@
 import React from 'react';
-import { render, screen } from '@testing-library/react';
+import { act, render, screen } from '@testing-library/react';
 import { LanguageProvider } from '../../i18n/LanguageContext';
 import { MotionProvider } from '../../motion/MotionContext';
 import { Player } from '.';
@@ -23,6 +23,16 @@ function glowRule(element) {
         rule.selectorText?.includes('::after') &&
         classes.some((name) => rule.selectorText.includes(`.${name}`))
     );
+}
+
+function fakeEmitter(initial) {
+  const listeners = new Set();
+  return {
+    ...initial,
+    addEventListener: (type, fn) => type === 'change' && listeners.add(fn),
+    removeEventListener: (type, fn) => type === 'change' && listeners.delete(fn),
+    emit: () => listeners.forEach((fn) => fn()),
+  };
 }
 
 function renderPlayer(rank) {
@@ -64,6 +74,40 @@ describe('Player card glow', () => {
     const rule = glowRule(renderPlayer(3));
     expect(rule).toBeDefined();
     expect(rule.style.getPropertyValue('animation')).toBe('');
+  });
+
+  test('a lite to full change after mount does not start the pulse', () => {
+    const connection = fakeEmitter({ effectiveType: '3g' });
+    Object.defineProperty(navigator, 'connection', { value: connection, configurable: true });
+    const card = renderPlayer(1);
+    expect(glowRule(card).style.getPropertyValue('animation')).toBe('');
+
+    connection.effectiveType = '4g';
+    act(() => connection.emit());
+    expect(glowRule(card).style.getPropertyValue('animation')).toBe('');
+  });
+
+  test('a full to lite change after mount keeps the pulse as it was', () => {
+    const connection = fakeEmitter({ effectiveType: '4g' });
+    Object.defineProperty(navigator, 'connection', { value: connection, configurable: true });
+    const card = renderPlayer(2);
+    const pulse = glowRule(card).style.getPropertyValue('animation');
+    expect(pulse).toMatch(/2 backwards/);
+
+    connection.effectiveType = '3g';
+    act(() => connection.emit());
+    expect(glowRule(card).style.getPropertyValue('animation')).toBe(pulse);
+  });
+
+  test('a flip to none after mount stops the pulse', () => {
+    const query = fakeEmitter({ matches: false });
+    window.matchMedia = vi.fn(() => query);
+    const card = renderPlayer(3);
+    expect(glowRule(card).style.getPropertyValue('animation')).toMatch(/2 backwards/);
+
+    query.matches = true;
+    act(() => query.emit());
+    expect(glowRule(card).style.getPropertyValue('animation')).toBe('');
   });
 
   test('a card outside the top 3 has no glow', () => {

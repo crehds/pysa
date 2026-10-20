@@ -13,15 +13,16 @@ import {
 import { VisuallyHidden } from '../../styles/VisuallyHidden';
 import { metalKeys } from '../../styles/podium';
 import { entranceFor, glowFor } from '../../styles/podiumMotion';
-import { useMotionLevel } from '../../motion/MotionContext';
+import { useMountedMotionLevel } from '../../motion/useMountedMotionLevel';
 import { useLanguage } from '../../i18n/LanguageContext';
 
 // The top three, as an ordered list. `players` is already sorted and holds at
 // most three; fewer than three are shown as they are. On mount the cards come
-// in by motion level (see podiumMotion).
+// in by motion level (see podiumMotion); the level is the one at mount, so a
+// later change does not replay the entrance.
 export const Podium = ({ players }) => {
   const { t, medal } = useLanguage();
-  const level = useMotionLevel();
+  const level = useMountedMotionLevel();
   return (
     <PodiumSection>
       <PodiumList aria-label={t('podium.label')} $count={players.length}>

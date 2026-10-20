@@ -30,7 +30,7 @@ describe('StagedIntro', () => {
   test('the skip button skips', () => {
     const { onSkip } = renderIntro();
     fireEvent.click(screen.getByRole('button', { name: 'Saltar intro' }));
-    expect(onSkip).toHaveBeenCalled();
+    expect(onSkip).toHaveBeenCalledTimes(1);
   });
 
   test('a click anywhere on the intro skips', () => {
