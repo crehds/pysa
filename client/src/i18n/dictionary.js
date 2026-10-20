@@ -68,6 +68,7 @@ export const dictionary = {
     'footer.newTab': '(se abre en una pestaña nueva)',
 
     'loading': 'Cargando',
+    'intro.skip': 'Saltar intro',
     'error.message': 'No pudimos cargar el ranking.',
     'error.retry': 'Reintentar',
 
@@ -158,6 +159,7 @@ export const dictionary = {
     'footer.newTab': '(opens in a new tab)',
 
     'loading': 'Loading',
+    'intro.skip': 'Skip intro',
     'error.message': 'We could not load the ranking.',
     'error.retry': 'Retry',
 

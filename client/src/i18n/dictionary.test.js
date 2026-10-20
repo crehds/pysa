@@ -14,6 +14,13 @@ describe('the dictionary', () => {
   });
 });
 
+describe('the intro', () => {
+  test('has its skip label in both languages', () => {
+    expect(dictionary.es['intro.skip']).toBe('Saltar intro');
+    expect(dictionary.en['intro.skip']).toBe('Skip intro');
+  });
+});
+
 describe('translate', () => {
   test('returns the text of a key in the given language', () => {
     expect(translate('es', 'language.label')).toBe('Idioma');

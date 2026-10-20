@@ -1,8 +1,12 @@
 import styled from 'styled-components';
 import { metalColors } from '../../styles/podium';
+import { topGlowCss } from '../../styles/podiumMotion';
+import { cardSpotlightCss } from '../../styles/cardSpotlight';
 
 // A flat card. Ranks 1-3 get a thin metal top border; the non-color cue is the
-// rank badge and its hidden "oro/plata/bronce" (see PlayerImageMedail).
+// rank badge and its hidden "oro/plata/bronce" (see PlayerImageMedail). They
+// also glow (see podiumMotion), and every card lights up on hover (see
+// cardSpotlight).
 export const Card = styled.article`
   height: 100%;
   padding: var(--space-4);
@@ -15,6 +19,8 @@ export const Card = styled.article`
   /* Lets the header and the table adapt to the card's own width (three narrow
      cards share a row at 1024px), not the viewport's. */
   container-type: inline-size;
+  ${topGlowCss}
+  ${cardSpotlightCss}
 `;
 
 export const Score = styled.div`

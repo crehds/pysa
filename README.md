@@ -22,6 +22,10 @@ The screenshots show seeded sample data from a local run.
 - Spanish and English, detected automatically, with an ES | EN switch.
 - Accessible: keyboard navigation with visible focus, screen reader labels,
   `prefers-reduced-motion` respected.
+- Staged motion in three levels (full, lite, none), chosen from the system's
+  reduced-motion setting and the connection: a curtain intro on the first load
+  in each tab, a podium entrance and glow, and a hover spotlight on the player
+  cards.
 - Works on phones: the side menu becomes a bottom bar and the pages scroll.
 - A single admin account to manage players (not reachable without credentials).
 

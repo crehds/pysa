@@ -1,6 +1,8 @@
 // import './App.css';
 import { useEffect, useRef, useState } from 'react';
 import { Loading } from './components/initLoading';
+import { StagedIntro } from './components/initLoading/StagedIntro';
+import { useStagedIntro } from './components/initLoading/useStagedIntro';
 import { LoadError } from './components/LoadError';
 import { GlobalStyle } from './styles/GlobalStyles';
 import { Home } from './pages/Home';
@@ -103,11 +105,16 @@ function App() {
 
   // loadingData is null when the request failed (see useGetData).
   const loadFailed = !isLoading && loadingData === null;
+  // The first load in a tab plays the staged intro; the page is mounted once
+  // its curtain starts to open, and the fast loader covers every other wait.
+  const intro = useStagedIntro({ ready: isLoading, failed: loadFailed });
+  const showPage = isLoading && (!intro.active || intro.curtain);
 
   return (
     <div id='app' className='App' data-menu-hidden={menuHidden}>
       <GlobalStyle />
-      {isLoading ? (
+      {intro.active && <StagedIntro curtain={intro.curtain} onSkip={intro.skip} level={intro.level} />}
+      {showPage ? (
         <>
           <NavBar
             isLogging={isLogging}
@@ -158,7 +165,7 @@ function App() {
         </>
       ) : loadFailed ? (
         <LoadError onRetry={handleRefreshApp} />
-      ) : (
+      ) : intro.active ? null : (
         <Loading />
       )}
     </div>

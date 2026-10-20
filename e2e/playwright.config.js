@@ -34,6 +34,11 @@ export default defineConfig({
     // it: every spec runs in Spanish unless it asks for another locale with
     // test.use({ locale }) (see tests/language.spec.js).
     locale: 'es-ES',
+    // Reduced motion skips the first-load intro (about 2.5 s) that would
+    // otherwise sit in front of every spec, since each test is a fresh tab. The
+    // intro has its own spec (tests/staged-intro.spec.js), which asks for full
+    // motion.
+    reducedMotion: 'reduce',
     trace: 'retain-on-failure',
   },
   projects: [
