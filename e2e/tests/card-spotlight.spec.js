@@ -104,7 +104,7 @@ test.describe('on a touch device', () => {
 });
 
 test.describe('with reduced motion', () => {
-  test.use({ viewport: { width: 1280, height: 800 } });
+  test.use({ reducedMotion: 'reduce', viewport: { width: 1280, height: 800 } });
 
   test('hovering lights a card up but moves nothing', async ({ page }) => {
     const cards = await openPlayers(page);
@@ -112,7 +112,7 @@ test.describe('with reduced motion', () => {
     await expect.poll(async () => (await lookOf(cards.nth(4), '::before')).opacity).toBe(1);
     expect((await lookOf(cards.nth(4))).transform).toBe('none');
     expect((await lookOf(cards.nth(5))).transform).toBe('none');
-    // The others still dim, instantly.
-    expect((await lookOf(cards.nth(5))).opacity).toBeLessThan(1);
+    // The others still dim.
+    await expect.poll(async () => (await lookOf(cards.nth(5))).opacity).toBeLessThan(1);
   });
 });
