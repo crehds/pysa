@@ -296,11 +296,16 @@ describe('hiding the menu', () => {
 
   test('blocked storage keeps the menu visible and toggling does not crash', async () => {
     const user = userEvent.setup();
-    vi.spyOn(Storage.prototype, 'getItem').mockImplementation(() => {
-      throw new Error('blocked');
+    // Only localStorage is blocked here: a blocked sessionStorage would play
+    // the staged intro (see App.intro.test.jsx).
+    const { getItem, setItem } = Storage.prototype;
+    vi.spyOn(Storage.prototype, 'getItem').mockImplementation(function (key) {
+      if (this === window.localStorage) throw new Error('blocked');
+      return getItem.call(this, key);
     });
-    vi.spyOn(Storage.prototype, 'setItem').mockImplementation(() => {
-      throw new Error('blocked');
+    vi.spyOn(Storage.prototype, 'setItem').mockImplementation(function (key, value) {
+      if (this === window.localStorage) throw new Error('blocked');
+      return setItem.call(this, key, value);
     });
     renderAppAt('/');
     await screen.findByText('PlayerOne');

@@ -7,6 +7,7 @@ import {
   updatingPlayer,
 } from './utils/Context';
 import { LanguageProvider } from './i18n/LanguageContext';
+import { MotionProvider } from './motion/MotionContext';
 const Context = createContext();
 
 let initialState = {
@@ -84,7 +85,9 @@ const reducer2 = (state, action) => {
 
 export const Provider = ({ children }) => (
   <Context.Provider value={useReducer(reducer2, initialState)}>
-    <LanguageProvider>{children}</LanguageProvider>
+    <LanguageProvider>
+      <MotionProvider>{children}</MotionProvider>
+    </LanguageProvider>
   </Context.Provider>
 );
 

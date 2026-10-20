@@ -12,19 +12,27 @@ import {
 } from './styles';
 import { VisuallyHidden } from '../../styles/VisuallyHidden';
 import { metalKeys } from '../../styles/podium';
+import { entranceFor, glowFor } from '../../styles/podiumMotion';
+import { useMountedMotionLevel } from '../../motion/useMountedMotionLevel';
 import { useLanguage } from '../../i18n/LanguageContext';
 
 // The top three, as an ordered list. `players` is already sorted and holds at
-// most three; fewer than three are shown as they are.
+// most three; fewer than three are shown as they are. On mount the cards come
+// in by motion level (see podiumMotion); the level is the one at mount, so a
+// later change does not replay the entrance.
 export const Podium = ({ players }) => {
   const { t, medal } = useLanguage();
+  const level = useMountedMotionLevel();
   return (
     <PodiumSection>
       <PodiumList aria-label={t('podium.label')} $count={players.length}>
         {players.map((player, i) => {
           const rank = i + 1;
+          const entrance = entranceFor(level, rank, players.length);
+          // The glow pulses once its card is in.
+          const glow = glowFor(level, entrance ? entrance.delayMs + entrance.durationMs : 0);
           return (
-            <Card key={player._id ?? i} $rank={rank}>
+            <Card key={player._id ?? i} $rank={rank} $entrance={entrance} $glow={glow}>
               <Badge $rank={rank}>
                 {rank}
                 <VisuallyHidden>, {t(metalKeys[i])}</VisuallyHidden>

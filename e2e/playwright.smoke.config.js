@@ -41,6 +41,9 @@ export default defineConfig({
     // runner whose locale is whatever the image says (likely en-US). Pin it so
     // the copy the specs assert ("Iniciar sesión") is the same on every run.
     locale: 'es-ES',
+    // Reduced motion skips the first-load intro (about 2.5 s, longer on a slow
+    // connection) that would otherwise sit in front of every spec.
+    reducedMotion: 'reduce',
     trace: 'retain-on-failure',
   },
   projects: [
