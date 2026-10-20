@@ -1,6 +1,7 @@
 import styled from 'styled-components';
 import { media } from '../../styles/breakpoints';
 import { pageGutter } from '../../styles/layout';
+import { siblingsRecedeCss } from '../../styles/cardSpotlight';
 
 // One column on phones, two from sm, three from lg. `minmax(0, 1fr)` lets the
 // cards shrink instead of widening the page.
@@ -13,6 +14,7 @@ export const PlayersGrid = styled.ul`
   padding-top: 0;
   padding-bottom: var(--space-8);
   list-style: none;
+  ${siblingsRecedeCss}
 
   ${media.sm} {
     grid-template-columns: repeat(2, minmax(0, 1fr));
